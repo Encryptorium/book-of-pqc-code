@@ -49,9 +49,9 @@ The suite defaults to the reference implementation, so a clone that has a chapte
 PQC_IMPL=exercises pytest tests/ch13
 ```
 
-Every stubbed function raises `NotImplementedError` until you write it, so the first run is red by design. Open `exercises/ch13-lamport/`, implement one function, run again. Each stub keeps the reference implementation's signature and docstring, and adds a contract block naming what it owes its caller, where the book covers it, and which test proves it.
+Every stubbed function raises `NotImplementedError` until you write it, so the first run is red by design. Open `exercises/ch13-lamport/`, implement one function, run again. Each stub keeps the reference implementation's signature and adds a contract block naming what it owes its caller, where the book covers it, and which test proves it. Most stubs keep the reference docstring too: 370 of the 413 do. The other 43 are functions the reference itself wrote without one, mostly one-line address accessors and field-arithmetic helpers, and there the contract block is the whole contract.
 
-`PQC_IMPL` accepts only `solutions` or `exercises`. A chapter with no stub package under `exercises/` stops at collection with a `ModuleNotFoundError`, because there is nothing to import.
+`PQC_IMPL` accepts only `solutions` or `exercises`. Every chapter with a package under `solutions/` has one under `exercises/` as well, thirty in all once the book has finished publishing, so `PQC_IMPL=exercises` resolves for every test directory in the clone. The remaining ten chapters have no package under either tree and no suite to run.
 
 Nothing is hidden: `solutions/` is in this clone. Reading it costs you the exercise, which is a trade only you can price.
 
