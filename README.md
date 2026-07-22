@@ -1,8 +1,8 @@
 # Book of PQC: companion code
 
-Runnable implementations, exercise stubs, and tests for [*The Encryptorium Book of Post-Quantum Cryptography*](https://book.encryptorium.com).
+Runnable implementations, exercise stubs, and tests for [*The Encryptorium Book of Post-Quantum Cryptography*](https://book.encryptorium.com). Post-quantum cryptography (PQC) is the set of algorithms built to stay secure against an adversary holding a large quantum computer.
 
-Every code block in the book runs and is checked in CI against a `# ==>` expected-output marker. This repository holds the fuller implementations behind those blocks, a stubbed copy of each so you can write them yourself, and the pytest suites that check either one. Those suites include the NIST Automated Cryptographic Validation Protocol (ACVP) vector comparisons for ML-KEM (FIPS 203) and SLH-DSA (FIPS 205).
+The book's continuous integration (CI) runs the fenced Python blocks in the prose and compares each one's output against a `# ==>` expected-output marker. The exception is a block tagged `no-verify`, which CI skips; the book has two, both sketches not meant to run standalone. This repository holds the fuller implementations behind those blocks, a stubbed copy of each so you can write them yourself, and the pytest suites that check either one. Those suites include the Automated Cryptographic Validation Protocol (ACVP) vector comparisons published by the US National Institute of Standards and Technology (NIST) for ML-KEM and SLH-DSA, standardized as Federal Information Processing Standards (FIPS) 203 and 205.
 
 ## Layout
 
@@ -33,11 +33,15 @@ There is no per-chapter install step. Each `tests/chNN/conftest.py` puts the sel
 
 ## Running the tests
 
+No chapter has been released yet, so a fresh clone carries the environment scaffolding only. There is no `tests/`, `solutions/`, or `exercises/` directory, and every command in this section and the next reports `no tests ran` until the first chapter lands. See Release model below.
+
+Once a chapter is published, run its suite from the repository root:
+
 ```
 pytest tests/ch13
 ```
 
-The suite defaults to the reference implementation, so a fresh clone is green.
+The suite defaults to the reference implementation, so a clone that has a chapter in it is green on the first run.
 
 ## Implementing a chapter yourself
 
@@ -55,9 +59,9 @@ Nothing is hidden: `solutions/` is in this clone. Reading it costs you the exerc
 
 **"No module named 'numpy'" in a Part II chapter.** The venv is active but numpy was not installed. Run `pip install "numpy>=1.26"` inside the venv.
 
-**Pytest reports "no tests ran".** Check you are in the repository root; the chapter test directories are resolved relative to it.
+**Pytest reports "no tests ran".** Two causes. Either no chapter has been released yet, so there is no `tests/` directory to collect from (see Release model), or pytest was called from outside the repository root, since the chapter test directories are resolved relative to it.
 
-**`python3 --version` reports 3.8 or 3.9.** Several chapters use `match` statements, which raise `SyntaxError` below 3.10. The official installer at python.org bypasses a system package manager's pin.
+**`python3 --version` reports 3.8 or 3.9.** Six of the reference packages annotate an optional argument with a PEP 604 union such as `bytes | None` and do not import `annotations` from `__future__`. On both versions the annotation is evaluated when the function is defined, so importing one of those modules raises `TypeError: unsupported operand type(s) for |` rather than a `SyntaxError`. The official installer at python.org bypasses a system package manager's pin.
 
 **The venv activates but `which python` still points at the system CPython.** The shell cached the pre-venv path. Open a new shell, `cd` in, activate again.
 
