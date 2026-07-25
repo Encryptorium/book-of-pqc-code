@@ -1,0 +1,13 @@
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "quantum-threat"
+version = "0.1.0"
+description = "Chapter 1 of the Encryptorium Book of Post-Quantum Cryptography: trial division, the classical factoring baseline the chapter calibrates the quantum threat against. Two functions: the plain factorization the chapter prints, and the instrumented variant exercise 2 asks for, which reports how many candidate divisions the loop performed. Uses only the Python standard library."
+requires-python = ">=3.10"
+dependencies = []
+
+[tool.setuptools.packages.find]
+where = ["src"]
