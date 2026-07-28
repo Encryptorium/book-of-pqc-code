@@ -1,0 +1,13 @@
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "hard-problems"
+version = "0.1.0"
+description = "Chapter 3 of the Encryptorium Book of Post-Quantum Cryptography: the two hard problems the chapter makes concrete enough to compute. The lattice module enumerates the 2D lattice the chapter draws and closes its shortest-vector claim with the membership congruence that makes the search finite. The codes module builds the [7, 4] Hamming parity-check matrix whose column order turns syndrome decoding into a base-2 read, which is the contrast the chapter draws against decoding a random code. Uses only the Python standard library."
+requires-python = ">=3.10"
+dependencies = []
+
+[tool.setuptools.packages.find]
+where = ["src"]
