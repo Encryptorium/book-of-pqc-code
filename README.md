@@ -65,7 +65,7 @@ PQC_IMPL=exercises pytest tests/ch01
 
 Every stubbed function raises `NotImplementedError` until you write it, so the first run is red by design. Open `exercises/ch01-quantum-threat/`, implement one function, run again. Each stub keeps the reference implementation's signature and adds a contract block naming what it owes its caller, where the book covers it, and which test proves it. Most stubs keep the reference docstring too, so the contract you implement against is the one the book describes rather than a paraphrase. The rest are functions the reference itself wrote without one, mostly one-line address accessors and field-arithmetic helpers, and there the contract block is the whole contract.
 
-`PQC_IMPL` accepts only `solutions` or `exercises`. Every chapter with a package under `solutions/` has one under `exercises/` as well, so `PQC_IMPL=exercises` resolves for every test directory in the clone. Chapter 3 is the one chapter of the book with no package under either tree and no suite to run, because it prints no code.
+`PQC_IMPL` accepts only `solutions` or `exercises`. Every chapter with a package under `solutions/` has one under `exercises/` as well, so `PQC_IMPL=exercises` resolves for every test directory in the clone.
 
 Nothing is hidden: `solutions/` is in this clone. Reading it costs you the exercise, which is a trade only you can price.
 
@@ -85,7 +85,9 @@ Appendix C of the book covers the environment contract in full.
 
 The book publishes one chapter at a time, and a chapter's code publishes with it. This repository tracks the published book rather than the working draft, so anything present here belongs to a chapter that has cleared review. Expect it to grow as the book does.
 
-**Chapters released so far: Chapter 1.** The rest of the book is in editorial review, and each chapter's four trees land here on the day its prose publishes.
+**Chapters released so far: Chapters 1, 2, and 3.** The rest of the book is in editorial review, and each chapter's trees land here on the day its prose publishes.
+
+Not every chapter fills all four trees. `chapter-code/` holds the listings a chapter prints in its own body, so a chapter whose prose prints no Python has no directory there. Chapter 3 is the first of those, and it still ships a `solutions/` package, an `exercises/` package and a suite, because the worked answers on its Appendix D page are code and belong under test like any other.
 
 ## What this repository is not
 
