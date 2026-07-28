@@ -1,0 +1,13 @@
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "prelim-algebra"
+version = "0.1.0"
+description = "Chapter 2 of the Encryptorium Book of Post-Quantum Cryptography: the algebraic toolbox the later chapters are built out of. Modular exponentiation and inversion over Z/nZ, polynomial arithmetic and reduction over F_p, and Gaussian elimination over F_p, plus the element-order and root-finding searches the chapter's exercises ask for. Every routine is the naive form the chapter prints, chosen to be readable rather than fast. Uses only the Python standard library."
+requires-python = ">=3.10"
+dependencies = []
+
+[tool.setuptools.packages.find]
+where = ["src"]
