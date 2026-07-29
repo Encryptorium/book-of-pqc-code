@@ -8,7 +8,7 @@ The book's continuous integration (CI) runs the fenced Python blocks in the pros
 
 Four trees, each with one job.
 
-- `chapter-code/chNN/`: every Python block that chapter prints, one file each. Generated from the chapter text, so what you run is what the page shows.
+- `chapter-code/chNN/`: every Python block that chapter prints and CI runs, one file each. Generated from the chapter text, so what you run is what the page shows. A block tagged `no-verify` is skipped, because CI does not run it and shipping it as a runnable file would be a promise the book does not keep. Chapter 4's ECDSA signing sketch is the first of those, which is why `chapter-code/ch04/` holds eight files for the nine blocks that chapter prints.
 - `solutions/chNN-<slug>/`: the reference implementation for one chapter, as a standalone Python package
 - `exercises/chNN-<slug>/`: the same package with the functions that chapter teaches replaced by stubs
 - `tests/chNN/`: the pytest suite, which runs against either package tree
@@ -85,7 +85,7 @@ Appendix C of the book covers the environment contract in full.
 
 The book publishes one chapter at a time, and a chapter's code publishes with it. This repository tracks the published book rather than the working draft, so anything present here belongs to a chapter that has cleared review. Expect it to grow as the book does.
 
-**Chapters released so far: Chapters 1, 2, and 3.** The rest of the book is in editorial review, and each chapter's trees land here on the day its prose publishes.
+**Chapters released so far: Chapters 1, 2, 3, and 4.** The rest of the book is in editorial review, and each chapter's trees land here on the day its prose publishes.
 
 Not every chapter fills all four trees. `chapter-code/` holds the listings a chapter prints in its own body, so a chapter whose prose prints no Python has no directory there. Chapter 3 is the first of those, and it still ships a `solutions/` package, an `exercises/` package and a suite, because the worked answers on its Appendix D page are code and belong under test like any other.
 

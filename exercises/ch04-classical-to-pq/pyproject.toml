@@ -1,0 +1,13 @@
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "classical-to-pq"
+version = "0.1.0"
+description = "Chapter 4 of the Encryptorium Book of PQC: toy RSA, toy ECDSA on secp256k1, and the classical post-processing step of Shor's algorithm."
+requires-python = ">=3.10"
+dependencies = []
+
+[tool.setuptools.packages.find]
+where = ["src"]
