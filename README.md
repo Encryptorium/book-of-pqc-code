@@ -1,8 +1,8 @@
 # Book of PQC: companion code
 
-Every line of code in [*The Encryptorium Book of Post-Quantum Cryptography*](https://book.encryptorium.com), in a form you can run. Post-quantum cryptography (PQC) is the set of algorithms built to stay secure against an adversary holding a large quantum computer.
+Every line of code in [*The Encryptorium Book of Post-Quantum Cryptography*](https://book.encryptorium.com) that is meant to run, in a form you can run. Post-quantum cryptography (PQC) is the set of algorithms built to stay secure against an adversary holding a large quantum computer.
 
-The book's continuous integration (CI) runs the fenced Python blocks in the prose and compares each one's output against a `# ==>` expected-output marker. The exception is a block tagged `no-verify`, which CI skips; the book has two, both sketches not meant to run standalone. This repository holds those blocks as files, the fuller implementations behind them, a stubbed copy of each so you can write them yourself, and the pytest suites that check either one. Those suites include the Automated Cryptographic Validation Protocol (ACVP) vector comparisons published by the US National Institute of Standards and Technology (NIST) for ML-KEM and SLH-DSA, standardized as Federal Information Processing Standards (FIPS) 203 and 205.
+The book's continuous integration (CI) runs the fenced Python blocks in the prose and compares each one's output against a `# ==>` expected-output marker. The exception is a block tagged `no-verify`, which CI skips; the book has two, both sketches not meant to run standalone. This repository holds those blocks as files, the fuller implementations behind them, a stubbed copy of each so you can write them yourself, and the pytest suites that check either one. Those suites will include the Automated Cryptographic Validation Protocol (ACVP) vector comparisons published by the US National Institute of Standards and Technology (NIST) for ML-KEM and SLH-DSA, standardized as Federal Information Processing Standards (FIPS) 203 and 205, when the chapters that build them publish. Chapters 11, 12 and 17 are still in editorial review, so no clone carries those fixtures yet.
 
 ## Layout
 
@@ -13,7 +13,7 @@ Four trees, each with one job.
 - `exercises/chNN-<slug>/`: the same package with the functions that chapter teaches replaced by stubs
 - `tests/chNN/`: the pytest suite, which runs against either package tree
 
-The chapters draw pedagogical slices from `solutions/`. Code in the book is a readable excerpt; code here is the fuller version it was cut from. `chapter-code/` is the excerpt itself, byte for byte.
+The chapters draw pedagogical slices from `solutions/`. Code in the book is a readable excerpt; code here is the fuller version it was cut from. `chapter-code/` is the excerpt itself: each file adds a generated provenance header, and after that header its body is the chapter excerpt byte for byte.
 
 ## What to run
 
@@ -75,7 +75,7 @@ Nothing is hidden: `solutions/` is in this clone. Reading it costs you the exerc
 
 **Pytest reports "no tests ran".** Two causes. Either the chapter named on the command line has not been released yet, so there is no `tests/chNN` directory to collect from (see Release model), or pytest was called from outside the repository root, since the chapter test directories are resolved relative to it.
 
-**`python3 --version` reports 3.8 or 3.9.** Six of the reference packages annotate an optional argument with a PEP 604 union such as `bytes | None` and do not import `annotations` from `__future__`. On both versions the annotation is evaluated when the function is defined, so importing one of those modules raises `TypeError: unsupported operand type(s) for |` rather than a `SyntaxError`. The official installer at python.org bypasses a system package manager's pin.
+**`python3 --version` reports 3.8 or 3.9.** Some reference packages annotate an optional argument with a PEP 604 union such as `bytes | None` and do not import `annotations` from `__future__`. On both versions the annotation is evaluated when the function is defined, so importing one of those modules raises `TypeError: unsupported operand type(s) for |` rather than a `SyntaxError`. The official installer at python.org bypasses a system package manager's pin.
 
 **The venv activates but `which python` still points at the system CPython.** The shell cached the pre-venv path. Open a new shell, `cd` in, activate again.
 
@@ -87,7 +87,7 @@ The book publishes one chapter at a time, and a chapter's code publishes with it
 
 **Chapters released so far: Chapters 1, 2, 3, and 4.** The rest of the book is in editorial review, and each chapter's trees land here on the day its prose publishes.
 
-Not every chapter fills all four trees. `chapter-code/` holds the listings a chapter prints in its own body, so a chapter whose prose prints no Python has no directory there. Chapter 3 is the first of those, and it still ships a `solutions/` package, an `exercises/` package and a suite, because the worked answers on its Appendix D page are code and belong under test like any other.
+Not every chapter fills all four trees. `chapter-code/` holds the listings a chapter prints in its own body and CI runs, so a chapter whose prose prints no Python has no directory there, and a chapter with a `no-verify` sketch ships one file fewer than it prints. Chapter 3 is the first of those, and it still ships a `solutions/` package, an `exercises/` package and a suite, because the worked answers on its Appendix D page are code and belong under test like any other.
 
 ## What this repository is not
 
