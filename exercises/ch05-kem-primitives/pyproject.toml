@@ -1,0 +1,13 @@
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "kem-primitives"
+version = "0.1.0"
+description = "Chapter 5 of the Encryptorium Book of PQC: toy Diffie-Hellman key agreement, a toy RSA-KEM, and the mauling attack that shows why it is not IND-CCA2."
+requires-python = ">=3.10"
+dependencies = []
+
+[tool.setuptools.packages.find]
+where = ["src"]
