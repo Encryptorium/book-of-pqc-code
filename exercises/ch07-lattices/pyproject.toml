@@ -1,0 +1,13 @@
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "lattices-for-programmers"
+version = "0.1.0"
+description = "Chapter 7 of the Encryptorium Book of PQC: lattices, bases, dual lattices, determinants, and Minkowski's bound for programmers."
+requires-python = ">=3.10"
+dependencies = ["numpy>=1.26"]
+
+[tool.setuptools.packages.find]
+where = ["src"]
