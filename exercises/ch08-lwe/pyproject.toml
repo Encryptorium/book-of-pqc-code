@@ -1,0 +1,13 @@
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "learning-with-errors"
+version = "0.1.0"
+description = "Chapter 8 of the Encryptorium Book of PQC: the learning with errors (LWE) problem, toy parameter sampling, noise-free Gaussian elimination over Z_q, and the q-ary lattice embedding of search LWE."
+requires-python = ">=3.10"
+dependencies = ["numpy>=1.26"]
+
+[tool.setuptools.packages.find]
+where = ["src"]
