@@ -24,20 +24,11 @@ def poly_mul(f: list[int], g: list[int], p: int) -> list[int]:
     deg(f) + deg(g). Every entry is reduced modulo p as it is accumulated
     rather than at the end, which keeps the intermediate integers small.
     """
-    # EXERCISE: implement this function.
-    #
-    # Coefficients are ascending, so index i holds the coefficient of x**i
-    # and the product of a degree-i term with a degree-j term lands at index
-    # i + j. Allocate len(f) + len(g) - 1 zeros and accumulate the double
-    # loop into them, reducing modulo p as you go rather than at the end so
-    # the intermediate integers stay small. This is the textbook O(n^2)
-    # form; Chapter 9 replaces it with the number theoretic transform.
-    #
-    # Reference: Chapter 2, 'Polynomials over a finite field'
-    #
-    # Proved by:
-    #   tests/ch02/test_polynomials.py
-    raise NotImplementedError("exercise: poly_mul")
+    result = [0] * (len(f) + len(g) - 1)
+    for i, a in enumerate(f):
+        for j, b in enumerate(g):
+            result[i + j] = (result[i + j] + a * b) % p
+    return result
 
 
 def poly_mod(a: list[int], f: list[int], p: int) -> list[int]:
@@ -58,23 +49,16 @@ def poly_mod(a: list[int], f: list[int], p: int) -> list[int]:
     was at least that long to begin with; an input already below that degree
     is returned at its own length, reduced but otherwise untouched.
     """
-    # EXERCISE: implement this function.
-    #
-    # Reduce every incoming coefficient modulo p first, otherwise an input
-    # already below deg(f) skips the loop entirely and passes through
-    # unreduced. Then long-divide, one leading term at a time: while the
-    # working list is still at least as long as f, take its top coefficient,
-    # subtract that multiple of f from the matching tail, then pop the
-    # now-zero top entry. Because f is monic the leading coefficient needs
-    # no inversion, which is the whole simplification the monic assumption
-    # buys. Do not trim trailing zeros, so the zero polynomial comes back as
-    # a list of zeros deg(f) long.
-    #
-    # Reference: Chapter 2, 'Polynomial reduction'
-    #
-    # Proved by:
-    #   tests/ch02/test_polynomials.py
-    raise NotImplementedError("exercise: poly_mod")
+    assert f[-1] == 1, "poly_mod requires f to be monic"
+    a = [c % p for c in a]
+    deg_f = len(f) - 1
+    while len(a) - 1 >= deg_f:
+        lead = a[-1]
+        if lead != 0:
+            for i in range(deg_f + 1):
+                a[-1 - i] = (a[-1 - i] - lead * f[deg_f - i]) % p
+        a.pop()
+    return a
 
 
 def poly_eval(coeffs: list[int], x: int, p: int) -> int:

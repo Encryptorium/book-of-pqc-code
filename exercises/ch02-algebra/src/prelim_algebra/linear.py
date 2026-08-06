@@ -28,19 +28,25 @@ def gauss_eliminate(matrix: list[list[int]], p: int) -> tuple[list[list[int]], i
     since a^(p-1) == 1 makes a^(p-2) the inverse of a. The Fermat form is
     shorter when the modulus is known to be prime, which it is here.
     """
-    # EXERCISE: implement this function.
-    #
-    # Return the reduced row echelon form and the rank together. Process one
-    # column at a time: find a row at or below the current pivot row with a
-    # nonzero entry in that column, swap it up, scale it so the pivot is 1,
-    # then clear the column from every other row. Skip a column with no
-    # available pivot, which is what makes rectangular and rank-deficient
-    # input work. The rank is the number of pivots placed; do not compute it
-    # separately. Copy the rows before starting so the caller's matrix
-    # survives.
-    #
-    # Reference: Chapter 2, 'Gaussian elimination over a finite field'
-    #
-    # Proved by:
-    #   tests/ch02/test_linear.py
-    raise NotImplementedError("exercise: gauss_eliminate")
+    assert p > 1, "p must be prime; this helper does not test primality"
+    m = [row[:] for row in matrix]
+    rows = len(m)
+    cols = len(m[0]) if m else 0
+    rank = 0
+    for col in range(cols):
+        pivot = None
+        for r in range(rank, rows):
+            if m[r][col] % p != 0:
+                pivot = r
+                break
+        if pivot is None:
+            continue
+        m[rank], m[pivot] = m[pivot], m[rank]
+        inv = pow(m[rank][col], p - 2, p)
+        m[rank] = [(x * inv) % p for x in m[rank]]
+        for r in range(rows):
+            if r != rank and m[r][col] % p != 0:
+                factor = m[r][col]
+                m[r] = [(m[r][c] - factor * m[rank][c]) % p for c in range(cols)]
+        rank += 1
+    return m, rank

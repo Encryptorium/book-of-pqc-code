@@ -24,21 +24,16 @@ def mod_pow(base: int, exponent: int, modulus: int) -> int:
     ``result`` starts at ``1 % modulus`` rather than ``1`` so that a modulus of
     1 returns 0, which is the only element of the zero ring.
     """
-    # EXERCISE: implement this function.
-    #
-    # Walk the exponent from low bit to high bit. Keep a running base that
-    # you square every step, and a running result that you multiply the base
-    # into whenever the current bit is 1. Start the result at 1 % modulus
-    # rather than 1, so a modulus of 1 returns 0, the only element of the
-    # zero ring. Reduce after every multiplication, not at the end: the
-    # point of the algorithm is that no intermediate value ever exceeds
-    # modulus squared.
-    #
-    # Reference: Chapter 2, 'Modular exponentiation'
-    #
-    # Proved by:
-    #   tests/ch02/test_modular.py
-    raise NotImplementedError("exercise: mod_pow")
+    assert exponent >= 0, "exponent must be non-negative"
+    assert modulus >= 1, "modulus must be at least 1"
+    result = 1 % modulus
+    base = base % modulus
+    while exponent > 0:
+        if exponent % 2 == 1:
+            result = (result * base) % modulus
+        base = (base * base) % modulus
+        exponent //= 2
+    return result
 
 
 def ext_gcd(a: int, b: int) -> tuple[int, int, int]:
@@ -56,22 +51,10 @@ def ext_gcd(a: int, b: int) -> tuple[int, int, int]:
     substituting a mod b == a - (a // b) * b gives
     a * y1 + b * (x1 - (a // b) * y1) == g.
     """
-    # EXERCISE: implement this function.
-    #
-    # Return the triple (g, x, y) with a * x + b * y == g, for non-negative
-    # a and b. Base case: b == 0 gives (a, 1, 0). Otherwise recurse on (b, a
-    # % b) to get (g, x1, y1), then repackage. Substituting a % b == a - (a
-    # // b) * b into b * x1 + (a % b) * y1 == g gives a * y1 + b * (x1 - (a
-    # // b) * y1) == g, so the coefficients swap and the second one picks up
-    # the quotient term. Non-negativity is load-bearing: a negative argument
-    # can bottom the recursion out on a negative value and return a negative
-    # g.
-    #
-    # Reference: Chapter 2, 'The extended Euclidean algorithm'
-    #
-    # Proved by:
-    #   tests/ch02/test_modular.py
-    raise NotImplementedError("exercise: ext_gcd")
+    if b == 0:
+        return a, 1, 0
+    g, x1, y1 = ext_gcd(b, a % b)
+    return g, y1, x1 - (a // b) * y1
 
 
 def mod_inv(a: int, modulus: int) -> int:
@@ -82,19 +65,10 @@ def mod_inv(a: int, modulus: int) -> int:
     The Bezout coefficient x from a * x + n * y == 1 is the inverse once
     reduced modulo n, because the n * y term vanishes.
     """
-    # EXERCISE: implement this function.
-    #
-    # Run ext_gcd on (a % modulus, modulus). An element of Z/nZ is a unit
-    # exactly when it is coprime to n, so asserting the gcd is 1 is the
-    # whole existence condition rather than a defensive check. The Bezout
-    # coefficient x satisfies a * x + modulus * y == 1, and the modulus * y
-    # term vanishes on reduction, so x % modulus is the inverse.
-    #
-    # Reference: Chapter 2, 'The extended Euclidean algorithm'
-    #
-    # Proved by:
-    #   tests/ch02/test_modular.py
-    raise NotImplementedError("exercise: mod_inv")
+    assert modulus > 1, "modulus must be greater than 1"
+    g, x, _ = ext_gcd(a % modulus, modulus)
+    assert g == 1, "inverse does not exist: a and modulus share a factor"
+    return x % modulus
 
 
 def order(g: int, p: int) -> int:

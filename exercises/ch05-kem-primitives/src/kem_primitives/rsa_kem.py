@@ -52,19 +52,10 @@ def encap(pk, rng):
     cryptographically secure; real encapsulation uses
     ``secrets.SystemRandom`` and feeds the output through a KDF.
     """
-    # EXERCISE: implement this function.
-    #
-    # Unpack the public key, draw K uniformly from [1, n-1] with
-    # rng.randint, encrypt it as pow(K, e, n), and return the pair (c, K) in
-    # that order. Note that encapsulation returns the key as well as the
-    # ciphertext: neither party chose K, which is the whole distinction from
-    # public-key encryption.
-    #
-    # Reference: Chapter 5, 'The KEM API and a toy RSA-KEM'
-    #
-    # Proved by:
-    #   tests/ch05/test_rsa_kem.py
-    raise NotImplementedError("exercise: encap")
+    mod, exp = pk
+    K = rng.randint(1, mod - 1)
+    c = pow(K, exp, mod)
+    return (c, K)
 
 
 def decap(sk, c):
@@ -73,14 +64,5 @@ def decap(sk, c):
     This is raw RSA decryption. There is no re-encryption check and no
     rejection branch, which is precisely what the mauling attack exploits.
     """
-    # EXERCISE: implement this function.
-    #
-    # Raise the ciphertext to the private exponent modulo n. That is raw RSA
-    # decryption, with no re-encryption check and no rejection branch, which
-    # is exactly what the mauling attack exploits.
-    #
-    # Reference: Chapter 5, 'The KEM API and a toy RSA-KEM'
-    #
-    # Proved by:
-    #   tests/ch05/test_rsa_kem.py
-    raise NotImplementedError("exercise: decap")
+    mod, dec_exp = sk
+    return pow(c, dec_exp, mod)
