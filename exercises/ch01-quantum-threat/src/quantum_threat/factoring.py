@@ -24,22 +24,12 @@ def factor_trial_division(n: int) -> tuple[int, int] | None:
     composite has a prime factor at most sqrt(n). It is just catastrophically
     slow for moduli the size of any real RSA key.
     """
-    # EXERCISE: implement this function.
-    #
-    # Walk candidate divisors upward from 2 while candidate * candidate <=
-    # n, and return (candidate, n // candidate) at the first one that
-    # divides n. Return None if the loop ends without finding one. The loop
-    # bound is the lesson, not an optimization: every composite has a prime
-    # factor at most sqrt(n), so stopping there is exact rather than
-    # approximate. Do not validate the input. An n below 4 fails the loop
-    # condition immediately and reports None, which is the honest answer for
-    # 0, 1, 2, and 3 alike.
-    #
-    # Reference: Chapter 1, 'Classical factoring, to calibrate the threat'
-    #
-    # Proved by:
-    #   tests/ch01/test_factoring.py
-    raise NotImplementedError("exercise: factor_trial_division")
+    candidate = 2
+    while candidate * candidate <= n:
+        if n % candidate == 0:
+            return candidate, n // candidate
+        candidate += 1
+    return None
 
 
 def factor_trial_division_counted(n: int) -> tuple[int, int, int] | None:
@@ -59,13 +49,15 @@ def factor_trial_division_counted(n: int) -> tuple[int, int, int] | None:
     """
     # EXERCISE: implement this function.
     #
-    # The same search, returning (p, q, divisions). Increment the counter
-    # once per candidate before testing divisibility, so the division that
-    # finds the factor is itself counted. For n = 3233 that yields 52: the
-    # loop runs over candidates 2 through 53 inclusive, stopping at the
-    # smaller factor, which is 53 - 1 divisions and not the 56 that
-    # floor(sqrt(3233)) would suggest. Returning the count is what turns the
-    # chapter's cost argument into a number a reader can check.
+    # The same search as the block the chapter prints, returning (p, q,
+    # divisions). Start from that block rather than writing the search
+    # again. Increment the counter once per candidate before testing
+    # divisibility, so the division that finds the factor is itself counted.
+    # For n = 3233 that yields 52: the loop runs over candidates 2 through
+    # 53 inclusive, stopping at the smaller factor, which is 53 - 1
+    # divisions and not the 56 that floor(sqrt(3233)) would suggest.
+    # Returning the count is what turns the chapter's cost argument into a
+    # number a reader can check.
     #
     # Reference: Chapter 1, exercise 2
     #
