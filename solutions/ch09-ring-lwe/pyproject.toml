@@ -1,0 +1,13 @@
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "ring-and-module-lwe"
+version = "0.1.0"
+description = "Chapter 9 of the Encryptorium Book of PQC: the polynomial ring R_q = Z_q[x]/(x^n+1), Ring-LWE and Module-LWE instance sampling, and a negacyclic number theoretic transform usable at any (n, q) with n a power of two and 2n dividing q - 1."
+requires-python = ">=3.10"
+dependencies = ["numpy>=1.26"]
+
+[tool.setuptools.packages.find]
+where = ["src"]
