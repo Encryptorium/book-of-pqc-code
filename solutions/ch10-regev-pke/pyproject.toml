@@ -1,0 +1,13 @@
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "regev-pke"
+version = "0.1.0"
+description = "Chapter 10 of the Encryptorium Book of PQC: Regev's public-key encryption scheme over flat LWE, with key generation, one-bit encryption via the floor(q/2) scaling, symmetric-representative decoding, and the noise budget 2 * m * B < q // 2 that keeps decryption correct on uniform noise."
+requires-python = ">=3.10"
+dependencies = ["numpy>=1.26"]
+
+[tool.setuptools.packages.find]
+where = ["src"]
