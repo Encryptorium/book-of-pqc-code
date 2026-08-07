@@ -1,0 +1,13 @@
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "ml-kem"
+version = "0.1.0"
+description = "Chapter 11 of the Encryptorium Book of PQC: ML-KEM (FIPS 203) from scratch. K-PKE over Module-LWE at (n, q, k) with centered binomial noise, compression, ByteEncode/ByteDecode serialization, SHA-3 auxiliary functions, a specialized partial NTT at zeta = 17, and the Fujisaki-Okamoto transform in its implicit-rejection form lifting K-PKE to IND-CCA2 ML-KEM at the three standardized parameter sets ML-KEM-512, ML-KEM-768, and ML-KEM-1024. Matches the NIST ACVP test vectors byte-for-byte."
+requires-python = ">=3.10"
+dependencies = ["numpy>=1.26"]
+
+[tool.setuptools.packages.find]
+where = ["src"]
