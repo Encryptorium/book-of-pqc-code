@@ -1,0 +1,13 @@
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "hash-cryptanalysis"
+version = "0.1.0"
+description = "Chapter 18 of the Encryptorium Book of Post-Quantum Cryptography: the generic-attack arithmetic behind SLH-DSA's security claims. Carries FIPS 205's six SHA-2 parameter sets as data, reproduces every published signature size from the component accounting, counts the multi-target preimage population ADRS defends against, computes the exact FORS reuse coverage probability rather than its q << t approximation, and prices the generic quantum attacks and the verify-after-sign countermeasure. Analysis only, no signing: uses the Python standard library and nothing else."
+requires-python = ">=3.10"
+dependencies = []
+
+[tool.setuptools.packages.find]
+where = ["src"]
