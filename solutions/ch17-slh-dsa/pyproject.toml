@@ -1,0 +1,6 @@
+[project]
+name = "slh-dsa"
+version = "0.1.0"
+description = "Chapter 17: SLH-DSA (FIPS 205) from scratch"
+requires-python = ">=3.10"
+dependencies = []
