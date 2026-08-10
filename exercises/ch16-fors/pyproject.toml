@@ -1,0 +1,13 @@
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "fors-hypertree"
+version = "0.1.0"
+description = "Chapter 16 of the Encryptorium Book of PQC: FORS (Forest of Random Subsets) few-time signatures and multi-layer hypertrees built from WOTS+ Merkle subtrees. Uses only the Python standard library (hashlib for SHA-256)."
+requires-python = ">=3.10"
+dependencies = []
+
+[tool.setuptools.packages.find]
+where = ["src"]
