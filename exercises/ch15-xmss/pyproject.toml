@@ -1,0 +1,13 @@
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "wots-xmss"
+version = "0.1.0"
+description = "Chapter 15 of the Encryptorium Book of PQC: WOTS+ one-time signatures with base-w encoding and checksum, L-tree compression, and XMSS many-time signatures with stateful leaf management. Uses only the Python standard library (hashlib for SHA-256)."
+requires-python = ">=3.10"
+dependencies = []
+
+[tool.setuptools.packages.find]
+where = ["src"]
