@@ -1,0 +1,13 @@
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "lattice-cryptanalysis"
+version = "0.1.0"
+description = "Chapter 13 of the Encryptorium Book of PQC: a minimal core-SVP cost estimator for Module-LWE. Reimplements equation 9 of the CRYSTALS-Kyber Round 3 submission (primal attack success condition) with the Chen 2013 root-Hermite-factor closed form and the Becker-Ducas-Gama-Laarhoven 2016 sieving exponents, reproducing the published block sizes and classical/quantum bit counts for ML-KEM-512, ML-KEM-768, and ML-KEM-1024 within 5 block sizes. Uses only the Python standard library math module; no numpy or scipy."
+requires-python = ">=3.10"
+dependencies = []
+
+[tool.setuptools.packages.find]
+where = ["src"]

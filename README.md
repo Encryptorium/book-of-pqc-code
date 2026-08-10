@@ -30,7 +30,7 @@ The worked answers to a chapter's numbered exercises are not a separate tree: th
 
 ## Setup
 
-CPython 3.10 or newer. The lattice chapters (7 through 12) also need NumPy 1.26 or newer; every other chapter runs against the standard library alone.
+CPython 3.10 or newer. The lattice chapters (7 through 13) also need NumPy 1.26 or newer; every other chapter runs against the standard library alone. Chapter 13 needs it for one block, the toy LLL; its core-SVP estimator is standard library only.
 
 ```
 git clone https://github.com/Encryptorium/book-of-pqc-code.git
@@ -85,7 +85,7 @@ Appendix C of the book covers the environment contract in full.
 
 The book publishes one chapter at a time, and a chapter's code publishes with it. This repository tracks the published book rather than the working draft, so anything present here belongs to a chapter that has cleared review. Expect it to grow as the book does.
 
-**Chapters released so far: Chapters 1 through 12, which is all of Part I and the first six chapters of Part II.** The rest of the book is in editorial review, and each chapter's trees land here on the day its prose publishes.
+**Chapters released so far: Chapters 1 through 13, which is all of Part I and all of Part II.** The rest of the book is in editorial review, and each chapter's trees land here on the day its prose publishes.
 
 Not every chapter fills all four trees. `chapter-code/` holds the listings a chapter prints in its own body and CI runs, so a chapter whose prose prints no Python has no directory there, and a chapter with a `no-verify` sketch ships one file fewer than it prints. Chapter 3 is the first of those, and it still ships a `solutions/` package, an `exercises/` package and a suite, because the worked answers on its Appendix D page are code and belong under test like any other.
 
