@@ -1,0 +1,13 @@
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "ml-dsa"
+version = "0.1.0"
+description = "Chapter 12 of the Encryptorium Book of PQC: ML-DSA (FIPS 204) from scratch. Module-lattice signatures over Module-LWE/SIS at (n, q, k, l) with the full 256-point NTT at zeta = 1753 mod q = 8380417, Power2Round/Decompose rounding and the MakeHint/UseHint mechanism, rejection sampling (ExpandA, ExpandS, ExpandMask, SampleInBall), BitPack/SimpleBitPack serialization, and the Fiat-Shamir-with-aborts KeyGen/Sign/Verify at the three standardized parameter sets ML-DSA-44, ML-DSA-65, and ML-DSA-87. Matches the NIST ACVP test vectors byte-for-byte."
+requires-python = ">=3.10"
+dependencies = ["numpy>=1.26"]
+
+[tool.setuptools.packages.find]
+where = ["src"]

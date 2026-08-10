@@ -2,7 +2,7 @@
 
 Every line of code in [*The Encryptorium Book of Post-Quantum Cryptography*](https://book.encryptorium.com) that is meant to run, in a form you can run. Post-quantum cryptography (PQC) is the set of algorithms built to stay secure against an adversary holding a large quantum computer.
 
-The book's continuous integration (CI) runs the fenced Python blocks in the prose and compares each one's output against a `# ==>` expected-output marker. The exception is a block tagged `no-verify`, which CI skips; the book has two, both sketches not meant to run standalone. This repository holds those blocks as files, the fuller implementations behind them, a stubbed copy of each so you can write them yourself, and the pytest suites that check either one. Those suites will include the Automated Cryptographic Validation Protocol (ACVP) vector comparisons published by the US National Institute of Standards and Technology (NIST) for ML-KEM and SLH-DSA, standardized as Federal Information Processing Standards (FIPS) 203 and 205, when the chapters that build them publish. Chapters 12 and 17 are still in editorial review, so no clone carries their fixtures yet; Chapter 11's ML-KEM vectors are here.
+The book's continuous integration (CI) runs the fenced Python blocks in the prose and compares each one's output against a `# ==>` expected-output marker. The exception is a block tagged `no-verify`, which CI skips; the book has two, both sketches not meant to run standalone. This repository holds those blocks as files, the fuller implementations behind them, a stubbed copy of each so you can write them yourself, and the pytest suites that check either one. Those suites include the Automated Cryptographic Validation Protocol (ACVP) vector comparisons published by the US National Institute of Standards and Technology (NIST) for the algorithms the released chapters build. Chapter 11's ML-KEM vectors and Chapter 12's ML-DSA vectors are both here, checked byte for byte against Federal Information Processing Standards (FIPS) 203 and 204. Chapter 17 builds SLH-DSA against FIPS 205 and is still in editorial review, so no clone carries its fixtures yet.
 
 ## Layout
 
@@ -30,7 +30,7 @@ The worked answers to a chapter's numbered exercises are not a separate tree: th
 
 ## Setup
 
-CPython 3.10 or newer. The lattice chapters (7 through 11) also need NumPy 1.26 or newer; every other chapter runs against the standard library alone.
+CPython 3.10 or newer. The lattice chapters (7 through 12) also need NumPy 1.26 or newer; every other chapter runs against the standard library alone.
 
 ```
 git clone https://github.com/Encryptorium/book-of-pqc-code.git
@@ -85,7 +85,7 @@ Appendix C of the book covers the environment contract in full.
 
 The book publishes one chapter at a time, and a chapter's code publishes with it. This repository tracks the published book rather than the working draft, so anything present here belongs to a chapter that has cleared review. Expect it to grow as the book does.
 
-**Chapters released so far: Chapters 1 through 11, which is all of Part I and the first five chapters of Part II.** The rest of the book is in editorial review, and each chapter's trees land here on the day its prose publishes.
+**Chapters released so far: Chapters 1 through 12, which is all of Part I and the first six chapters of Part II.** The rest of the book is in editorial review, and each chapter's trees land here on the day its prose publishes.
 
 Not every chapter fills all four trees. `chapter-code/` holds the listings a chapter prints in its own body and CI runs, so a chapter whose prose prints no Python has no directory there, and a chapter with a `no-verify` sketch ships one file fewer than it prints. Chapter 3 is the first of those, and it still ships a `solutions/` package, an `exercises/` package and a suite, because the worked answers on its Appendix D page are code and belong under test like any other.
 
