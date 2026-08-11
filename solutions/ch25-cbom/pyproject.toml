@@ -1,0 +1,13 @@
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "cbom"
+version = "0.1.0"
+description = "Chapter 25 of the Encryptorium Book of PQC: a hand-rolled CycloneDX CBOM generator over a mock five-touchpoint Python application. Standard library only."
+requires-python = ">=3.10"
+dependencies = []
+
+[tool.setuptools.packages.find]
+where = ["src"]
