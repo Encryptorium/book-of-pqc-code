@@ -1,0 +1,13 @@
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "mceliece"
+version = "0.1.0"
+description = "Chapter 20 of the Encryptorium Book of PQC: toy McEliece-style PKE over GF(2^m) with Patterson decoding. Not Classic McEliece; see the chapter for the differences. Uses only the Python standard library."
+requires-python = ">=3.10"
+dependencies = []
+
+[tool.setuptools.packages.find]
+where = ["src"]
