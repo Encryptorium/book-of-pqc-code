@@ -1,0 +1,13 @@
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "multivariate"
+version = "0.1.0"
+description = "Chapter 24 of the Encryptorium Book of PQC: a toy Unbalanced Oil and Vinegar signature scheme over a prime field, with the parameter-size arithmetic behind the UOV, MAYO and SNOVA comparison. Uses only the Python standard library."
+requires-python = ">=3.10"
+dependencies = []
+
+[tool.setuptools.packages.find]
+where = ["src"]

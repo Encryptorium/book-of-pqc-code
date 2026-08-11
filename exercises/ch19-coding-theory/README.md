@@ -13,7 +13,7 @@ PQC_IMPL=exercises pytest tests/ch19   # against the stubbed rebuild track
 
 This is a teaching package for the concepts Part IV builds on. It is not a
 cryptographic implementation and nothing here should be used to protect
-anything. Chapter 20 builds Classic McEliece and Chapter 21 builds HQC; this
+anything. Chapter 20 builds McEliece and Chapter 21 builds HQC; this
 package supplies the vocabulary those two need.
 
 There is no reference specification to conform to and therefore no known-answer
