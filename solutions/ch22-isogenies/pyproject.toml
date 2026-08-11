@@ -1,0 +1,13 @@
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "isogenies"
+version = "0.1.0"
+description = "Chapter 22 of the Encryptorium Book of PQC: toy SIDH key exchange over supersingular elliptic curves at p=431. Uses only the Python standard library."
+requires-python = ">=3.10"
+dependencies = []
+
+[tool.setuptools.packages.find]
+where = ["src"]
