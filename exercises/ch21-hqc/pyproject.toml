@@ -1,0 +1,13 @@
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "hqc"
+version = "0.1.0"
+description = "Chapter 21 of the Encryptorium Book of PQC: toy HQC KEM over GF(2)[x]/(x^n-1) with repetition inner code. Uses only the Python standard library."
+requires-python = ">=3.10"
+dependencies = []
+
+[tool.setuptools.packages.find]
+where = ["src"]
