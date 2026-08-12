@@ -1,0 +1,13 @@
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "tls_migration"
+version = "0.1.0"
+description = "Chapter 28 of the Encryptorium Book of PQC: operator tools for a production TLS 1.3 migration to X25519MLKEM768. Ships an OpenSSL and nginx configuration lint, a per-window NamedGroup adoption rollup, and a fleet-readiness classifier. Standard library only."
+requires-python = ">=3.10"
+dependencies = []
+
+[tool.setuptools.packages.find]
+where = ["src"]
