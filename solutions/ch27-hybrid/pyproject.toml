@@ -1,0 +1,13 @@
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "hybrid"
+version = "0.1.0"
+description = "Chapter 27 of the Encryptorium Book of PQC: X25519MLKEM768 hybrid KEM (RFC 10024) and Ed25519+ML-DSA-65 composite signatures. Pure-Python X25519 (RFC 7748) and Ed25519 (RFC 8032); imports ML-KEM from solutions/ch11-mlkem/ via sys.path, which is what makes NumPy a transitive requirement. ML-DSA is stubbed by choice; solutions/ch12-mldsa has the real FIPS 204 implementation."
+requires-python = ">=3.10"
+dependencies = []
+
+[tool.setuptools.packages.find]
+where = ["src"]
