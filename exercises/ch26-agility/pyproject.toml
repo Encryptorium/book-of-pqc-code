@@ -1,0 +1,13 @@
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "agility"
+version = "0.1.0"
+description = "Chapter 26 of the Encryptorium Book of PQC: the crypto-agility patterns behind the chapter's three blocks, plus the approval-state, effective-date and rotation rules the chapter states in prose. Runs over the same mock five-touchpoint application Chapter 25 inventories. Standard library only."
+requires-python = ">=3.10"
+dependencies = []
+
+[tool.setuptools.packages.find]
+where = ["src"]
