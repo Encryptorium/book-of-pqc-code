@@ -1,0 +1,13 @@
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "migration-program"
+version = "0.1.0"
+description = "Chapter 30 of the Encryptorium Book of PQC: operator tooling for running a multi-year post-quantum migration program. Three utilities: a PQRA-weighted CBOM priority rollup, a phase-gate exit-criteria checker, and a milestone tracker. Uses only the Python standard library."
+requires-python = ">=3.10"
+dependencies = []
+
+[tool.setuptools.packages.find]
+where = ["src"]
