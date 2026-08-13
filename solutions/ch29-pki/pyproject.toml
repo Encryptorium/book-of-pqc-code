@@ -1,0 +1,13 @@
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "pki-migration"
+version = "0.1.0"
+description = "Chapter 29 of the Encryptorium Book of PQC: operator tooling for post-quantum PKI migration. Includes a JWKS composite-signature JWT verifier, an X.509 chain-algorithm analyzer, and a durable-counter wrapper around XMSS. Imports composite_sig_verify from solutions/ch27-hybrid and xmss_sign from solutions/ch15-xmss via sys.path. Uses only the Python standard library."
+requires-python = ">=3.10"
+dependencies = []
+
+[tool.setuptools.packages.find]
+where = ["src"]

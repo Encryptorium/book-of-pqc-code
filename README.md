@@ -30,7 +30,7 @@ The worked answers to a chapter's numbered exercises are not a separate tree: th
 
 ## Setup
 
-CPython 3.10 or newer. The lattice chapters (7 through 13) also need NumPy 1.26 or newer; Chapter 13 needs it for one block, the toy LLL, and its core-SVP estimator is standard library only. Chapter 27 needs it too, for a less obvious reason: none of its own modules import NumPy, but its hybrid KEM imports Chapter 11's ML-KEM through `sys.path`, so `pytest tests/ch27` pulls NumPy in transitively. Every other chapter runs against the standard library alone.
+CPython 3.10 or newer. The lattice chapters (7 through 13) also need NumPy 1.26 or newer; Chapter 13 needs it for one block, the toy LLL, and its core-SVP estimator is standard library only. Chapter 27 needs it too, for a less obvious reason: none of its own modules import NumPy, but its hybrid KEM imports Chapter 11's ML-KEM through `sys.path`, so `pytest tests/ch27` pulls NumPy in transitively. Chapter 29 is a second transitive case and a step further removed again. Its JWKS verifier imports Chapter 27's composite signature, and importing anything under that package first runs `hybrid/__init__.py`, which imports the hybrid KEM, which imports Chapter 11's ML-KEM. Nothing in Chapter 29 or in the composite signature itself touches NumPy, and `pytest tests/ch29` needs it anyway, through two chapters and a package `__init__`. Every other chapter runs against the standard library alone.
 
 ```
 git clone https://github.com/Encryptorium/book-of-pqc-code.git
@@ -85,7 +85,7 @@ Appendix C of the book covers the environment contract in full.
 
 The book publishes one chapter at a time, and a chapter's code publishes with it. This repository tracks the published book rather than the working draft, so anything present here belongs to a chapter that has cleared review. Expect it to grow as the book does.
 
-**Chapters released so far: Chapters 1 through 28, which is all of Part I, all of Part II, all of Part III, all of Part IV, and the first four chapters of Part V.** The rest of the book is in editorial review, and each chapter's trees land here on the day its prose publishes.
+**Chapters released so far: Chapters 1 through 29, which is all of Part I, all of Part II, all of Part III, all of Part IV, and the first five chapters of Part V.** The rest of the book is in editorial review, and each chapter's trees land here on the day its prose publishes.
 
 Not every chapter fills all four trees. `chapter-code/` holds the listings a chapter prints in its own body and CI runs, so a chapter whose prose prints no Python has no directory there, and a chapter with a `no-verify` sketch ships one file fewer than it prints. Chapter 3 is the first of those, and it still ships a `solutions/` package, an `exercises/` package and a suite, because the worked answers on its Appendix D page are code and belong under test like any other.
 
