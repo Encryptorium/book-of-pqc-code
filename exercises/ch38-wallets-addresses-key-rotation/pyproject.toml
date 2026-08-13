@@ -1,0 +1,13 @@
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "wallet-rotation"
+version = "0.1.0"
+description = "Chapter 38 of the Encryptorium Book of PQC: a small toolkit for wallet derivation under post-quantum signing primitives. Three utilities: a BIP-32-style derivation walker over a parameterized signature primitive that tracks which BIP-32 derivation properties survive (deterministic child pubkey from parent pubkey, watch-only wallets, hardened versus non-hardened), a custody-shape by primitive fit lookup over the six-candidate set for the Strand wallet surface, and a specialized Mosca-window calculator for the wallet surface that recommends a rotation cadence under a stated arrival scenario. Uses only the Python standard library."
+requires-python = ">=3.10"
+dependencies = []
+
+[tool.setuptools.packages.find]
+where = ["src"]
