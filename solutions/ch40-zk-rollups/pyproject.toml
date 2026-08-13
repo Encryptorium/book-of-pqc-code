@@ -1,0 +1,13 @@
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "zk-rollups"
+version = "0.1.0"
+description = "Chapter 40 of the Encryptorium Book of PQC: a small toolkit for migrating a ZK rollup verifier contract to a post-quantum-friendlier construction. Three utilities: a four-layer (L1/L2/L3/L4) decomposition lookup over a per-layer candidate set, per-proof gas-cost arithmetic against the Ethereum per-block gas budget, and a specialized Mosca-window calculator for the on-chain-verifier surface (X=3, Y=2 from the Ch 36 fixture). Uses only the Python standard library."
+requires-python = ">=3.10"
+dependencies = []
+
+[tool.setuptools.packages.find]
+where = ["src"]
