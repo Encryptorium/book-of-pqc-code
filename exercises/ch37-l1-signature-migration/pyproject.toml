@@ -1,0 +1,13 @@
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "l1-migration"
+version = "0.1.0"
+description = "Chapter 37 of the Encryptorium Book of PQC: a small toolkit for the Layer 1 signature migration. Three utilities: a per-transaction byte-budget calculator over a fixed candidate set (ECDSA-secp256k1, ML-DSA-65, SLH-DSA-128s, Ed25519+ML-DSA-65 composite), a deterministic throughput-rank function over the candidate set against the Bitcoin block weight limit and the Ethereum post-Pectra gas limit, and a composite-overhead arithmetic helper that compares classical+PQ composite signatures against either primitive alone. Uses only the Python standard library."
+requires-python = ">=3.10"
+dependencies = []
+
+[tool.setuptools.packages.find]
+where = ["src"]
