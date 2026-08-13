@@ -1,0 +1,13 @@
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "blockchain-threat"
+version = "0.1.0"
+description = "Chapter 36 of the Encryptorium Book of PQC: a small toolkit for the blockchain threat model. Two utilities: a quantum-vulnerability classifier for signature primitives deployed on blockchain surfaces, and a Mosca's-inequality calculator that returns the exposure window in years for an asset given its data lifetime, migration time, and quantum-arrival year. Uses only the Python standard library."
+requires-python = ">=3.10"
+dependencies = []
+
+[tool.setuptools.packages.find]
+where = ["src"]
