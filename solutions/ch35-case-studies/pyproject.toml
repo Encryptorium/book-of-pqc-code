@@ -1,0 +1,13 @@
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "zk_case_studies"
+version = "0.1.0"
+description = "Chapter 35 of the Encryptorium Book of PQC: the case-study apparatus for placing a deployed zero-knowledge system in the (L2, L4) grid and pricing its post-quantum bit margin. Three modules: margins (the decoding radii, the composed FRI soundness budget with its three terms exposed, the DFMS20 challenge-width rule in both its exact and approximate forms, and the pairing zero-margin result), grid (the L2 and L4 colour tables and the dominance rule), systems (the six deployed configurations the chapter walks, each carrying its own layer assignment and transition scope). Uses only the Python standard library."
+requires-python = ">=3.10"
+dependencies = []
+
+[tool.setuptools.packages.find]
+where = ["src"]
