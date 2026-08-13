@@ -1,0 +1,13 @@
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "consensus-staking"
+version = "0.1.0"
+description = "Chapter 39 of the Encryptorium Book of PQC: a small toolkit for migrating Ethereum's BLS-BLS12-381 consensus signatures to a post-quantum candidate. Three utilities: a per-validator-set byte-budget calculator across the five-candidate set, a threshold-scheme by candidate support matrix, and a specialized Mosca-window calculator for the consensus surface (X=2, Y=1 from the Ch 36 fixture). Uses only the Python standard library."
+requires-python = ">=3.10"
+dependencies = []
+
+[tool.setuptools.packages.find]
+where = ["src"]
