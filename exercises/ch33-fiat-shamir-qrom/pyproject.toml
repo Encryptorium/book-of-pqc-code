@@ -1,0 +1,13 @@
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "fiat-shamir-qrom"
+version = "0.1.0"
+description = "Chapter 33 of the Encryptorium Book of PQC: classical pedagogical scaffolding for the Fiat-Shamir transform analyzed in the quantum random oracle model. Three modules: rom_simulator (lazy-sampling classical ROM with reprogramming discipline), fiat_shamir (Schnorr three-move sigma protocol over the (p=2027, n=1013) toy group from Ch 32 with Fiat-Shamir compilation), measure_and_reprogram (classical scaffolding of the DFMS19 measure-and-reprogram mechanic). Uses only the Python standard library."
+requires-python = ">=3.10"
+dependencies = []
+
+[tool.setuptools.packages.find]
+where = ["src"]
