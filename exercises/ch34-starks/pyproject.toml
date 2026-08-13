@@ -1,0 +1,13 @@
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "starks"
+version = "0.1.0"
+description = "Chapter 34 of the Encryptorium Book of PQC: pedagogical end-to-end FRI-based STARK over F_97. Seven modules: arithmetization (AIR with transition and boundary constraints), lde (Reed-Solomon low-degree extension), fri_full (FRI proximity with per-round Fiat-Shamir challenges, grinding, and Merkle commitments), transcript (Fiat-Shamir transcript built on SHA-256), prover (end-to-end stark_prove orchestrating the four stages), verifier (end-to-end stark_verify replaying the transcript and checking every query). The running example is a length-8 Fibonacci trace with LDE blowup 4 and domain size 32. Uses only the Python standard library."
+requires-python = ">=3.10"
+dependencies = []
+
+[tool.setuptools.packages.find]
+where = ["src"]
