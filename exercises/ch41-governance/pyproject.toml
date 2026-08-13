@@ -1,0 +1,13 @@
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "governance"
+version = "0.1.0"
+description = "Chapter 41 of the Encryptorium Book of PQC: a small toolkit for the cross-stakeholder choreography of a post-quantum hard fork. Three utilities: a three-stakeholder by three-action decomposition lookup over the Ch 26 work-stream-owner taxonomy, BIP-cycle versus All-Core-Devs-cycle activation-window arithmetic, and a specialized Mosca-window calculator for the governance surface (X=4, Y=3 from the Ch 36 fixture). Uses only the Python standard library."
+requires-python = ">=3.10"
+dependencies = []
+
+[tool.setuptools.packages.find]
+where = ["src"]
