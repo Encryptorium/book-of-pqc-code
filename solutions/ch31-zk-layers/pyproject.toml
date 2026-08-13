@@ -1,0 +1,13 @@
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "zk-layers"
+version = "0.1.0"
+description = "Chapter 31 of the Encryptorium Book of PQC: the four-layer decomposition of a zero-knowledge proof system. Three modules: the R1CS constraint format and its per-gate cost model at L1, a binary Merkle commitment at L2, and the layer table that assigns each deployed system a per-layer quantum-safety posture. Uses only the Python standard library."
+requires-python = ">=3.10"
+dependencies = []
+
+[tool.setuptools.packages.find]
+where = ["src"]

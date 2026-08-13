@@ -85,7 +85,7 @@ Appendix C of the book covers the environment contract in full.
 
 The book publishes one chapter at a time, and a chapter's code publishes with it. This repository tracks the published book rather than the working draft, so anything present here belongs to a chapter that has cleared review. Expect it to grow as the book does.
 
-**Chapters released so far: Chapters 1 through 30, which is all of Part I, all of Part II, all of Part III, all of Part IV, and all of Part V.** The rest of the book is in editorial review, and each chapter's trees land here on the day its prose publishes.
+**Chapters released so far: Chapters 1 through 31, which is all of Part I, all of Part II, all of Part III, all of Part IV, all of Part V, and the first chapter of Part VI.** The rest of the book is in editorial review, and each chapter's trees land here on the day its prose publishes.
 
 Not every chapter fills all four trees. `chapter-code/` holds the listings a chapter prints in its own body and CI runs, so a chapter whose prose prints no Python has no directory there, and a chapter with a `no-verify` sketch ships one file fewer than it prints. Chapter 3 is the first of those, and it still ships a `solutions/` package, an `exercises/` package and a suite, because the worked answers on its Appendix D page are code and belong under test like any other.
 
