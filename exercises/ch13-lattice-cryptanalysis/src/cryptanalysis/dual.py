@@ -25,9 +25,9 @@ The underlying Gaussian-to-uniform bound is the Albrecht-Player-Scott
 2015 result. This module exposes :func:`dual_advantage`, which
 evaluates that bound. The full dual-attack success condition also
 requires a short-vector length ``l`` that BKZ-``beta`` can reach in
-the dual; the advantage bound here is used inside the Chapter 13 §4b
-derivation as the "what happens once a short dual vector is found"
-step. The bound is meaningful only when below 1; for
+the dual; the advantage bound here is used inside the Chapter 13
+"The dual distinguisher" derivation as the "what happens once a short
+dual vector is found" step. The bound is meaningful only when below 1; for
 :math:`\\|\\mathbf{w}\\| \\sigma` a small fraction of ``q`` the raw
 expression exceeds 1, is capped at 1 in interpretation, and stops
 being a meaningful quantitative estimate.
