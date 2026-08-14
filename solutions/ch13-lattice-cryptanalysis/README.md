@@ -1,6 +1,6 @@
 # ch13-lattice-cryptanalysis
 
-Standalone Python package for Chapter 13 of the Encryptorium Book of PQC. Implements the core-SVP cost model that the NIST Post-Quantum Cryptography project has used since the NewHope submission (Alkim, Ducas, Pöppelmann, Schwabe 2016) to calibrate lattice-based key-exchange parameters. The package reimplements equation 9 of the CRYSTALS-Kyber Round 3 submission (Avanzi et al. 2021, Section 5.1.2 "Primal attack") together with the Chen 2013 root-Hermite-factor model for BKZ output and the Becker-Ducas-Gama-Laarhoven 2016 sieving exponents ($2^{0.292 \beta}$ classical, $2^{0.265 \beta}$ quantum).
+Standalone Python package for Chapter 13 of the Encryptorium Book of PQC. Implements the core-SVP cost model that the NIST Post-Quantum Cryptography project has used since the NewHope submission (Alkim, Ducas, Pöppelmann, Schwabe 2016) to calibrate lattice-based key-exchange parameters. The package reimplements equation 9 of the CRYSTALS-Kyber Round 3 submission (Avanzi et al. 2021, Section 5.1.2 "Primal attack") together with the Chen 2013 root-Hermite-factor model for BKZ output and the sieving exponents $2^{0.292 \beta}$ classical (Becker, Ducas, Gama, Laarhoven 2016) and $2^{0.265 \beta}$ quantum (Laarhoven, Mosca, van de Pol 2015).
 
 The package does NOT implement BKZ or LLL. BKZ is treated as an oracle with cost $2^{0.292 \beta}$. The only thing the package computes is the smallest block size $\beta$ for which the primal-attack success condition is met, and the corresponding classical and quantum bit costs.
 

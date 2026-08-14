@@ -45,7 +45,11 @@ class MarginTerms:
 
     @property
     def dominant(self) -> str:
-        """Name the term contributing most of the composed probability."""
+        """Name the term contributing most of the composed probability.
+
+        The query terms are compared after grinding, because that is the
+        form in which they enter the sum (Ch 34 Section 5.5).
+        """
         # EXERCISE: implement this function.
         #
         # Name which of bad_beta, per_round and consistency contributes most

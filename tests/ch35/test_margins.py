@@ -67,7 +67,7 @@ def test_decoding_radius_rejects_bad_rate_and_regime():
 
 def test_stark_classical_margin_reproduces_the_boojum_listing():
     assert stark_classical_margin(field_bits=128, L=2 ** 16, N=2 ** 20,
-                                  mu=40, r_FRI=16, grinding=20) == 100.0
+                                  mu=40, r_FRI=16, grinding=20) == 99.9
 
 
 def test_stark_classical_margin_reproduces_the_ethstark_listing():
@@ -81,20 +81,27 @@ def test_composed_margin_total_matches_the_listing_wrapper():
     assert composed_margin(**args).total == stark_classical_margin(**args)
 
 
-def test_the_per_round_term_dominates_at_the_chapter_configurations():
-    # The three terms are log-probabilities, so the least negative dominates.
-    # At both printed parameter points that is the FRI per-round term, not
-    # the query-consistency term.
+def test_which_term_dominates_at_the_chapter_configurations():
+    # The three terms are log-probabilities, so the least negative dominates,
+    # and the query terms are compared after grinding attenuates them.
+    # At both printed parameter points that is the FRI per-round term.
     for args in (dict(field_bits=128, L=2 ** 16, N=2 ** 20, mu=40, r_FRI=16,
                       grinding=20),
                  dict(field_bits=244, L=2 ** 20, N=2 ** 24, mu=48, r_FRI=20,
-                      grinding=20),
-                 dict(field_bits=128, L=2 ** 18, N=2 ** 22, mu=48, r_FRI=18,
                       grinding=20)):
         terms = composed_margin(**args)
         assert terms.dominant == "per_round"
         assert terms.per_round > terms.consistency
-        assert terms.per_round > terms.bad_beta
+        assert terms.per_round - terms.grinding > terms.bad_beta
+
+    # The Ch 35 Exercise 2 configuration is past the crossover: raising mu to
+    # 48 buries the query terms below the bad-beta union bound, which is why
+    # the extra queries buy almost nothing.
+    terms = composed_margin(field_bits=128, L=2 ** 18, N=2 ** 22, mu=48,
+                            r_FRI=18, grinding=20)
+    assert terms.dominant == "bad_beta"
+    assert terms.bad_beta > terms.per_round - terms.grinding
+    assert terms.total == pytest.approx(101.8, abs=0.05)
 
 
 def test_regime_choice_moves_the_margin_by_the_stated_amount():
@@ -104,8 +111,8 @@ def test_regime_choice_moves_the_margin_by_the_stated_amount():
     unique = composed_margin(**args, regime="unique").total
     capacity = composed_margin(**args, regime="capacity").total
     assert unique < johnson < capacity
-    assert johnson == 100.0
-    assert johnson - unique == pytest.approx(43.5, abs=0.1)
+    assert johnson == 99.9
+    assert johnson - unique == pytest.approx(43.4, abs=0.1)
 
 
 def test_composed_margin_rejects_a_blowup_below_one():
@@ -175,10 +182,29 @@ def test_query_miss_bits_rejects_bad_parameters():
                         regime="nonesuch")
 
 
-def test_grinding_enters_the_budget_additively():
+def test_grinding_attenuates_only_the_query_terms():
     base = dict(field_bits=128, L=2 ** 16, N=2 ** 20, mu=40, r_FRI=16)
+    unground = composed_margin(**base, grinding=0)
+
+    # Grinding never buys more than its own bit count, because it multiplies
+    # the query terms only and leaves bad_beta alone (Ch 34 Section 5.5).
+    for pow_bits in (10, 20, 40, 60):
+        gained = composed_margin(**base, grinding=pow_bits).total - unground.total
+        assert gained <= pow_bits
+
+    # While the query terms still dominate, grinding buys nearly all of itself.
     assert (composed_margin(**base, grinding=20).total
-            - composed_margin(**base, grinding=0).total) == pytest.approx(20.0)
+            - unground.total) == pytest.approx(19.9, abs=0.05)
+    assert composed_margin(**base, grinding=20).dominant == "per_round"
+
+    # Past the crossover it saturates against the bad-beta union bound, which
+    # no amount of grinding moves. This is the point of Ch 35 Exercise 2.
+    ceiling = -unground.bad_beta
+    assert composed_margin(**base, grinding=60).total == pytest.approx(
+        ceiling, abs=0.05)
+    assert composed_margin(**base, grinding=60).dominant == "bad_beta"
+
+    # query_miss_bits counts the query side alone, so there grinding is additive.
     assert math.isclose(
         query_miss_bits(n_queries=70, pow_bits=26, log_blowup=1,
                         regime="johnson")

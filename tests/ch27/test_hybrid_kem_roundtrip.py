@@ -55,6 +55,26 @@ def test_hybrid_kem_rejects_tampered_x25519_component():
     assert ss_bob != ss_alice
 
 
+def test_the_high_bit_of_the_x25519_component_is_not_bound():
+    """A distinct ciphertext that decapsulates to the same shared secret.
+
+    RFC 7748 masks bit 255 of the u-coordinate before scalar
+    multiplication, so flipping it changes the ciphertext without
+    changing the X25519 output. The combiner derives from the two
+    shared secrets and a fixed label only, so the derived key follows
+    the secret rather than the ciphertext. This is the standalone
+    ciphertext-binding gap the chapter discusses: TLS closes it later
+    through the transcript hash, and the analysed combiner of Bindel et
+    al. closes it by keying its second PRF with ``c1 || c2``.
+    """
+    pk, sk = hybrid_kem_keygen()
+    ct, ss_alice = hybrid_kem_encaps(pk)
+    tampered = bytearray(ct)
+    tampered[-1] ^= 0x80
+    assert bytes(tampered) != ct
+    assert hybrid_kem_decaps(sk, bytes(tampered)) == ss_alice
+
+
 def test_hybrid_kem_with_random_urandom_seeds_produces_32_byte_secret():
     pk, sk = hybrid_kem_keygen()
     ct, ss = hybrid_kem_encaps(pk, seed_mlkem=os.urandom(32))

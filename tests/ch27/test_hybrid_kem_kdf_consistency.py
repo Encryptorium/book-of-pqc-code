@@ -26,6 +26,28 @@ def test_combiner_output_is_32_bytes():
     assert len(ss) == X25519MLKEM768_SS_BYTES == 32
 
 
+def test_combiner_output_is_pinned_against_fixed_inputs():
+    """Pin the derived secret to a constant, not just to itself.
+
+    Every other assertion in this file is relative: a length, a
+    determinism check, a difference. All of them survive a combiner that
+    concatenates the two shared secrets in the wrong order, or that
+    changes the label. This one does not, which is what makes the
+    chapter's claim about test vectors true.
+    """
+    d = b"\x01" * 32
+    z = b"\x02" * 32
+    x = b"\x03" * 32
+    m = b"\x04" * 32
+    e = b"\x05" * 32
+    pk, sk = hybrid_kem_keygen(seed_mlkem_d=d, seed_mlkem_z=z, seed_x25519=x)
+    ct, ss = hybrid_kem_encaps(pk, seed_mlkem=m, seed_x25519_ephemeral=e)
+    assert ss.hex() == (
+        "843868a64d79e0b3b42f24164f790ed9dbacc1b520d94055c77e3ee5ab988b4e"
+    )
+    assert hybrid_kem_decaps(sk, ct) == ss
+
+
 def test_combiner_output_stable_for_same_inputs():
     d = b"\x01" * 32
     z = b"\x02" * 32

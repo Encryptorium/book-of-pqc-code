@@ -9,9 +9,28 @@ label. The wire format follows the TLS 1.3 Named Group codepoint
 - ``ServerHello`` keyshare: ``mlkem_ct || x25519_pk_server``, total
   1120 bytes.
 
-The security argument is Bindel/Brendel/Fischlin/Goncalves/Stebila
-2019: if HKDF-SHA256 is a secure dual-PRF and at least one of X25519
-or ML-KEM-768 is IND-CCA, the hybrid is IND-CCA.
+RFC 10024 Section 4.3 defines the X25519MLKEM768 shared secret as the
+plain 64-byte concatenation ``ss_mlkem || ss_x25519``, which TLS feeds
+to its own key schedule. The HKDF-SHA256 call above is a standalone
+stand-in for that schedule, so this module runs without a TLS stack and
+returns 32 bytes where the RFC returns 64.
+
+The stand-in carries no standalone IND-CCA claim. The
+Bindel/Brendel/Fischlin/Goncalves/Stebila 2019 result is about the
+combiner ``PRF(dPRF(k1, k2), c1 || c2)``, where the concatenated
+component ciphertexts key the second PRF, and their Section 3.2 shows
+why that input is required. This module derives from the two component
+secrets alone, so the property fails here with both components intact:
+``_decode_u`` masks bit 255 of the u-coordinate as RFC 7748 Section 5
+requires, so flipping ``0x80`` in the last ciphertext byte yields a
+different, well-formed ciphertext that decapsulates to the same secret.
+Inside TLS the missing binding arrives further down the key schedule,
+from the transcript hash; RFC 10024 Section 6 states that the security
+analysis "relies crucially on the TLS 1.3 message transcript, and one
+cannot assume a similar hybridization is secure in other protocols".
+Treat this module as the TLS combiner shape, not as a KEM with
+standalone IND-CCA status. Appendix D, Chapter 27, Exercise 1 works
+through the difference.
 
 Public API:
 

@@ -22,7 +22,8 @@
 # Source: Ch 34 Sections 5.1 and 5.5; Ch 33 'Multi-round
 # Fiat-Shamir'; Ben-Sasson, Carmon, Ishai, Kopparty, Saraf (2020,
 # proximity gap at the Johnson bound); ZKsync (2023); Block et al.
-# (2023, classical ROM).
+# (2023, classical NI/ROM bound; the same paper's QROM
+# bound is one factor of q heavier).
 import math
 
 
@@ -41,9 +42,12 @@ def stark_classical_margin(field_bits: int, L: int, N: int, mu: int,
     log_bad_beta = math.log2(r_FRI * (N + 1)) - field_bits
     log_per_round = mu * math.log2(1.0 - delta_0)
     log_consistency = mu * math.log2((L - 1) / N)
-    composed_prob = (2.0 ** log_bad_beta + 2.0 ** log_per_round
-                     + 2.0 ** log_consistency)
-    return round(-math.log2(composed_prob) + grinding, 1)
+    # Ch 34 Section 5.5: grinding attenuates the query-miss terms only.
+    # A forger who wins on a bad fold challenge never re-grinds.
+    composed_prob = (2.0 ** log_bad_beta
+                     + 2.0 ** -grinding * (2.0 ** log_per_round
+                                           + 2.0 ** log_consistency))
+    return round(-math.log2(composed_prob), 1)
 
 
 def dfms20_required_cbits(k_target: int, q_bits: int, r_FS: int) -> int:
@@ -63,4 +67,4 @@ k_classical_boojum = stark_classical_margin(field_bits=128, L=2 ** 16,
                                             grinding=20)
 c_bits_required = dfms20_required_cbits(k_target=128, q_bits=80, r_FS=6)
 print(k_classical_boojum, c_bits_required)
-# ==> 100.0 182
+# ==> 99.9 182

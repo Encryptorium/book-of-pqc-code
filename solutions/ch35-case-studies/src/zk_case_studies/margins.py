@@ -45,11 +45,15 @@ class MarginTerms:
 
     @property
     def dominant(self) -> str:
-        """Name the term contributing most of the composed probability."""
+        """Name the term contributing most of the composed probability.
+
+        The query terms are compared after grinding, because that is the
+        form in which they enter the sum (Ch 34 Section 5.5).
+        """
         pairs = (
             ("bad_beta", self.bad_beta),
-            ("per_round", self.per_round),
-            ("consistency", self.consistency),
+            ("per_round", self.per_round - self.grinding),
+            ("consistency", self.consistency - self.grinding),
         )
         return max(pairs, key=lambda pair: pair[1])[0]
 
@@ -104,8 +108,13 @@ def composed_margin(field_bits: int, L: int, N: int, mu: int, r_FRI: int,
     bad_beta = math.log2(r_FRI * (N + 1)) - field_bits
     per_round = mu * math.log2(1.0 - delta_0)
     consistency = mu * math.log2((L - 1) / N)
-    composed_prob = (2.0 ** bad_beta + 2.0 ** per_round + 2.0 ** consistency)
-    total = round(-math.log2(composed_prob) + grinding, 1)
+    # Ch 34 Section 5.5: eps_total <= eps_pre + 2^-g * eps_query + eps_bind.
+    # Grinding attenuates only the query-miss terms. A forger who wins on a
+    # bad fold challenge never re-grinds, so 2^-g does not touch bad_beta.
+    composed_prob = (2.0 ** bad_beta
+                     + 2.0 ** -grinding * (2.0 ** per_round
+                                           + 2.0 ** consistency))
+    total = round(-math.log2(composed_prob), 1)
     return MarginTerms(bad_beta=bad_beta, per_round=per_round,
                        consistency=consistency, grinding=grinding, total=total)
 
