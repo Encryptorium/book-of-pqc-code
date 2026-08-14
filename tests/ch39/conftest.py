@@ -96,8 +96,8 @@ def validator_count_scenarios() -> dict[str, int]:
     """Three validator-count scenarios for the per-set byte budget.
 
     ``small_chain`` is a smaller PoS chain (10K validators).
-    ``ethereum_mainnet`` is the Ethereum mainnet round-figure anchor at
-    chain-tip 2026 (1M active validators). ``hypothetical_large`` is
+    ``ethereum_mainnet`` is a one-million-validator normalisation at
+    mainnet scale, not a chain-tip count. ``hypothetical_large`` is
     a forward-looking scenario for stress-testing the byte budget.
     """
     return {

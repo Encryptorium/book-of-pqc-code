@@ -5,13 +5,20 @@ L1 surface — a Bitcoin-style soft-fork / BIP process and an
 Ethereum-style All Core Devs hard-fork process:
 
 - ``bitcoin-bip-cycle``: the Bitcoin Improvement Proposal cycle. A
-  proposal lands on the bitcoin-dev mailing list, moves to the
-  bitcoin/bips repository as a Draft, accumulates rough consensus
-  through public review, becomes Final or Active, and finally
-  activates on the chain through one of several deployment
-  mechanisms (BIP 9 versionbits, BIP 8, soft-fork-specific
-  signaling). The activation window is dominated by the proposal
-  review and the economic-actor lead time.
+  proposal lands on the bitcoin-dev mailing list, and a BIP editor
+  merges it into the bitcoin/bips repository at Draft status once
+  it passes the editorial checks in BIP 3. It advances to Complete
+  when its authors have concluded all planned work and recommend
+  adoption, which for a Specification BIP requires a working
+  reference implementation and test vectors, and reaches Deployed
+  on evidence of active use. Activation happens on the chain
+  through one of several deployment mechanisms (BIP 9 versionbits,
+  BIP 8, soft-fork-specific signaling). The activation window is
+  dominated by the proposal review and the economic-actor lead
+  time. BIP 3 replaced BIP 2 in 2025 and collapsed the older
+  Final and Active statuses into Deployed; the editors run an
+  administrative gate and do not judge whether a proposal is
+  likely to be adopted.
 - ``ethereum-acd-cycle``: the Ethereum All Core Devs cycle. A
   proposal lands as an EIP, surfaces on the eth-magicians forum,
   appears on the AllCoreDevs biweekly call agenda, accumulates
@@ -30,18 +37,22 @@ Quantity vocabulary used throughout (defined precisely to avoid
 the per-cycle collision the Ch 39 R1 review caught at the
 consensus surface):
 
-- ``bip_proposal_review_weeks``: weeks between bitcoin-dev draft
-  and BIP-repository acceptance under rough consensus.
-- ``bip_economic_actor_lead_weeks``: weeks the BIP holds at Final
-  before activation, giving mining pools, exchanges, custodians,
+- ``bip_proposal_review_weeks``: weeks between the bitcoin-dev
+  draft and the editorial merge of the numbered BIP at Draft
+  status.
+- ``bip_economic_actor_lead_weeks``: the lead window before
+  activation, giving mining pools, exchanges, custodians,
   and wallet vendors time to stage code.
 - ``acd_proposal_review_weeks``: weeks between EIP draft and
   AllCoreDevs forum-call agenda inclusion, accumulating the
   cross-client rough consensus.
-- ``acd_client_team_release_weeks``: weeks the EIP holds at
-  Final between AllCoreDevs sign-off and the named hard-fork
-  epoch, giving the consensus-client and execution-client teams
-  time to ship release builds.
+- ``acd_client_team_release_weeks``: weeks between AllCoreDevs
+  scheduling the EIP for a named upgrade and that upgrade's
+  activation epoch, giving the consensus-client and
+  execution-client teams time to ship release builds. The EIP is
+  not Final across this window: All Core Devs track inclusion
+  separately from EIP document status, and an EIP is marked
+  Included only after the upgrade activates.
 - ``consensus_participant_update_weeks``: weeks the rule-
   enforcement set takes to roll over once the activation block or
   hard-fork epoch lands. On Ethereum this is the validator-set
