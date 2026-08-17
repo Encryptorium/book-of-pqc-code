@@ -125,8 +125,11 @@ def ml_kem_decaps_internal(
          ``J(z || c)``.
 
     The constant-time comparison is omitted because this module is
-    pedagogical, not hardened. Chapter 28 covers the timing-channel
-    hardening that belongs in a production implementation.
+    pedagogical, not hardened. Chapter 11 covers the timing-channel
+    hardening that belongs in a production implementation: FIPS 203
+    section 6.3 makes the implicit-rejection flag secret intermediate
+    data, so the ciphertext comparison and the shared-secret selection
+    must both run in constant time.
     """
     # EXERCISE: implement this function.
     #

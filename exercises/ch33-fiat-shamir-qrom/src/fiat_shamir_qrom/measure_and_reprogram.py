@@ -158,19 +158,25 @@ def simulate_classical_extraction(
 def reduction_loss_dfms19(query_budget: int, challenge_space_size: int) -> float:
     """DFMS19 reduction loss for three-move sigma protocols.
 
-    Theorem 2 of Don-Fehr-Majenz-Schaffner 2019 (informal): for a
-    three-move sigma protocol with soundness error ``epsilon`` and
-    challenge space of size ``|C|``, the Fiat-Shamir-compiled protocol
-    in the QROM has soundness error
+    Theorem 2 of Don-Fehr-Majenz-Schaffner 2019 is a measure-and-reprogram
+    lemma on pairs ``(x, H(x))``. Combined with the classical
+    special-soundness extractor it gives, for a three-move sigma
+    protocol with soundness error ``epsilon`` and challenge space of
+    size ``|C|``, a Fiat-Shamir-compiled soundness error in the QROM of
 
-        epsilon_qrom <= epsilon + (2q + 1)^2 / |C|
+        epsilon_qrom <= (2q + 1)^2 * epsilon
 
-    where ``q`` is the adversary's quantum query budget. The quadratic
-    term is the measure-and-reprogram loss factor, arising from two
-    independent index-guesses in the two-transcript Sigma-protocol
-    extractor. This helper returns the quadratic loss term only;
-    callers add the interactive soundness error ``epsilon`` to obtain
-    the full bound.
+    where ``q`` is the adversary's quantum query budget. The loss is
+    multiplicative: the reduction multiplies ``epsilon`` rather than
+    adding a term beside it. DFMS19 states the coefficient as
+    ``O(q^2)`` with a negligible additive residue; DFMS20 sharpens it
+    to the exact ``(2q + 1)^2`` with no additive term. The two factors
+    of ``(2q + 1)`` come from the hybrid's internal combinatorics
+    inside a single run of the lemma, not from two runs of the
+    adversary and not from the two-transcript extractor, which runs on
+    the classical side. This helper returns ``(2q + 1)^2 / |C|``, which
+    is the whole bound at Schnorr's ``epsilon = 1 / |C|``; for any
+    other ``epsilon`` multiply ``(2q + 1)^2`` by it.
 
     Parameters
     ----------
@@ -183,18 +189,20 @@ def reduction_loss_dfms19(query_budget: int, challenge_space_size: int) -> float
     Returns
     -------
     float
-        The reduction loss term ``(2q + 1)^2 / |C|`` as a float.
+        The reduction loss ``(2q + 1)^2 / |C|`` as a float.
     """
     # EXERCISE: implement this function.
     #
-    # Return (2q + 1)^2 / challenge_space_size as a float: the quadratic
-    # measure-and-reprogram loss term of DFMS19 Theorem 2, and that term
-    # only. The caller adds the interactive soundness error epsilon to reach
-    # the full epsilon_qrom bound. The two factors of (2q + 1) come from the
-    # hybrid's internal combinatorics inside a single run of the lemma, not
-    # from two separate runs of the adversary, which is why the three-move
-    # bound is quadratic and not quartic. Reject a negative query budget and
-    # a non-positive challenge space.
+    # Return (2q + 1)^2 / challenge_space_size as a float: the
+    # measure-and-reprogram loss factor of DFMS19 Theorem 2, divided by the
+    # challenge space. The loss is multiplicative, epsilon_qrom <= (2q +
+    # 1)^2 * epsilon, so what this returns is the whole bound at Schnorr's
+    # epsilon = 1 / |C| and the caller multiplies (2q + 1)^2 by any other
+    # epsilon. The two factors of (2q + 1) come from the hybrid's internal
+    # combinatorics inside a single run of the lemma, not from two separate
+    # runs of the adversary, which is why the three-move bound is quadratic
+    # and not quartic. Reject a negative query budget and a non-positive
+    # challenge space.
     #
     # Reference: Chapter 33, 'The measure-and-reprogram technique'
     #
@@ -213,9 +221,10 @@ def parameter_bump_bits(
     Given a target post-quantum soundness of ``target_pq_bits`` and a
     quantum query budget of ``2^query_budget_bits``, the DFMS19 bound
 
-        epsilon_qrom <= epsilon + (2q + 1)^2 / |C|
+        epsilon_qrom <= (2q + 1)^2 * epsilon
 
-    requires the leading term to be at most ``2^(-target_pq_bits)``.
+    requires ``(2q + 1)^2 / |C|``, which is that bound at Schnorr's
+    ``epsilon = 1 / |C|``, to be at most ``2^(-target_pq_bits)``.
     Setting ``(2q + 1)^2 / |C| <= 2^{-k}`` and taking logs (ignoring
     the constant factor 4 absorbed into the big-O) gives
     ``c_bits >= 2 * query_budget_bits + target_pq_bits``. The function
@@ -231,12 +240,13 @@ def parameter_bump_bits(
     # Set (2q + 1)^2 / |C| <= 2^{-k} and take logs: the challenge space
     # needs at least 2 * query_budget_bits + target_pq_bits bits. Return how
     # many bits short the current space falls, and zero when it already
-    # clears the bound. Dropping the +1 inside log_2(2q + 1) is what makes
-    # this an approximation rather than the exact threshold; at q = 2^80 and
-    # k = 128 it reports 288 where the smallest integer width satisfying the
-    # strict inequality is 291, so read the result as a floor and not as a
-    # sized deployment parameter. Reject a negative query budget in bits and
-    # a non-positive challenge space or target.
+    # clears the bound. Approximating 2q + 1 by q, which drops the doubling
+    # as well as the +1, is what makes this an approximation rather than the
+    # exact threshold; at q = 2^80 and k = 128 it reports 288 where the
+    # smallest integer width satisfying the strict inequality is 291, so
+    # read the result as a floor and not as a sized deployment parameter.
+    # Reject a negative query budget in bits and a non-positive challenge
+    # space or target.
     #
     # Reference: Chapter 33, 'Cost of the quantum oracle'
     #

@@ -165,19 +165,25 @@ def simulate_classical_extraction(
 def reduction_loss_dfms19(query_budget: int, challenge_space_size: int) -> float:
     """DFMS19 reduction loss for three-move sigma protocols.
 
-    Theorem 2 of Don-Fehr-Majenz-Schaffner 2019 (informal): for a
-    three-move sigma protocol with soundness error ``epsilon`` and
-    challenge space of size ``|C|``, the Fiat-Shamir-compiled protocol
-    in the QROM has soundness error
+    Theorem 2 of Don-Fehr-Majenz-Schaffner 2019 is a measure-and-reprogram
+    lemma on pairs ``(x, H(x))``. Combined with the classical
+    special-soundness extractor it gives, for a three-move sigma
+    protocol with soundness error ``epsilon`` and challenge space of
+    size ``|C|``, a Fiat-Shamir-compiled soundness error in the QROM of
 
-        epsilon_qrom <= epsilon + (2q + 1)^2 / |C|
+        epsilon_qrom <= (2q + 1)^2 * epsilon
 
-    where ``q`` is the adversary's quantum query budget. The quadratic
-    term is the measure-and-reprogram loss factor, arising from two
-    independent index-guesses in the two-transcript Sigma-protocol
-    extractor. This helper returns the quadratic loss term only;
-    callers add the interactive soundness error ``epsilon`` to obtain
-    the full bound.
+    where ``q`` is the adversary's quantum query budget. The loss is
+    multiplicative: the reduction multiplies ``epsilon`` rather than
+    adding a term beside it. DFMS19 states the coefficient as
+    ``O(q^2)`` with a negligible additive residue; DFMS20 sharpens it
+    to the exact ``(2q + 1)^2`` with no additive term. The two factors
+    of ``(2q + 1)`` come from the hybrid's internal combinatorics
+    inside a single run of the lemma, not from two runs of the
+    adversary and not from the two-transcript extractor, which runs on
+    the classical side. This helper returns ``(2q + 1)^2 / |C|``, which
+    is the whole bound at Schnorr's ``epsilon = 1 / |C|``; for any
+    other ``epsilon`` multiply ``(2q + 1)^2`` by it.
 
     Parameters
     ----------
@@ -190,7 +196,7 @@ def reduction_loss_dfms19(query_budget: int, challenge_space_size: int) -> float
     Returns
     -------
     float
-        The reduction loss term ``(2q + 1)^2 / |C|`` as a float.
+        The reduction loss ``(2q + 1)^2 / |C|`` as a float.
     """
     if query_budget < 0:
         raise ValueError("query_budget must be non-negative")
@@ -209,9 +215,10 @@ def parameter_bump_bits(
     Given a target post-quantum soundness of ``target_pq_bits`` and a
     quantum query budget of ``2^query_budget_bits``, the DFMS19 bound
 
-        epsilon_qrom <= epsilon + (2q + 1)^2 / |C|
+        epsilon_qrom <= (2q + 1)^2 * epsilon
 
-    requires the leading term to be at most ``2^(-target_pq_bits)``.
+    requires ``(2q + 1)^2 / |C|``, which is that bound at Schnorr's
+    ``epsilon = 1 / |C|``, to be at most ``2^(-target_pq_bits)``.
     Setting ``(2q + 1)^2 / |C| <= 2^{-k}`` and taking logs (ignoring
     the constant factor 4 absorbed into the big-O) gives
     ``c_bits >= 2 * query_budget_bits + target_pq_bits``. The function
