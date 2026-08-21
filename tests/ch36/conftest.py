@@ -91,7 +91,7 @@ def mosca_z_values() -> dict[str, int]:
     value, not as a predicted CRQC arrival date. ``ncsc_2035`` is the
     NCSC 2035 migration horizon (deadline for completing PQC
     migration, not a CRQC forecast); ``nsm10_2035`` is the NSM-10 /
-    CNSA 2.0 2035 NSS quantum-resistant goal (regulatory deadline for
+    CNSA 2.0 2035 NSS quantum-resistant goal (policy goal for
     National Security Systems, not a CRQC forecast); ``mid_2040`` is
     a hypothetical mid-arrival scenario the chapter uses for the
     deferred surfaces.

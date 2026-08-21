@@ -49,13 +49,15 @@ There is no per-chapter install step. Each `tests/chNN/conftest.py` puts the sel
 
 ## Running the tests
 
-A clone carries the chapters released so far, and nothing for the ones still in editorial review. Run a chapter's suite from the repository root:
+A clone carries all 41 chapters. Run a chapter's suite from the repository root:
 
 ```
 pytest tests/ch01
 ```
 
 The suite defaults to the reference implementation, so a clone is green on the first run.
+
+The continuous integration named at the top of this README runs in the book's source repository, which is private; this repository carries no workflow of its own. The four trees here are published from that gated source. The claim a reader can verify independently is the one the gate enforces: from a clone in the environment above, `pytest tests/` collects every chapter's suite and passes, apart from the skips this README already names (Chapter 17's slow signature-generation sets, Chapter 27's million-iteration vector, and Chapter 21's known-answer checks until you vendor the official vectors).
 
 ## Implementing a chapter yourself
 
@@ -73,7 +75,7 @@ Nothing is hidden: `solutions/` is in this clone. Reading it costs you the exerc
 
 **"No module named 'numpy'" in a Part II chapter.** The venv is active but numpy was not installed. Run `pip install "numpy>=1.26"` inside the venv.
 
-**Pytest reports "no tests ran".** Two causes. Either the chapter named on the command line has not been released yet, so there is no `tests/chNN` directory to collect from (see Release model), or pytest was called from outside the repository root, since the chapter test directories are resolved relative to it.
+**Pytest reports "no tests ran".** Two causes. Either the path names a chapter directory that does not exist (the chapter suites are `tests/ch01` through `tests/ch41`), or pytest was called from outside the repository root, since the chapter test directories are resolved relative to it.
 
 **`python3 --version` reports 3.8 or 3.9.** Some reference packages annotate an optional argument with a PEP 604 union such as `bytes | None` and do not import `annotations` from `__future__`. On both versions the annotation is evaluated when the function is defined, so importing one of those modules raises `TypeError: unsupported operand type(s) for |` rather than a `SyntaxError`. The official installer at python.org bypasses a system package manager's pin.
 
@@ -83,7 +85,7 @@ Appendix C of the book covers the environment contract in full.
 
 ## Release model
 
-The book publishes one chapter at a time, and a chapter's code publishes with it. This repository tracks the published book rather than the working draft, so anything present here belongs to a chapter that has cleared review. Expect it to grow as the book does.
+The book published one chapter at a time, and each chapter's code published with it. This repository tracks the published book rather than the working draft, so everything here belongs to a chapter that has cleared review.
 
 **Chapters released so far: all 41, which is the whole book, Parts I through VII.** Every chapter's trees are here. The book is still in external review, so what lands from now on is corrections to published chapters rather than new ones.
 
