@@ -6,9 +6,8 @@
 # Generated from the chapter text. Edits here do not reach the book.
 # Run: python3 chapter-code/ch33/03-lazyoracle.py
 
-# Block 3: pedagogical slice of
-# fiat_shamir_qrom.measure_and_reprogram.simulate_classical_extraction
-# (stdlib only).
+# Block 3: pedagogical slice of the reference implementation's
+# measure_and_reprogram.simulate_classical_extraction (stdlib only).
 
 import hashlib
 
