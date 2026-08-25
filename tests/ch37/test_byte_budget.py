@@ -80,45 +80,45 @@ def test_witness_bytes_match_output_pattern():
 
 
 def test_btc_tx_per_block_ecdsa_baseline():
-    """ECDSA at 64-byte signatures yields ~15k transactions per Bitcoin block.
+    """ECDSA at 64-byte signatures yields ~9k transactions per Bitcoin block.
 
-    With 200-weight overhead and a 64-byte witness (P2TR key-path),
-    each transaction costs 264 weight units. The 4 MB weight budget
-    yields floor(4_000_000 / 264) = 15151 transactions. The figure
+    With 380-weight overhead and a 64-byte witness (P2TR key-path),
+    each transaction costs 444 weight units. The 4 MB weight budget
+    yields floor(4_000_000 / 444) = 9009 transactions. The figure
     exists as the upper anchor for the migration tax on every PQ
     candidate.
     """
     tx = byte_budget.transactions_per_btc_block("ECDSA-secp256k1")
-    assert tx == 4_000_000 // (200 + 64)
-    assert tx == 15151
+    assert tx == 4_000_000 // (380 + 64)
+    assert tx == 9009
 
 
 def test_btc_tx_per_block_ml_dsa_includes_public_key():
-    """ML-DSA-65 spend reveals pk + sig in witness; toy model gives 732 tx/block.
+    """ML-DSA-65 spend reveals pk + sig in witness; toy model gives 709 tx/block.
 
     With a P2WPKH-style commit-then-reveal output pattern, the spend
-    witness carries 1952 + 3309 = 5261 bytes. With 200 overhead the
-    per-tx weight is 5461. The 4 MB budget yields floor(4_000_000 /
-    5461) = 732 transactions per block, a 20.7-fold drop against the
+    witness carries 1952 + 3309 = 5261 bytes. With 380 overhead the
+    per-tx weight is 5641. The 4 MB budget yields floor(4_000_000 /
+    5641) = 709 transactions per block, a 12.7-fold drop against the
     ECDSA baseline.
     """
     tx = byte_budget.transactions_per_btc_block("ML-DSA-65")
-    assert tx == 4_000_000 // (200 + 1952 + 3309)
-    assert tx == 732
+    assert tx == 4_000_000 // (380 + 1952 + 3309)
+    assert tx == 709
 
 
 def test_btc_tx_per_block_slh_dsa_includes_public_key():
-    """SLH-DSA-128s spend witness is 32 + 7856 = 7888 bytes; toy model gives 494 tx/block."""
+    """SLH-DSA-128s spend witness is 32 + 7856 = 7888 bytes; toy model gives 483 tx/block."""
     tx = byte_budget.transactions_per_btc_block("SLH-DSA-128s")
-    assert tx == 4_000_000 // (200 + 32 + 7856)
-    assert tx == 494
+    assert tx == 4_000_000 // (380 + 32 + 7856)
+    assert tx == 483
 
 
 def test_btc_tx_per_block_composite_includes_public_key():
     """Ed25519+ML-DSA-65 composite spend witness is 1984 + 3373 = 5357 bytes."""
     tx = byte_budget.transactions_per_btc_block("Ed25519+ML-DSA-65")
-    assert tx == 4_000_000 // (200 + 1984 + 3373)
-    assert tx == 719
+    assert tx == 4_000_000 // (380 + 1984 + 3373)
+    assert tx == 697
 
 
 def test_btc_tx_per_block_pq_candidates_lose_throughput():
@@ -132,8 +132,8 @@ def test_btc_tx_per_block_pq_candidates_lose_throughput():
 def test_slh_dsa_btc_throughput_lowest_of_pq():
     """SLH-DSA-128s yields the lowest BTC throughput among PQ candidates.
 
-    7856-byte signature plus 32-byte public key plus 200 overhead is
-    8088 weight per spend. ML-DSA-65's 5461 weight per spend is
+    7856-byte signature plus 32-byte public key plus 380 overhead is
+    8268 weight per spend. ML-DSA-65's 5641 weight per spend is
     roughly two-thirds the per-tx weight, so it fits roughly 1.5x as
     many transactions per block. SLH-DSA-128s remains the throughput
     floor of the PQ candidate set.

@@ -27,8 +27,8 @@ def per_set_bytes(primitive, N):
         return BLS_AGG_BYTES + bitmap_bytes
     if primitive == "threshold-ML-DSA":
         # One combined ML-DSA-65 signature plus the per-validator
-        # participation bitmap (analogous to BLS) so the chain can
-        # attribute attestation rewards and slashing.
+        # participation bitmap the chain records for rewards. Unlike
+        # BLS's bitmap it is not an input to verification.
         return spec["sig_bytes"] + bitmap_bytes
     return N * spec["sig_bytes"]
 

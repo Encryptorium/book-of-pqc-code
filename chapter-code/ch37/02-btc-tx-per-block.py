@@ -8,7 +8,7 @@
 
 # Block 2: pedagogical slice of l1_migration.throughput_compare.rank (stdlib only).
 BTC_BLOCK_WEIGHT_LIMIT = 4_000_000
-BTC_TX_OVERHEAD_WU = 200
+BTC_TX_OVERHEAD_WU = 380
 ETH_BLOCK_GAS_LIMIT = 60_000_000
 ETH_TX_BASE_GAS = 21_000
 ETH_GAS_PER_NONZERO_CALLDATA_BYTE = 16
@@ -45,10 +45,10 @@ for budget in ("btc", "eth"):
     for primitive, count in rank(budget):
         print(f"{primitive:<19} {count:>6}")
 # ==> -- btc --
-# ==> ECDSA-secp256k1      15151
-# ==> ML-DSA-65              732
-# ==> Ed25519+ML-DSA-65      719
-# ==> SLH-DSA-128s           494
+# ==> ECDSA-secp256k1       9009
+# ==> ML-DSA-65              709
+# ==> Ed25519+ML-DSA-65      697
+# ==> SLH-DSA-128s           483
 # ==> -- eth --
 # ==> ECDSA-secp256k1       2724
 # ==> ML-DSA-65              811

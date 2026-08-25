@@ -77,7 +77,7 @@ def test_composite_is_fit_in_every_shape(custody_shapes):
         assert cell["fit"] == "fit", shape
 
 
-def test_xmss_mt_is_unfit_under_multi_device_and_multisig():
+def test_xmss_mt_fit_tracks_key_replication_not_device_count():
     # Single-device-hot is marginal: consumer single-device hot wallets
     # typically lack the tamper-resistant non-volatile state plus
     # atomic-counter discipline NIST SP 800-208 effectively requires for
@@ -89,13 +89,18 @@ def test_xmss_mt_is_unfit_under_multi_device_and_multisig():
     cell = custody_fit.lookup("hardware-only-cold", "XMSS-MT")
     assert cell["fit"] == "fit"
 
+    # Multi-device hot replicates one seed across devices, so the
+    # one-time-key index races and the shape is unfit.
     cell = custody_fit.lookup("multi-device-hot", "XMSS-MT")
     assert cell["fit"] == "unfit"
     assert cell["state_compatible"] is False
 
+    # Independent-key multisig shares no index: each cosigner device is
+    # its own single-signer state machine (SP 800-208 Section 7), so the
+    # shape is fit.
     cell = custody_fit.lookup("multisig-cold", "XMSS-MT")
-    assert cell["fit"] == "unfit"
-    assert cell["state_compatible"] is False
+    assert cell["fit"] == "fit"
+    assert cell["state_compatible"] is True
 
 
 def test_lms_matches_xmss_mt_shape_compatibility(custody_shapes):

@@ -8,7 +8,7 @@
 
 # Block 1: pedagogical slice of l1_migration.byte_budget.evaluate (stdlib only).
 BTC_BLOCK_WEIGHT_LIMIT = 4_000_000
-BTC_TX_OVERHEAD_WU = 200
+BTC_TX_OVERHEAD_WU = 380
 ETH_BLOCK_GAS_LIMIT = 60_000_000  # EIP-7935 / Fusaka, Dec 2025
 ETH_TX_BASE_GAS = 21_000
 ETH_GAS_PER_NONZERO_CALLDATA_BYTE = 16
@@ -42,7 +42,7 @@ def evaluate(primitive):
 for primitive in CANDIDATES:
     sig, pk, btc, eth = evaluate(primitive)
     print(f"{primitive:<19} sig={sig:>5} pk={pk:>5} btc_tx={btc:>5} eth_tx={eth:>4}")
-# ==> ECDSA-secp256k1     sig=   64 pk=   33 btc_tx=15151 eth_tx=2724
-# ==> ML-DSA-65           sig= 3309 pk= 1952 btc_tx=  732 eth_tx= 811
-# ==> SLH-DSA-128s        sig= 7856 pk=   32 btc_tx=  494 eth_tx= 409
-# ==> Ed25519+ML-DSA-65   sig= 3373 pk= 1984 btc_tx=  719 eth_tx= 800
+# ==> ECDSA-secp256k1     sig=   64 pk=   33 btc_tx= 9009 eth_tx=2724
+# ==> ML-DSA-65           sig= 3309 pk= 1952 btc_tx=  709 eth_tx= 811
+# ==> SLH-DSA-128s        sig= 7856 pk=   32 btc_tx=  483 eth_tx= 409
+# ==> Ed25519+ML-DSA-65   sig= 3373 pk= 1984 btc_tx=  697 eth_tx= 800

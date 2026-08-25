@@ -83,10 +83,15 @@ BTC_BLOCK_WEIGHT_LIMIT = 4_000_000
 """Bitcoin block weight limit in weight units. Witness data weighs 1
 weight unit per byte; non-witness data weighs 4 weight units per byte."""
 
-BTC_TX_OVERHEAD_WU = 200
-"""Non-signature weight per typical 1-in-1-out segwit transaction
-(input scaffolding, output scaffolding, sighash byte, locktime). Used
-as a fixed per-tx overhead in the per-block throughput calculation."""
+BTC_TX_OVERHEAD_WU = 380
+"""Non-signature weight per typical 1-in-1-out segwit transaction.
+The stripped serialization of that shape (version, one input with its
+outpoint, empty-scriptSig length byte and sequence, one output with
+its value, script length byte and 34-byte script, locktime, and the
+two counts) is 94 bytes at 4 weight units per non-witness byte per
+BIP-141, or 376 weight units, plus roughly 4 weight units of witness
+framing. Used as a fixed per-tx overhead in the per-block throughput
+calculation."""
 
 ETH_BLOCK_GAS_LIMIT = 60_000_000
 """Ethereum block gas limit at chain-tip 2026, set by EIP-7935 in the

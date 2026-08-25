@@ -14,8 +14,8 @@ PRIMS = {
     "ML-DSA-65":         {"legacy": False, "state": (1, 1, 1, 1), "marginal": (0, 0, 0, 0)},
     "SLH-DSA-128s":      {"legacy": False, "state": (1, 1, 1, 1), "marginal": (1, 1, 0, 0)},
     "Ed25519+ML-DSA-65": {"legacy": False, "state": (1, 1, 1, 1), "marginal": (0, 0, 0, 0)},
-    "XMSS-MT":           {"legacy": False, "state": (1, 0, 1, 0), "marginal": (1, 0, 0, 0)},
-    "LMS":               {"legacy": False, "state": (1, 0, 1, 0), "marginal": (1, 0, 0, 0)},
+    "XMSS-MT":           {"legacy": False, "state": (1, 0, 1, 1), "marginal": (1, 0, 0, 0)},
+    "LMS":               {"legacy": False, "state": (1, 0, 1, 1), "marginal": (1, 0, 0, 0)},
 }
 
 
@@ -40,5 +40,5 @@ for primitive in PRIMS:
 # ==> ML-DSA-65           fit        fit        fit        fit
 # ==> SLH-DSA-128s        marginal   marginal   fit        fit
 # ==> Ed25519+ML-DSA-65   fit        fit        fit        fit
-# ==> XMSS-MT             marginal   unfit      fit        unfit
-# ==> LMS                 marginal   unfit      fit        unfit
+# ==> XMSS-MT             marginal   unfit      fit        fit
+# ==> LMS                 marginal   unfit      fit        fit

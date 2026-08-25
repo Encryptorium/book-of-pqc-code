@@ -181,9 +181,10 @@ def test_pq_total_for_bls_routes_through_aggregate():
 def test_pq_total_for_threshold_ml_dsa_collapses_signature_plus_bitmap():
     """Threshold ML-DSA returns one ML-DSA-65 signature plus a per-validator bitmap.
 
-    A deployable threshold-PQ protocol must ship a signer set on-chain
-    to attribute attestation rewards and slashing; the package adds a
-    ceil(N/8)-byte participation bitmap analogous to BLS.
+    A deployable threshold-PQ protocol still ships its claimed signer
+    set on-chain for reward attribution, though the combined signature
+    verifies against the joint key without it; the package adds a
+    ceil(N/8)-byte participation bitmap in the BLS bitmap's format.
     """
     assert ao.pq_total_bytes("threshold-ML-DSA", 1) == 3309 + 1
     assert ao.pq_total_bytes("threshold-ML-DSA", 1_000_000) == 3309 + 125_000

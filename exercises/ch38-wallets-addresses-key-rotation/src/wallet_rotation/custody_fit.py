@@ -148,21 +148,23 @@ _COMPOSITE = _row(
 )
 
 # XMSS-MT is stateful. Hardware-only single-device shapes sustain a local
-# state file inside a secure element; multi-device and multisig shapes
-# break under state sync requirements. The single-device hot shape is
-# downgraded to marginal because consumer-grade single-device hot wallets
-# typically lack the tamper-resistant non-volatile state plus
+# state file inside a secure element; multi-device shapes that replicate
+# one key break under state sync requirements. Independent-key multisig
+# holds: each cosigner advances only its own key's counter, the
+# multi-module design SP 800-208 Section 7 permits. The single-device
+# hot shape is downgraded to marginal because consumer-grade single-device
+# hot wallets typically lack the tamper-resistant non-volatile state plus
 # atomic-counter discipline NIST SP 800-208 effectively requires.
 _XMSS_MT = _row(
     state_compat={
         "single-device-hot": True,
         "multi-device-hot": False,
         "hardware-only-cold": True,
-        "multisig-cold": False,
+        "multisig-cold": True,
     },
     byte_compat={shape: True for shape in CUSTODY_SHAPES},
     marginal_shapes=("single-device-hot",),
-    rationale="stateful hypertree; single-device hot is marginal pending hardware-backed atomic counter; multi-device and multisig break under one-time-key index reuse",
+    rationale="stateful hypertree; single-device hot is marginal pending hardware-backed atomic counter; shared-seed multi-device breaks under one-time-key index reuse, while independent-key multisig keeps one counter per cosigner",
 )
 
 # LMS is stateful. Same shape compatibility as XMSS-MT, including the
@@ -173,11 +175,11 @@ _LMS = _row(
         "single-device-hot": True,
         "multi-device-hot": False,
         "hardware-only-cold": True,
-        "multisig-cold": False,
+        "multisig-cold": True,
     },
     byte_compat={shape: True for shape in CUSTODY_SHAPES},
     marginal_shapes=("single-device-hot",),
-    rationale="stateful Merkle tree per RFC 8554; same single-device-hot marginal label and multi-device/multisig break as XMSS-MT",
+    rationale="stateful Merkle tree per RFC 8554; same single-device-hot marginal label, shared-seed multi-device break, and independent-key multisig fit as XMSS-MT",
 )
 
 MATRIX: Dict[str, Dict[str, FitCell]] = {
@@ -208,8 +210,9 @@ def lookup(custody_shape: str, primitive: str) -> Dict[str, object]:
     # row is legacy in all four columns because it is the source of the
     # migration rather than a target, SLH-DSA-128s is marginal on the two
     # hot columns under its 7856-byte signature, and XMSS-MT and LMS are
-    # unfit on multi-device-hot and multisig-cold because no one-time-key
-    # index survives being coordinated across independent devices.
+    # unfit on multi-device-hot, where one seed is replicated across devices
+    # and the one-time-key index races, and fit on multisig-cold, where each
+    # cosigner keeps an independent key and its own counter.
     #
     # Reference: Chapter 38, 'Pick the candidate per custody shape'
     #

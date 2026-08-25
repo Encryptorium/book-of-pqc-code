@@ -72,8 +72,10 @@ plus a sighash flag. Comparisons against the ECDSA row are therefore generous to
 ECDSA by a few bytes.
 
 **Two anchors are conventions rather than consensus rules.**
-`BTC_TX_OVERHEAD_WU` is a round 200 weight units standing in for a typical
-1-in-1-out segwit transaction, and real overhead varies with transaction shape.
+`BTC_TX_OVERHEAD_WU` is 380 weight units for a typical 1-in-1-out segwit
+transaction: the 94-byte stripped serialization at 4 weight units per
+non-witness byte per BIP-141 (376 units) plus roughly 4 units of witness
+framing. Real overhead varies with transaction shape.
 `ETH_BLOCK_GAS_LIMIT` is 60 million per EIP-7935, which is an Informational
 client-default recommendation that any validator may configure away from, not a
 consensus-pinned constant like `BTC_BLOCK_WEIGHT_LIMIT`.

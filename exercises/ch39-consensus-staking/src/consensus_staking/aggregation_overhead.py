@@ -26,9 +26,12 @@ Strand consensus surface:
   trivially.
 - ``threshold-ML-DSA`` is the threshold-signature variant of ML-DSA
   per active research at chain-tip 2026; combines T partial signatures
-  to one ML-DSA-65 signature plus a per-validator participation
-  bitmap analogous to the BLS bitmap. Research-grade at chain-tip
-  2026; no NIST standard.
+  to one standard ML-DSA-65 signature under a fixed, jointly generated
+  public key, shipped with a per-validator participation bitmap in the
+  BLS bitmap's format. Unlike BLS's, the bitmap is not an input to
+  verification: attributing rewards and slashing to it needs a separate
+  accountability mechanism. Research-grade at chain-tip 2026; no NIST
+  standard.
 
 Validator-count anchor: Ethereum mainnet at chain-tip 2026 carries on
 the order of one million active validators. The chapter uses
@@ -51,10 +54,12 @@ Per-validator-set byte total under a non-aggregating PQ candidate:
 
 Per-validator-set byte total under a threshold-PQ candidate:
     threshold_total(N) = sig_bytes + ceil(N / 8)
-where the second term is the analogous participation bitmap that
-records which T-of-N validators contributed to the combine round.
-A deployable threshold-PQ protocol must ship a per-validator
-signer set on-chain to attribute attestation rewards and slashing.
+where the second term is the participation bitmap that records
+which T-of-N validators the coordinator claims contributed to the
+combine round. A deployable threshold-PQ protocol still ships that
+signer set on-chain for reward attribution, but the combined
+signature verifies against the joint key without it, so attribution
+needs accountability evidence beyond the signature.
 
 Aggregation ratio: per-validator-set partial-sig total divided by
 per-validator-set aggregate output size. BLS at large N saturates
@@ -190,9 +195,9 @@ def pq_total_bytes(primitive: str, N: int) -> int:
     96-byte aggregate plus the ceil(N/8) participation bitmap). For
     threshold-ML-DSA the function returns the threshold-aggregate
     size (one ML-DSA-65 signature) plus a per-validator participation
-    bitmap of ceil(N/8) bytes, analogous to the BLS bitmap; a
-    deployable threshold-PQ protocol must ship a signer set on-chain
-    to attribute attestation rewards and slashing.
+    bitmap of ceil(N/8) bytes in the BLS bitmap's format; the bitmap
+    records the claimed signer set for reward attribution and is not
+    an input to verification, which runs against the fixed joint key.
     """
     # EXERCISE: implement this function.
     #
@@ -200,8 +205,9 @@ def pq_total_bytes(primitive: str, N: int) -> int:
     # non-negative. BLS-BLS12-381 delegates to bls_aggregate_total_bytes.
     # threshold-ML-DSA returns one combined ML-DSA-65 signature plus the
     # same ceil(N/8) participation bitmap, because a deployable threshold
-    # protocol still has to name its signer set on-chain to attribute
-    # rewards and slashing. Everything else is a plain non-aggregating
+    # protocol still names its claimed signer set on-chain for reward
+    # attribution, even though the signature verifies against the fixed
+    # joint key without it. Everything else is a plain non-aggregating
     # candidate and returns N times its signature size. That last branch is
     # the chapter's headline: 3.3 GB per attestation set for ML-DSA-65 at a
     # million validators against 125 KB for BLS.
