@@ -143,10 +143,13 @@ BLS_AGGREGATE_SIG_BYTES = 96
 def participation_bitmap_bytes(N: int) -> int:
     """Bytes required for the BLS participation bitmap on N validators.
 
-    One bit per validator, rounded up to the nearest byte. Matches the
-    Ethereum consensus-specs ``Bitlist[VALIDATOR_REGISTRY_LIMIT]``
-    serialization at the byte-count level (the SSZ wrapping adds a
-    fixed overhead the chapter ignores for the comparison).
+    One bit per validator, rounded up to the nearest byte: the byte
+    count of the data bits of the Ethereum consensus-specs
+    ``Bitlist[VALIDATOR_REGISTRY_LIMIT]``. Literal SSZ serialization
+    appends a delimiting bit, one extra byte whenever N is a multiple
+    of eight (125,001 rather than 125,000 at N = 1,000,000), an
+    overhead the chapter ignores for the comparison along with the
+    SSZ wrapping.
     """
     assert N >= 0, "validator count must be non-negative"
     return (N + 7) // 8
@@ -199,7 +202,11 @@ def aggregation_ratio(primitive: str, N: int) -> float:
     large N the ratio approaches 8 * 3309 = 26472 (the per-signature
     byte size scaled by 8 because the bitmap dominates). ML-DSA-65,
     SLH-DSA-128s, and FN-DSA-512 produce N independent signatures
-    so partial total equals output and the ratio is 1.
+    so partial total equals output and the ratio is 1. The two
+    aggregating models price one aggregate over the whole set, the
+    chapter's normalized single-payload floor; a per-committee
+    deployment pays one aggregate or combined signature per
+    committee instead.
     """
     assert primitive in CANDIDATES, f"unknown primitive: {primitive!r}"
     assert N >= 1, "validator count must be at least one for the ratio"
