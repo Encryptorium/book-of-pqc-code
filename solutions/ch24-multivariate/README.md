@@ -85,10 +85,11 @@ against the UOV submission.
 
 `ROUND2_SIZES` in `multivariate.sizes` records public-key and signature sizes
 for seven parameter sets, each with the table it was read from: UOV Table 1,
-MAYO Table 2.1, SNOVA Table 6. `test_sizes.py` recomputes the two UOV entries
-from `uov_public_key_bytes` and checks them against the recorded figures, so
-the chapter's 412,160-byte and 278,432-byte claims are derived rather than
-transcribed.
+MAYO Table 2.1, SNOVA Table 6. `test_sizes.py` recomputes both UOV expanded-key
+entries from `uov_public_key_bytes` and checks them against the recorded
+figures, so the chapter's 412,160-byte claim is derived rather than
+transcribed. The 278,432-byte uov-Ip figure is recomputed the same way; the
+chapter does not quote it.
 
 The recorded MAYO and SNOVA figures are not recomputed. They are transcriptions
 from those specifications, and `test_round2_sizes_are_internally_consistent`

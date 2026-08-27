@@ -12,7 +12,7 @@ only and runs on Python 3.10 or later.
 | `toy_kzg` | Pairing-based polynomial commitment | d-SDH (reduced here to discrete log) | SRS setup, commit, honest opening via quotient polynomial, simulated Shor trapdoor recovery, post-Shor opening forgery. Does not build pairings. |
 | `merkle` | Hash-based | Collision resistance of the hash | q-ary Merkle tree with configurable output width, commit/open/verify round trip, BHT and CNPS quantum-collision-bit helpers. |
 | `fri` | Hash-based (information-theoretic proximity) | Collision resistance of the hash plus the proximity gap | Reed-Solomon codeword, folding rounds, query-based consistency check. Interactive only; no Fiat-Shamir compilation. |
-| `lattice_pcs` | Lattice-based | Module-SIS | Public-matrix setup, commit with small error for hiding, verify, SIS-binding witness extraction from two openings. Vector commitment only; does not implement an evaluation protocol. |
+| `lattice_pcs` | Lattice-based | Plain SIS over `Z_q` (production reduces to Module-SIS) | Public-matrix setup, commit with small error for hiding, verify, SIS-binding witness extraction from two openings. Vector commitment only; does not implement an evaluation protocol. |
 
 ## Scope boundaries
 

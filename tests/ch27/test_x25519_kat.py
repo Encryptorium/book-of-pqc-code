@@ -2,7 +2,8 @@
 
 Covers both the single-call vectors and the iterated (1 round, 1000
 rounds) vectors. The 1,000,000-round vector is skipped by default
-because it takes on the order of a minute in pure Python; enable via
+because a million pure-Python scalar multiplications take tens of
+minutes; enable via
 ``CH27_X25519_STRESS=1``.
 """
 

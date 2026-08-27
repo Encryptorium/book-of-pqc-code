@@ -41,7 +41,7 @@ import secrets
 from dataclasses import dataclass
 
 
-# Toy Module-SIS parameters. These are pedagogically sized (much smaller
+# Toy scalar-SIS parameters. These are pedagogically sized (much smaller
 # than the 2024-2026 frontier parameters). Chapter 32 explicitly calls
 # this out and cites the Hwang et al. 2024, Nguyen-Seiler 2024, Hwang
 # et al. 2026, and Nguyen et al. 2026 papers for concrete parameters.
@@ -53,9 +53,10 @@ DEFAULT_ERROR_BOUND = 2  # small-error infinity norm for hiding
 
 @dataclass
 class LatticeParams:
-    """Parameters for the toy Module-SIS commitment.
+    """Parameters for the toy scalar-SIS commitment.
 
-    ``modulus`` is the ring modulus q. ``dimension`` is the length of
+    ``modulus`` is the modulus q of the scalar ring ``Z_q``; the toy has
+    no polynomial ring. ``dimension`` is the length of
     the committed vector m. ``commit_size`` is the length of the
     commitment vector (equivalently, the number of rows of the public
     matrix A). ``error_bound`` bounds the infinity norm of the random
@@ -70,7 +71,7 @@ class LatticeParams:
 
 @dataclass
 class PublicMatrix:
-    """Public randomness A in the Module-SIS commitment equation."""
+    """Public randomness A in the SIS commitment equation."""
 
     params: LatticeParams
     rows: list[list[int]]
@@ -238,7 +239,7 @@ def sis_binding_witness(
     If C = A*m_a + e_a = A*m_b + e_b mod q, then
     A*(m_a - m_b) + (e_a - e_b) = 0 mod q, which is an SIS solution
     with combined message-error vector (m_a - m_b, e_a - e_b). Finding
-    one is infeasible under Module-SIS, so this routine exists to
+    one is infeasible under SIS, so this routine exists to
     demonstrate the reduction, not as an attack tool.
     """
     # EXERCISE: implement this function.

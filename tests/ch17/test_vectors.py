@@ -15,8 +15,11 @@ Four independent checks run:
    public-key and signature sizes of all twelve sets against FIPS 205
    Table 2, transcribed as a frozen literal.
 2. ``TestACVPKeyGenByteForByte`` reproduces ``sk`` and ``pk`` from seeds.
-3. ``TestACVPSigVer`` accepts every valid signature and rejects every
-   invalid one, at all twelve parameter sets.
+3. ``TestACVPSigVer`` accepts a valid signature at all twelve parameter
+   sets, and rejects an invalid one at the two sets whose committed groups
+   carry invalid cases: SLH-DSA-SHA2-128s and SLH-DSA-SHAKE-128s, six
+   each, one per rejection reason.  The other ten groups carry no invalid
+   case, so they reject nothing.
 4. ``TestACVPSigGenByteForByte`` regenerates the signature of each valid
    case from its ``sk`` and ``additionalRandomness`` and compares bytes.
 
@@ -228,6 +231,11 @@ class TestACVPKeyGenByteForByte:
 )
 class TestACVPSigVer:
     """Every committed ACVP sigVer case, at all twelve parameter sets.
+
+    Each of the twelve groups carries one valid case.  Only
+    SLH-DSA-SHA2-128s and SLH-DSA-SHAKE-128s carry invalid ones, six
+    each; the fixture offers none at the other ten, so no rejection is
+    exercised there.
 
     The valid cases are the ones that matter most: they are signatures
     this package did not produce, so they cannot pass by sharing a

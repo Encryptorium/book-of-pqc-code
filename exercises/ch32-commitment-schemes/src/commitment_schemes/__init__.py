@@ -9,8 +9,10 @@ decomposition (Chapter 31):
   and BHT/CNPS quantum-collision-bit helpers.
 - ``fri``: toy FRI commitment with Reed-Solomon codeword construction,
   folding rounds, and query-based consistency checks.
-- ``lattice_pcs``: Module-SIS vector commitment demonstrating the
-  binding reduction and hiding-via-error pattern.
+- ``lattice_pcs``: scalar-SIS vector commitment demonstrating the
+  binding reduction and hiding-via-error pattern.  The toy works over
+  ``Z_q``, so its displayed instance is plain SIS; production lattice
+  PCS works over ``R_q`` and reduces to Module-SIS.
 
 Every module is pedagogical. Production constructions of KZG, FRI, and
 lattice PCS require machinery (pairing-friendly curves, production
