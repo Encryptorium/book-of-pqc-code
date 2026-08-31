@@ -6,7 +6,7 @@
 # Generated from the chapter text. Edits here do not reach the book.
 # Run: python3 chapter-code/ch29/03-read-counter.py
 
-# Block 3: pedagogical slice of pki_migration.xmss_index.durable_xmss_sign (stdlib only).
+# Block 3: pedagogical slice of pki_migration.xmss_index.durable_xmss_sign (stdlib only, POSIX).
 import fcntl
 import json
 import os
