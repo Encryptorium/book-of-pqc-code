@@ -15,7 +15,10 @@ read-check-increment-write sequence, then runs the WOTS+ signing
 step. A crash between counter persistence and WOTS+ signing wastes a
 leaf but cannot reuse one; a second concurrent signer blocks at
 ``LOCK_EX`` until the first releases, then reads the
-already-incremented counter and reserves the next index.
+already-incremented counter and reserves the next index. The same
+lock guards ``initialize_counter``, so a provisioning run that races
+a signer either creates the counter first or refuses because it
+exists; it can never rewind one.
 
 The POSIX file lock is the pedagogical simplification. SP 800-208
 section 8.1 validates key and signature generation only inside a
@@ -29,7 +32,8 @@ Public API:
 - ``initialize_counter(path, max_leaf)``: create a fresh counter
   file. Raises ``RuntimeError`` if the file already exists.
 - ``read_counter(path) -> dict``: parse the counter file under a
-  shared lock; raises ``RuntimeError`` if absent or corrupt.
+  shared lock on the same sibling lock file the writers use; raises
+  ``RuntimeError`` if absent or corrupt.
 - ``durable_xmss_sign(counter_path, ...) -> xmss signature``:
   reserve, persist, sign under a single exclusive lock. Raises
   ``RuntimeError`` for any precondition failure (missing file,
@@ -86,15 +90,25 @@ def _read_counter_unlocked(path: Path) -> dict:
 def read_counter(path: Path) -> dict:
     """Read the counter file at ``path`` under a shared lock.
 
+    The shared lock is taken on the sibling lock file, which is the
+    file every writer locks exclusively; a ``LOCK_SH`` on the counter
+    file itself would conflict with nothing, because writers replace
+    that inode through ``os.replace`` rather than locking it. The lock
+    file is opened read-only, so an auditor with read access and no
+    write access can still read; ``flock`` needs no write permission.
+    If no writer has ever created the lock file there is no writer to
+    wait for, and the read proceeds unlocked (``os.replace`` keeps it
+    whole either way).
+
     Raises ``RuntimeError`` if the file is absent, cannot be decoded,
     or lacks the required integer keys.
     """
-    if not path.exists():
-        raise RuntimeError(f"counter file missing at {path}")
-    with path.open("rb") as f:
-        fcntl.flock(f.fileno(), fcntl.LOCK_SH)
-        raw = f.read()
-    return _parse_counter_bytes(raw, path)
+    lock_path = _lock_path_for(path)
+    if not lock_path.exists():
+        return _read_counter_unlocked(path)
+    with lock_path.open("rb") as lock:
+        fcntl.flock(lock.fileno(), fcntl.LOCK_SH)
+        return _read_counter_unlocked(path)
 
 
 def _write_counter_atomic(path: Path, state: dict) -> None:
@@ -129,7 +143,10 @@ def initialize_counter(path: Path, max_leaf: int) -> None:
     """Create a fresh counter file at ``path`` with ``next_leaf = 0``.
 
     Raises ``RuntimeError`` if a file already exists (refusing to
-    overwrite protects against accidental reset).
+    overwrite protects against accidental reset). Takes the sibling
+    lock file's exclusive lock for the existence check and the write
+    together, so a second initializer, or a signer that has already
+    reserved a leaf, cannot interleave between the two.
     """
     # EXERCISE: implement this function.
     #
@@ -138,7 +155,10 @@ def initialize_counter(path: Path, max_leaf: int) -> None:
     # already there. Overwriting would rewind the counter and reissue leaves
     # that have already signed, which is the precise failure this module
     # exists to prevent, so the guard is the feature rather than defensive
-    # habit.
+    # habit. Hold the sibling lock file's LOCK_EX around the existence check
+    # and the write together; a check made outside the lock lets a second
+    # initializer create the file, a signer reserve leaf 0, and this one
+    # then rewind it.
     #
     # Reference: Chapter 29, 'Code-signing pipeline' (NIST SP 800-208 sections 8.1 and 9.1)
     #
