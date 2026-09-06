@@ -19,6 +19,8 @@ from sqisign.deuring import (
     verify_iota_pi_anticommutes,
     quaternion_to_endo_action,
 )
+from sqisign.graph import two_torsion_points
+from sqisign.orders import standard_basis
 
 
 P = 431
@@ -101,6 +103,26 @@ def test_quaternion_action_negation():
     assert expected is not None
     assert fp2_eq(image[0], expected[0], P)
     assert fp2_eq(image[1], expected[1], P)
+
+
+def test_standard_basis_embeds_in_End_E0():
+    """Each O_0 basis element is an endomorphism of E_0 under iota -> i, pi -> j.
+
+    An endomorphism alpha is divisible by 2 in End(E_0) exactly when it
+    kills E_0[2] (it then factors through [2], whose kernel is E_0[2]).
+    So a basis element e with half-integer coordinates belongs to
+    End(E_0) only if 2e sends all three finite 2-torsion points to
+    infinity.  On y^2 = x^3 + x at p = 3 mod 4, (1 + pi) sends (i, 0)
+    to (0, 0), which rules out (1 + j)/2 and leaves (i + j)/2 and
+    (1 + k)/2, the basis the SQIsign specification uses (round-10
+    external review, R10-P1-04).
+    """
+    two_torsion = two_torsion_points(A0, B0, P)
+    assert len(two_torsion) == 3
+    for e in standard_basis(P):
+        twice = tuple(int(2 * x) for x in e)
+        for T in two_torsion:
+            assert quaternion_to_endo_action(twice, T, P) is None, (e, T)
 
 
 def test_quaternion_action_iota_squared_is_minus_one():

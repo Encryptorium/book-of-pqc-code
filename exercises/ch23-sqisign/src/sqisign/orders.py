@@ -1,13 +1,18 @@
 """Maximal orders and left ideals in B_{p,inf}.
 
 For p prime with p = 3 mod 4, the standard maximal order in
-B_{p,inf} = (-1, -p / Q) is:
+B_{p,inf} = (-1, -p / Q) is the one the SQIsign specification uses:
 
-    O_0 = Z + Z*i + Z*(1+j)/2 + Z*(i+k)/2
+    O_0 = Z + Z*i + Z*(i+j)/2 + Z*(1+k)/2
 
-This is sometimes called the "level 1" maximal order.  It contains
-the suborder Z<1, i, j, k> with index 4 and has reduced discriminant p
-(matching the discriminant of B_{p,inf}).
+It contains the suborder Z<1, i, j, k> with index 4 and has reduced
+discriminant p (matching the discriminant of B_{p,inf}).  Under
+iota -> i, pi -> j for E_0: y^2 = x^3 + x it is End(E_0): the two
+half-integer generators are (iota + pi)/2 and (1 + iota*pi)/2, which
+are endomorphisms because iota + pi and 1 + iota*pi kill E_0[2].  The
+conjugate order Z<1, i, (1+j)/2, (i+k)/2> is also maximal, but (1+pi)/2
+is not an endomorphism of this curve model: (1+pi) sends (i, 0) to
+(0, 0).
 
 A left O_0-ideal is a Z-lattice of rank 4 in B_{p,inf} that is closed
 under left multiplication by O_0.  We represent ideals by an explicit
@@ -38,37 +43,40 @@ from sqisign.quaternion import (
 def standard_basis(p: int) -> list[Quat]:
     """Return the Z-basis of the standard maximal order O_0 for p = 3 mod 4.
 
-    O_0 = Z + Z*i + Z*(1+j)/2 + Z*(i+k)/2
+    O_0 = Z + Z*i + Z*(i+j)/2 + Z*(1+k)/2
     """
     # EXERCISE: implement this function.
     #
-    # Return the four generators of O_0 = Z + Z*i + Z*(1+j)/2 + Z*(i+k)/2 in
-    # that order: 1, i, the quaternion with coefficients (1/2, 0, 1/2, 0),
-    # and the one with (0, 1/2, 0, 1/2). Reject p not congruent to 3 mod 4
+    # Return the four generators of O_0 = Z + Z*i + Z*(i+j)/2 + Z*(1+k)/2 in
+    # that order: 1, i, the quaternion with coefficients (0, 1/2, 1/2, 0),
+    # and the one with (1/2, 0, 0, 1/2). Reject p not congruent to 3 mod 4
     # with ValueError, because closure under multiplication needs 4 to
     # divide p + 1; at p = 431 that quotient is 108. The two half-integer
     # generators are what make this order maximal rather than the obvious
-    # Z<1, i, j, k>, which sits inside it at index 4.
+    # Z<1, i, j, k>, which sits inside it at index 4, and they are the ones
+    # that are endomorphisms of E_0 under iota -> i, pi -> j: iota + pi and
+    # 1 + iota*pi kill the 2-torsion, while 1 + pi does not.
     #
     # Reference: Chapter 23, 'The maximal order O_0'
     #
     # Proved by:
     #   tests/ch23/test_maximal_orders.py
+    #   tests/ch23/test_deuring_correspondence.py
     raise NotImplementedError("exercise: standard_basis")
 
 
 def in_standard_order(x: Quat, p: int) -> bool:
     """Test whether x = a + bi + cj + dk lies in O_0.
 
-    x is in O_0 = Z + Zi + Z(1+j)/2 + Z(i+k)/2 iff the coordinates
+    x is in O_0 = Z + Zi + Z(i+j)/2 + Z(1+k)/2 iff the coordinates
     (u_0, u_1, u_2, u_3) in the O_0 basis are all integers, where:
-        u_0 = a - c,  u_1 = b - d,  u_2 = 2c,  u_3 = 2d.
+        u_0 = a - d,  u_1 = b - c,  u_2 = 2c,  u_3 = 2d.
     """
     if p % 4 != 3:
         raise ValueError(f"requires p = 3 mod 4, got p = {p}")
     a, b, c, d = x
-    u0 = a - c
-    u1 = b - d
+    u0 = a - d
+    u1 = b - c
     u2 = 2 * c
     u3 = 2 * d
     return all(u.denominator == 1 for u in (u0, u1, u2, u3))
@@ -81,7 +89,7 @@ def order_coords(x: Quat, p: int) -> tuple[int, int, int, int]:
     """
     # EXERCISE: implement this function.
     #
-    # Return the same four values in_standard_order tests, (a - c, b - d,
+    # Return the same four values in_standard_order tests, (a - d, b - c,
     # 2c, 2d), converted to Python ints, having first raised ValueError when
     # the element is not in O_0. Reconstructing the element as the integer
     # combination of the basis returned by standard_basis, in the same
@@ -124,7 +132,7 @@ def ideal_norm_principal(generator: Quat, p: int) -> Fraction:
     """For a principal left ideal I = O_0 * alpha, nrd(I) = nrd(alpha).
 
     The reduced norm of a principal ideal equals the reduced norm of
-    any of its generators (Voight 2021, Lemma 16.4.7).
+    any of its generators (Voight 2021, paragraph 16.3.5).
     """
     # EXERCISE: implement this function.
     #

@@ -10,21 +10,21 @@ from fractions import Fraction
 
 def in_O0(x):
     a, b, c, d = x
-    u0 = a - c
-    u1 = b - d
+    u0 = a - d
+    u1 = b - c
     u2 = 2 * c
     u3 = 2 * d
     return all(u.denominator == 1 for u in (u0, u1, u2, u3))
 
-# (1 + j) / 2 lies in O_0; j/2 alone does not.
-half_one_plus_j = (Fraction(1, 2), Fraction(0), Fraction(1, 2), Fraction(0))
+# (i + j) / 2 lies in O_0; j/2 alone does not.
+half_i_plus_j = (Fraction(0), Fraction(1, 2), Fraction(1, 2), Fraction(0))
 half_j = (Fraction(0), Fraction(0), Fraction(1, 2), Fraction(0))
-print(in_O0(half_one_plus_j))
+print(in_O0(half_i_plus_j))
 # ==> True
 print(in_O0(half_j))
 # ==> False
 
-# i and j are also in O_0 (j = 2*(1+j)/2 - 1).
+# i and j are also in O_0 (j = 2*(i+j)/2 - i).
 print(in_O0((Fraction(0), Fraction(1), Fraction(0), Fraction(0))))
 # ==> True
 print(in_O0((Fraction(0), Fraction(0), Fraction(1), Fraction(0))))

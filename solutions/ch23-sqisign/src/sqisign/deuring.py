@@ -1,7 +1,8 @@
 """The Deuring correspondence at p = 431 for E_0: y^2 = x^3 + x.
 
 Deuring's theorem (1941) establishes a bijection between:
-  - supersingular j-invariants over F_{p^2}, and
+  - supersingular j-invariants over F_{p^2} taken up to Galois
+    conjugacy (the pairs {j, j^p}), and
   - conjugacy classes of maximal orders in B_{p,inf}.
 
 The correspondence is constructive at the level of endomorphism rings:
@@ -25,9 +26,14 @@ These satisfy:
                               Theorem V.2.3.1)
 
 Under the map iota -> i, pi -> j, iota*pi -> k, End(E_0) tensor Q is
-isomorphic to B_{p,inf}.  The lattice Z<1, iota, (1+pi)/2, (iota+iota*pi)/2>
-maps to O_0 = Z + Z*i + Z*(1+j)/2 + Z*(i+k)/2, the standard maximal
-order for p = 3 mod 4.
+isomorphic to B_{p,inf}.  The lattice Z<1, iota, (iota+pi)/2, (1+iota*pi)/2>
+maps to O_0 = Z + Z*i + Z*(i+j)/2 + Z*(1+k)/2, the standard maximal
+order for p = 3 mod 4.  The halves exist because iota + pi and
+1 + iota*pi kill E_0[2] = {inf, (0,0), (i,0), (-i,0)}: with p = 3 mod 4,
+i^p = -i, so iota and pi both swap (i,0) with (-i,0).  By contrast
+(1 + pi)(i,0) = (i,0) + (-i,0) = (0,0), so (1+pi)/2 is not an
+endomorphism of this model (the reviewer's counterexample in the
+round-10 external review).
 
 References:
   Deuring 1941. Die Typen der Multiplikatorenringe elliptischer

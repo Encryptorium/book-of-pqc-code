@@ -82,7 +82,7 @@ def quat_scalar(x: Quat, c: Union[int, Fraction]) -> Quat:
     # Multiply every coefficient by the rational c, converting c with
     # _to_fraction so an int argument does not silently drop the element out
     # of exact arithmetic. Rational scaling is what the order basis needs:
-    # (1 + j)/2 and (i + k)/2 are half-integer combinations, and quat_inv
+    # (i + j)/2 and (1 + k)/2 are half-integer combinations, and quat_inv
     # divides a conjugate by a norm.
     #
     # Reference: Chapter 23, 'The maximal order O_0'

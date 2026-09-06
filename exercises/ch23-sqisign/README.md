@@ -11,32 +11,31 @@ byte-for-byte compatibility with the NIST additional-signatures SQIsign
 submission, and it does not carry a `tests/ch23/test_vectors.py` harness
 loading the reference known-answer tests.
 
-## Divergences from the Round-2 SQIsign specification
+## Divergences from the SQIsign specification
 
-Figures below are from version 2.0.1 of the specification, dated 2025-07-07,
-which the SQIsign project lists as current. No Round-3 specification has been
-published.
+Figures below are from version 3.0 of the specification, dated 2026-09-01,
+the round-3 submission, which the SQIsign project lists as current.
 
-| Axis | Round-2 SQIsign | This toy |
+| Axis | SQIsign (version 3.0) | This toy |
 | --- | --- | --- |
-| Characteristic | `p = 5 * 2**248 - 1` at NIST-I, a 251-bit prime | `p = 431` |
-| Supersingular graph size | About `p / 12`, near `2**247` vertices | 37 vertices (enumerable) |
+| Characteristic | `p = 3 * 2**324 - 1` at NIST-I, a 326-bit prime | `p = 431` |
+| Supersingular graph size | About `p / 12`, near `2**322` vertices | 37 vertices (enumerable) |
 | Connecting-isogeny search | Quaternion-side: sample a bounded-norm element of an ideal intersection, then translate | Breadth-first search over the graph itself |
 | Ideal-to-isogeny translation | Needs isogenies between abelian surfaces (dimension two) | Not implemented; the toy never leaves dimension one |
 | Response representation | Interpolation data: point images as a change-of-basis matrix, plus an auxiliary curve | The BFS path itself, as explicit kernel generators |
 | Quaternion order arithmetic | Compressed lattice representation | Basis quadruples with explicit multiplication |
 | Randomness schedule | NIST DRBG seed | `hashlib.sha256` over a caller-supplied seed |
-| Public key size | 65 bytes at NIST-I (64-byte Montgomery coefficient plus a one-byte basis hint) | `j`-invariant in `F_{p^2}`, 4 bytes at `p = 431` |
-| Signature size | 148 bytes at NIST-I | Path length times edge encoding |
+| Public key size | 83 bytes at NIST-I (82-byte Montgomery coefficient plus a one-byte basis hint) | `j`-invariant in `F_{p^2}`, 4 bytes at `p = 431` |
+| Signature size | 200 bytes at NIST-I | Path length times edge encoding |
 
 The two changes that buy laptop scale are the prime and the search. At
 `p = 431` the whole supersingular graph fits in memory, so breadth-first
-search finds a connecting isogeny by brute force in `O(p)` time; at a 251-bit
+search finds a connecting isogeny by brute force in `O(p)` time; at a 326-bit
 prime the same search is infeasible and the real scheme works on the
 quaternion side instead, where the cost is polynomial in `log p`. Closing that
-gap would mean a 251-bit finite-field backend, quaternion-lattice sampling,
+gap would mean a 326-bit finite-field backend, quaternion-lattice sampling,
 ideal-to-isogeny translation through dimension two, and the binary format of
-specification section 4.6. Those are out of scope for the chapter.
+specification chapter 6. Those are out of scope for the chapter.
 
 One thing does carry over unchanged: the NIST-I prime is `3 mod 4`, like
 `p = 431`, so the presentation of `B_{p,inf}` and the standard maximal order

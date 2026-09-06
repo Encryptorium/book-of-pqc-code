@@ -41,17 +41,17 @@ def test_basis_membership():
 
 
 def test_unit_in_order():
-    """1, i, j, k all need scrutiny: 1 and i are in O_0, j and k are not directly."""
+    """1, i, j, k are all in O_0; j and k only as integer combinations of the halves."""
     assert in_standard_order(quat_one(), P)
     assert in_standard_order(quat_i(), P)
-    # j = 2 * (1+j)/2 - 1, so j IS in O_0.
+    # j = 2 * (i+j)/2 - i, so j IS in O_0.
     assert in_standard_order(quat_j(), P)
-    # k = 2 * (i+k)/2 - i, so k IS in O_0.
+    # k = 2 * (1+k)/2 - 1, so k IS in O_0.
     assert in_standard_order(quat_k(), P)
 
 
 def test_half_basis_not_in_order():
-    """j/2 is not in O_0 (it would require c = 1/2 with a - c integer, but a = 0)."""
+    """j/2 is not in O_0 (it would require c = 1/2 with b - c integer, but b = 0)."""
     half_j = quat(0, 0, Fraction(1, 2), 0)
     assert not in_standard_order(half_j, P)
     half_i = quat(0, Fraction(1, 2), 0, 0)
@@ -124,8 +124,10 @@ def test_order_basis_equals_membership_test():
         quat(0, 1, 0, 0),
         quat(0, 0, 1, 0),
         quat(0, 0, 0, 1),
-        quat(Fraction(1, 2), 0, Fraction(1, 2), 0),
-        quat(0, Fraction(1, 2), 0, Fraction(1, 2)),
+        quat(0, Fraction(1, 2), Fraction(1, 2), 0),  # (i+j)/2, in O_0
+        quat(Fraction(1, 2), 0, 0, Fraction(1, 2)),  # (1+k)/2, in O_0
+        quat(Fraction(1, 2), 0, Fraction(1, 2), 0),  # (1+j)/2, not in O_0
+        quat(0, Fraction(1, 2), 0, Fraction(1, 2)),  # (i+k)/2, not in O_0
         quat(Fraction(1, 2), 0, 0, 0),  # not in O_0
         quat(0, 0, Fraction(1, 2), 0),  # not in O_0
     ]

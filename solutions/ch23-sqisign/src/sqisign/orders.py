@@ -1,13 +1,18 @@
 """Maximal orders and left ideals in B_{p,inf}.
 
 For p prime with p = 3 mod 4, the standard maximal order in
-B_{p,inf} = (-1, -p / Q) is:
+B_{p,inf} = (-1, -p / Q) is the one the SQIsign specification uses:
 
-    O_0 = Z + Z*i + Z*(1+j)/2 + Z*(i+k)/2
+    O_0 = Z + Z*i + Z*(i+j)/2 + Z*(1+k)/2
 
-This is sometimes called the "level 1" maximal order.  It contains
-the suborder Z<1, i, j, k> with index 4 and has reduced discriminant p
-(matching the discriminant of B_{p,inf}).
+It contains the suborder Z<1, i, j, k> with index 4 and has reduced
+discriminant p (matching the discriminant of B_{p,inf}).  Under
+iota -> i, pi -> j for E_0: y^2 = x^3 + x it is End(E_0): the two
+half-integer generators are (iota + pi)/2 and (1 + iota*pi)/2, which
+are endomorphisms because iota + pi and 1 + iota*pi kill E_0[2].  The
+conjugate order Z<1, i, (1+j)/2, (i+k)/2> is also maximal, but (1+pi)/2
+is not an endomorphism of this curve model: (1+pi) sends (i, 0) to
+(0, 0).
 
 A left O_0-ideal is a Z-lattice of rank 4 in B_{p,inf} that is closed
 under left multiplication by O_0.  We represent ideals by an explicit
@@ -38,29 +43,29 @@ from sqisign.quaternion import (
 def standard_basis(p: int) -> list[Quat]:
     """Return the Z-basis of the standard maximal order O_0 for p = 3 mod 4.
 
-    O_0 = Z + Z*i + Z*(1+j)/2 + Z*(i+k)/2
+    O_0 = Z + Z*i + Z*(i+j)/2 + Z*(1+k)/2
     """
     if p % 4 != 3:
         raise ValueError(f"standard maximal order requires p = 3 mod 4, got p = {p}")
     e0 = quat_one()
     e1 = quat_i()
-    e2 = quat(Fraction(1, 2), 0, Fraction(1, 2), 0)        # (1 + j) / 2
-    e3 = quat(0, Fraction(1, 2), 0, Fraction(1, 2))        # (i + k) / 2
+    e2 = quat(0, Fraction(1, 2), Fraction(1, 2), 0)        # (i + j) / 2
+    e3 = quat(Fraction(1, 2), 0, 0, Fraction(1, 2))        # (1 + k) / 2
     return [e0, e1, e2, e3]
 
 
 def in_standard_order(x: Quat, p: int) -> bool:
     """Test whether x = a + bi + cj + dk lies in O_0.
 
-    x is in O_0 = Z + Zi + Z(1+j)/2 + Z(i+k)/2 iff the coordinates
+    x is in O_0 = Z + Zi + Z(i+j)/2 + Z(1+k)/2 iff the coordinates
     (u_0, u_1, u_2, u_3) in the O_0 basis are all integers, where:
-        u_0 = a - c,  u_1 = b - d,  u_2 = 2c,  u_3 = 2d.
+        u_0 = a - d,  u_1 = b - c,  u_2 = 2c,  u_3 = 2d.
     """
     if p % 4 != 3:
         raise ValueError(f"requires p = 3 mod 4, got p = {p}")
     a, b, c, d = x
-    u0 = a - c
-    u1 = b - d
+    u0 = a - d
+    u1 = b - c
     u2 = 2 * c
     u3 = 2 * d
     return all(u.denominator == 1 for u in (u0, u1, u2, u3))
@@ -74,8 +79,8 @@ def order_coords(x: Quat, p: int) -> tuple[int, int, int, int]:
     if not in_standard_order(x, p):
         raise ValueError(f"element {x} is not in the standard maximal order")
     a, b, c, d = x
-    u0 = a - c
-    u1 = b - d
+    u0 = a - d
+    u1 = b - c
     u2 = 2 * c
     u3 = 2 * d
     return (int(u0), int(u1), int(u2), int(u3))
@@ -96,7 +101,7 @@ def ideal_norm_principal(generator: Quat, p: int) -> Fraction:
     """For a principal left ideal I = O_0 * alpha, nrd(I) = nrd(alpha).
 
     The reduced norm of a principal ideal equals the reduced norm of
-    any of its generators (Voight 2021, Lemma 16.4.7).
+    any of its generators (Voight 2021, paragraph 16.3.5).
     """
     return quat_norm(generator, p)
 
