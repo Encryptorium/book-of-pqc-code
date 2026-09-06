@@ -148,15 +148,19 @@ def test_counter_persists_across_reads(tmp_path, xmss_keys) -> None:
 # Each worker thread records any exception it did not expect, and the
 # main thread re-raises the first one, so a crash inside a thread (the
 # stub tree's NotImplementedError included) fails the test by its own
-# type rather than by a downstream assertion.
+# type rather than by a downstream assertion. Both concurrency tests are
+# skipped under Pyodide (the lab's runtime, sys.platform == "emscripten"),
+# which cannot start a thread; the lab's runner gate caught the failure.
 
 import fcntl
+import sys
 import threading
 from unittest.mock import patch
 
 from pki_migration import xmss_index as m
 
 
+@pytest.mark.skipif(sys.platform == "emscripten", reason="Pyodide cannot start a thread")
 def test_initialize_holds_the_reservation_lock(tmp_path) -> None:
     """A holder of the sibling LOCK_EX blocks initialize_counter until release."""
     counter = tmp_path / "counter.json"
@@ -184,6 +188,7 @@ def test_initialize_holds_the_reservation_lock(tmp_path) -> None:
     assert m.read_counter(counter) == {"next_leaf": 0, "max_leaf": 4}
 
 
+@pytest.mark.skipif(sys.platform == "emscripten", reason="Pyodide cannot start a thread")
 def test_late_initializer_cannot_rewind_a_reserved_counter(tmp_path) -> None:
     """Round-10 P1-02: init A passes its check, init B creates, a signer reserves 0,
     A resumes. Exactly one initializer writes; the other refuses; no leaf is reused."""
