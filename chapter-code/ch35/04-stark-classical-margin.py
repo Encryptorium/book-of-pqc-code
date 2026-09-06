@@ -10,7 +10,8 @@
 # reference-like parameter point (not a verified deployed Starknet
 # parameter table), via the Ch 34 Section 5.5 composed-soundness
 # formula at the Johnson-bound proximity radius (same regime note as
-# Block 3). The DFMS20 parameter-bump check compares
+# Block 3: the model's output at that radius, not a proven floor).
+# The DFMS20 parameter-bump check compares
 # the F_{p^4} challenge-field width (~244 bits, recommended in
 # ethSTARK Documentation v1.2 Section 5.10.2 for provable 128-bit
 # IOP knowledge soundness) against the required challenge width at
@@ -45,10 +46,13 @@ def stark_classical_margin(field_bits: int, L: int, N: int, mu: int,
     return round(-math.log2(composed_prob), 1)
 
 
-def dfms20_required_cbits(k_target: int, q_bits: int, r_FS: int) -> int:
+def dfms20_exact_cbits(k_target: int, q_bits: int, r_FS: int) -> int:
     if k_target <= 0 or r_FS <= 0 or q_bits < 0:
         raise ValueError("k_target, r_FS must be positive; q_bits non-negative")
-    return 2 * q_bits + math.ceil(k_target / r_FS)
+    # Ch 33's exact form; a value that lands on an integer rounds up.
+    exact = 2.0 * math.log2(2 * (2 ** q_bits) + 1) + k_target / r_FS
+    width = math.ceil(exact)
+    return width + 1 if width == exact else width
 
 
 # Illustrative ethSTARK-style reference point at blowup 16, mu = 48,
@@ -63,8 +67,8 @@ def dfms20_required_cbits(k_target: int, q_bits: int, r_FS: int) -> int:
 k_classical_ethstark = stark_classical_margin(field_bits=244, L=2 ** 20,
                                               N=2 ** 24, mu=48, r_FRI=20,
                                               grinding=20)
-c_bits_required_k128 = dfms20_required_cbits(k_target=128, q_bits=80,
-                                             r_FS=6)
+c_bits_required_k128 = dfms20_exact_cbits(k_target=128, q_bits=80,
+                                          r_FS=6)
 c_bits_deployed = 244
 print(k_classical_ethstark, c_bits_required_k128, c_bits_deployed)
-# ==> 116.0 182 244
+# ==> 116.0 184 244

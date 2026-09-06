@@ -1,9 +1,11 @@
 """Bit-margin arithmetic for the Chapter 35 case studies.
 
-The chapter prints four of these routines as listings. Two more are here
-because the chapter states them in prose but never prints them: the three
-decoding radii as one function, and the composed FRI budget with its three
-terms exposed rather than summed away.
+The chapter prints five of these routines as listings. Three more are here
+because the chapter states them in prose but never prints them, or printed
+them once and no longer does: the three decoding radii as one function, the
+composed FRI budget with its three terms exposed rather than summed away, and
+the approximate DFMS20 width earlier editions printed, kept so the gap to the
+exact form stays measurable.
 """
 
 import math
@@ -23,8 +25,9 @@ __all__ = [
 ]
 
 # The three proximity radii Ch 34 Section 5.1 names, in increasing order.
-# Only "johnson" carries a proven proximity gap (BCIKS Theorem 1.2); the
-# capacity radius rests on conjectures Crites and Stewart disproved in 2025.
+# BCIKS Theorem 1.2 proves the proximity gap strictly below "johnson", and the
+# chapter's model evaluates at it; the capacity radius rests on conjectures
+# Crites and Stewart disproved in 2025.
 REGIMES = ("unique", "johnson", "capacity")
 
 
@@ -95,9 +98,10 @@ def decoding_radius(rho: float, regime: str) -> float:
     # regimes, and the chapter's aside names all three: 'unique' is the
     # unique-decoding radius (1 - rho) / 2, below which every received word
     # decodes to at most one codeword; 'johnson' is the Johnson /
-    # Guruswami-Sudan list-decoding radius 1 - sqrt(rho), which is where
-    # BCIKS Theorem 1.2 proves the proximity gap; 'capacity' is 1 - rho,
-    # which production pipelines parameterised toward on the strength of
+    # Guruswami-Sudan list-decoding radius 1 - sqrt(rho), strictly below
+    # which BCIKS Theorem 1.2 proves the proximity gap, and at which the
+    # chapter's model reads its terms; 'capacity' is 1 - rho, which
+    # production pipelines parameterised toward on the strength of
     # conjectures Crites and Stewart disproved in 2025. Reject a rate
     # outside the open interval (0, 1) and a regime name not in REGIMES. The
     # three values are strictly ordered at every rate, and a test holds them
@@ -130,7 +134,9 @@ def composed_margin(field_bits: int, L: int, N: int, mu: int, r_FRI: int,
     # L agree at no more than L - 1 of the N LDE points. All three are
     # base-2 logarithms of probabilities, so raise 2 to each, add, take the
     # negative log2 of the sum, add the grinding bits, and round to one
-    # decimal. Validate before computing: every count positive, grinding
+    # decimal. This is the chapter's three-term model, not BCIKS Theorem
+    # 1.2's error term, which is undefined at zero slack from the Johnson
+    # radius. Validate before computing: every count positive, grinding
     # non-negative, and L strictly less than N. The consistency term is
     # numerically inert at every parameter point the chapter prints, so a
     # test reads it directly rather than through the total.
@@ -150,7 +156,10 @@ def stark_classical_margin(field_bits: int, L: int, N: int, mu: int,
 
 
 def dfms20_required_cbits(k_target: int, q_bits: int, r_FS: int) -> int:
-    """Approximate DFMS20 per-round challenge width, ``2 q + ceil(k / r)``."""
+    """Approximate DFMS20 per-round challenge width, ``2 q + ceil(k / r)``.
+
+    The form earlier editions printed; the chapter now prints the exact one.
+    """
     if k_target <= 0 or r_FS <= 0 or q_bits < 0:
         raise ValueError("k_target, r_FS must be positive; q_bits non-negative")
     return 2 * q_bits + math.ceil(k_target / r_FS)
@@ -159,28 +168,17 @@ def dfms20_required_cbits(k_target: int, q_bits: int, r_FS: int) -> int:
 def dfms20_exact_cbits(k_target: int, q_bits: int, r_FS: int) -> int:
     """Exact DFMS20 per-round width, ``2 log2(2q + 1) + k / r``.
 
-    The approximation drops the ``log2(2q + 1)`` correction, which is a
-    shade over ``q_bits + 1``. The strict inequality is what forces the
-    round up, so an exact bound landing on an integer still needs the next
-    width above it.
+    The approximation drops the ``log2(2q + 1)`` correction. That log is
+    strictly greater than ``q_bits + 1`` by a vanishing amount (Ch 33), so a
+    bound whose float value lands on an integer sits just above it and still
+    needs the next width up; at these ``q_bits`` the excess is below float
+    resolution, so the integer case is tested outright.
     """
-    # EXERCISE: implement this function.
-    #
-    # The exact DFMS20 per-round challenge width, c_bits >= 2 log2(2q + 1) +
-    # k / r, where the printed dfms20_required_cbits computes the
-    # approximation 2 q_bits + ceil(k / r). Take q as 2 raised to q_bits.
-    # Because the bound is a strict inequality, an exact value that lands on
-    # an integer needs the next width above it, not that integer: compute
-    # the ceiling and add one when the ceiling equals the exact value. The
-    # gap over the approximation is a little over two bits, which is the
-    # correction the chapter's Block 3 comment says the approximation drops.
-    # Same validation contract as the approximate form.
-    #
-    # Reference: Chapter 35, 'The (L2 x L4) grid and bit-margin arithmetic' (Block 3)
-    #
-    # Proved by:
-    #   tests/ch35/test_margins.py
-    raise NotImplementedError("exercise: dfms20_exact_cbits")
+    if k_target <= 0 or r_FS <= 0 or q_bits < 0:
+        raise ValueError("k_target, r_FS must be positive; q_bits non-negative")
+    exact = 2.0 * math.log2(2 * (2 ** q_bits) + 1) + k_target / r_FS
+    width = math.ceil(exact)
+    return width + 1 if width == exact else width
 
 
 def query_miss_bits(n_queries: int, pow_bits: int, log_blowup: int,

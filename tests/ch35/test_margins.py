@@ -31,7 +31,8 @@ def test_pairing_margin_rejects_non_positive_width():
 
 def test_the_three_radii_are_ordered_and_distinct():
     # Ch 34 Section 5.1: unique-decoding < Johnson < capacity, strictly, at
-    # every rate. Only the Johnson value carries a proven proximity gap.
+    # every rate. BCIKS Theorem 1.2 proves the gap strictly below the Johnson
+    # value; the capacity value rests on conjectures disproved in 2025.
     for rho in (1 / 2, 1 / 4, 1 / 8, 1 / 16):
         unique = decoding_radius(rho, "unique")
         johnson = decoding_radius(rho, "johnson")
@@ -130,14 +131,39 @@ def test_composed_margin_rejects_negative_grinding():
                         r_FRI=16, grinding=-1)
 
 
-def test_dfms20_approximation_matches_the_printed_requirement():
+def test_dfms20_exact_form_matches_the_printed_requirements():
+    # Blocks 3 and 4 print 184 at (k = 128, r_FS = 6); D35 Exercise 3 prints
+    # 176 at k = 80; D34 Exercises 2 and 4 print 179 at r_FS = 8 and 169 at
+    # r_FS = 20.
+    assert dfms20_exact_cbits(k_target=128, q_bits=80, r_FS=6) == 184
+    assert dfms20_exact_cbits(k_target=80, q_bits=80, r_FS=6) == 176
+    assert dfms20_exact_cbits(k_target=128, q_bits=80, r_FS=8) == 179
+    assert dfms20_exact_cbits(k_target=128, q_bits=80, r_FS=20) == 169
+
+
+def test_the_exact_width_is_the_least_that_satisfies_the_bound_in_integers():
+    # (2q + 1)^{2r} / 2^{c r} <= 2^{-k}  <=>  2^{c r} >= (2q + 1)^{2r} 2^k,
+    # checked in exact integer arithmetic so no float rounding can hide a
+    # boundary. At r_FS = 8 the real bound sits a hair above 178.0, which is
+    # the case the round-up-on-an-integer rule exists for.
+    q = 2 ** 80
+    for k, r in ((128, 6), (128, 8), (128, 20), (80, 6)):
+        width = dfms20_exact_cbits(k_target=k, q_bits=80, r_FS=r)
+        need = (2 * q + 1) ** (2 * r) * 2 ** k
+        assert 2 ** (width * r) >= need
+        assert 2 ** ((width - 1) * r) < need
+
+
+def test_dfms20_approximation_is_the_retired_form():
+    # The approximation is no longer printed. It stays so the gap test can
+    # measure what the chapter's earlier editions under-provisioned by.
     assert dfms20_required_cbits(k_target=128, q_bits=80, r_FS=6) == 182
     assert dfms20_required_cbits(k_target=80, q_bits=80, r_FS=6) == 174
 
 
 def test_the_exact_dfms20_form_exceeds_the_approximation_by_about_two_bits():
-    # The chapter's Block 3 comment claims the approximation drops the
-    # log2(2q + 1) correction and under-estimates by roughly two bits.
+    # The chapter's Block 3 comment says the approximation drops the
+    # log2(2q + 1) correction and lands about two bits short.
     for k, q, r in ((128, 80, 6), (128, 64, 4), (80, 80, 6)):
         gap = dfms20_exact_cbits(k, q, r) - dfms20_required_cbits(k, q, r)
         assert 1 <= gap <= 3

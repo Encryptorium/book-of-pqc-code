@@ -1,9 +1,11 @@
 """Bit-margin arithmetic for the Chapter 35 case studies.
 
-The chapter prints four of these routines as listings. Two more are here
-because the chapter states them in prose but never prints them: the three
-decoding radii as one function, and the composed FRI budget with its three
-terms exposed rather than summed away.
+The chapter prints five of these routines as listings. Three more are here
+because the chapter states them in prose but never prints them, or printed
+them once and no longer does: the three decoding radii as one function, the
+composed FRI budget with its three terms exposed rather than summed away, and
+the approximate DFMS20 width earlier editions printed, kept so the gap to the
+exact form stays measurable.
 """
 
 import math
@@ -23,8 +25,9 @@ __all__ = [
 ]
 
 # The three proximity radii Ch 34 Section 5.1 names, in increasing order.
-# Only "johnson" carries a proven proximity gap (BCIKS Theorem 1.2); the
-# capacity radius rests on conjectures Crites and Stewart disproved in 2025.
+# BCIKS Theorem 1.2 proves the proximity gap strictly below "johnson", and the
+# chapter's model evaluates at it; the capacity radius rests on conjectures
+# Crites and Stewart disproved in 2025.
 REGIMES = ("unique", "johnson", "capacity")
 
 
@@ -127,7 +130,10 @@ def stark_classical_margin(field_bits: int, L: int, N: int, mu: int,
 
 
 def dfms20_required_cbits(k_target: int, q_bits: int, r_FS: int) -> int:
-    """Approximate DFMS20 per-round challenge width, ``2 q + ceil(k / r)``."""
+    """Approximate DFMS20 per-round challenge width, ``2 q + ceil(k / r)``.
+
+    The form earlier editions printed; the chapter now prints the exact one.
+    """
     if k_target <= 0 or r_FS <= 0 or q_bits < 0:
         raise ValueError("k_target, r_FS must be positive; q_bits non-negative")
     return 2 * q_bits + math.ceil(k_target / r_FS)
@@ -136,10 +142,11 @@ def dfms20_required_cbits(k_target: int, q_bits: int, r_FS: int) -> int:
 def dfms20_exact_cbits(k_target: int, q_bits: int, r_FS: int) -> int:
     """Exact DFMS20 per-round width, ``2 log2(2q + 1) + k / r``.
 
-    The approximation drops the ``log2(2q + 1)`` correction, which is a
-    shade over ``q_bits + 1``. The strict inequality is what forces the
-    round up, so an exact bound landing on an integer still needs the next
-    width above it.
+    The approximation drops the ``log2(2q + 1)`` correction. That log is
+    strictly greater than ``q_bits + 1`` by a vanishing amount (Ch 33), so a
+    bound whose float value lands on an integer sits just above it and still
+    needs the next width up; at these ``q_bits`` the excess is below float
+    resolution, so the integer case is tested outright.
     """
     if k_target <= 0 or r_FS <= 0 or q_bits < 0:
         raise ValueError("k_target, r_FS must be positive; q_bits non-negative")

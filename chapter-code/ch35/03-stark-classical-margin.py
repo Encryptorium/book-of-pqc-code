@@ -9,19 +9,22 @@
 # Block 3: Boojum inner FRI-STARK classical-ROM margin via the Ch 34
 # Section 5.5 composed-soundness formula. The proximity threshold
 # delta_0 = 1 - sqrt(rho) is the Johnson / Guruswami-Sudan
-# list-decoding radius, which is exactly where BCIKS Theorem 1.2
-# proves the proximity gap; Ch 34 Section 5.1 sets out the three
-# radii and works at this one throughout for that reason. A pipeline
-# that sets delta_0 above it is in the conjectured regime, which is
-# the discount Ch 34's closing aside records as having fallen in late
-# 2025. The DFMS20 parameter-bump check from Ch 33's multi-round
-# subsection then asks whether the deployed challenge-space width
-# absorbs the QROM loss at a target PQ margin. Exact Boojum
+# list-decoding radius. BCIKS Theorem 1.2 proves the proximity gap
+# strictly below it, and the linear bad-beta term below is the Ch 34
+# Section 5.5 model's rather than the theorem's error term, so the
+# figure printed is the model's output at that radius and not a
+# proven floor; Ch 34 Section 5.1 sets out the three radii. A
+# pipeline that sets delta_0 above it is in the conjectured regime,
+# which is the discount Ch 34's closing aside records as having
+# fallen in late 2025. The DFMS20 parameter-bump check from Ch 33's
+# multi-round subsection then asks whether the deployed
+# challenge-space width absorbs the QROM loss at a target PQ
+# margin. Exact Boojum
 # parameters are not published at the granularity below; values are
 # illustrative of a Goldilocks extension-field configuration.
 # Source: Ch 34 Sections 5.1 and 5.5; Ch 33 'Multi-round
 # Fiat-Shamir'; Ben-Sasson, Carmon, Ishai, Kopparty, Saraf (2020,
-# proximity gap at the Johnson bound); ZKsync (2023); Block et al.
+# proximity gap below the Johnson bound); ZKsync (2023); Block et al.
 # (2023, classical NI/ROM bound; the same paper's QROM
 # bound is one factor of q heavier).
 import math
@@ -36,8 +39,8 @@ def stark_classical_margin(field_bits: int, L: int, N: int, mu: int,
     if L >= N:
         raise ValueError("L must be less than N")
     rho = L / N
-    # Johnson / Guruswami-Sudan radius, where BCIKS Theorem 1.2
-    # proves the proximity gap.
+    # Johnson / Guruswami-Sudan radius. BCIKS Theorem 1.2 proves the
+    # gap strictly below it; the model reads its terms here.
     delta_0 = 1.0 - math.sqrt(rho)
     log_bad_beta = math.log2(r_FRI * (N + 1)) - field_bits
     log_per_round = mu * math.log2(1.0 - delta_0)
@@ -50,21 +53,26 @@ def stark_classical_margin(field_bits: int, L: int, N: int, mu: int,
     return round(-math.log2(composed_prob), 1)
 
 
-def dfms20_required_cbits(k_target: int, q_bits: int, r_FS: int) -> int:
+def dfms20_exact_cbits(k_target: int, q_bits: int, r_FS: int) -> int:
     if k_target <= 0 or r_FS <= 0 or q_bits < 0:
         raise ValueError("k_target, r_FS must be positive; q_bits non-negative")
-    # The exact form is c_bits >= 2 log2(2 q + 1) + k / r_FS per
-    # Ch 33's quantum-oracle-cost section; the approximation
-    # c_bits >= 2 q_bits + k / r_FS drops
-    # the log2(2 q + 1) approximate q_bits + 1 correction and under-
-    # estimates by roughly 2 bits per round.
-    return 2 * q_bits + math.ceil(k_target / r_FS)
+    # Exact DFMS20 per-round width from Ch 33's quantum-oracle-cost
+    # section: c_bits >= 2 log2(2 q + 1) + k / r_FS. That log is
+    # strictly greater than q_bits + 1 by a vanishing amount, so a
+    # bound whose float value lands on an integer sits just above it
+    # and still needs the next width up; at these q_bits the excess is
+    # below float resolution, so the integer case is tested outright.
+    # The approximation 2 q_bits + ceil(k / r_FS) drops the
+    # log2(2 q + 1) correction and lands about 2 bits short.
+    exact = 2.0 * math.log2(2 * (2 ** q_bits) + 1) + k_target / r_FS
+    width = math.ceil(exact)
+    return width + 1 if width == exact else width
 
 
 # Illustrative Boojum inner.
 k_classical_boojum = stark_classical_margin(field_bits=128, L=2 ** 16,
                                             N=2 ** 20, mu=40, r_FRI=16,
                                             grinding=20)
-c_bits_required = dfms20_required_cbits(k_target=128, q_bits=80, r_FS=6)
+c_bits_required = dfms20_exact_cbits(k_target=128, q_bits=80, r_FS=6)
 print(k_classical_boojum, c_bits_required)
-# ==> 99.9 182
+# ==> 99.9 184

@@ -29,16 +29,16 @@ tree in `exercises/ch35-case-studies`.
 ## What the chapter prints and what it does not
 
 Six routines here appear as listings in the chapter: `bit_margin_pairing`,
-`shor_pairing_margin`, `stark_classical_margin`, `dfms20_required_cbits`,
+`shor_pairing_margin`, `stark_classical_margin`, `dfms20_exact_cbits`,
 `query_miss_bits`, and `classify`, together with the `L2_COLORS` and
 `L4_COLORS` tables.
 
-Four more exist because the chapter states them in prose and never prints them.
+Four more exist because the chapter states them in prose and never prints them, or printed them once and no longer does.
 `decoding_radius` is the three radii of Ch 34 Section 5.1 as one function.
 `composed_margin` is the budget with its three terms kept apart rather than
 summed away, which is what the prose needs when it asks which term dominates.
-`dfms20_exact_cbits` is the exact challenge-width bound the Block 3 comment
-describes but does not compute. `posture` is the per-system lookup that the
+`dfms20_required_cbits` is the approximate challenge width earlier editions
+printed, kept so the gap to the exact form stays measurable. `posture` is the per-system lookup that the
 five-step case-study procedure produces.
 
 ## Scope boundary
@@ -64,8 +64,10 @@ exception: `STWO_DEFAULTS` carries the triple published in the
 that is quoted rather than modelled.
 
 **Margins are quoted at the Johnson radius by default.** `composed_margin` takes
-a `regime` argument and defaults to `"johnson"`, because that is the radius at
-which BCIKS Theorem 1.2 proves the proximity gap. The `"capacity"` regime is
+a `regime` argument and defaults to `"johnson"`, because that is the largest radius
+BCIKS Theorem 1.2 reaches. The theorem proves the gap strictly below it, so the
+default figure is the chapter's three-term model read at the radius, not the
+theorem's error term. The `"capacity"` regime is
 available because deployed pipelines use it, not because it is sound: the
 conjectures supporting it were disproved in late 2025. Asking this package for a
 capacity-regime number is asking what a deployment claimed, not what is proven.
