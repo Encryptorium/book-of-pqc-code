@@ -306,3 +306,78 @@ def test_fri_verify_structural_checks():
             num_queries=4,
             grinding_bits=0,
         )
+
+
+def _monomial_codeword(degree: int):
+    prime = DEFAULT_PRIME
+    coeffs = [0] * degree + [1]
+    return extend_polynomial(coeffs, lde_domain(), prime), lde_domain()
+
+
+def _fri_accepts(codeword, dom, **kwargs) -> bool:
+    prime = DEFAULT_PRIME
+    proof = fri_prove(
+        initial_codeword=codeword,
+        initial_domain=dom,
+        prime=prime,
+        transcript=Transcript(b"fri-degree"),
+        num_queries=32,
+        grinding_bits=0,
+        **kwargs,
+    )
+    return fri_verify(
+        proof=proof,
+        initial_domain=dom,
+        prime=prime,
+        transcript=Transcript(b"fri-degree"),
+        num_queries=32,
+        grinding_bits=0,
+        **kwargs,
+    )
+
+
+def test_fri_round_count_enforces_the_trace_length_degree_bound():
+    # Track 2 round 10, R10-P1-03. Each fold halves the degree bound, so
+    # r folds followed by a constancy check accept exactly degree < 2^r.
+    # The STARK claims degree < TRACE_LENGTH = 8 on the 32-point LDE, so
+    # the round count must be log_2(8) = 3: x^7 is the highest honest
+    # degree and must pass, x^8 is the first dishonest one and must fail.
+    # A fourth fold also flattens x^8 (degree < 16 becomes constant), so
+    # the old default of log_2(N) - 1 = 4 accepted a rate-1/2 code where
+    # the chapter claims rate 1/4. All 32 positions are queried, so this
+    # is a statement about the fold, not about query luck.
+    x7, dom = _monomial_codeword(7)
+    x8, _ = _monomial_codeword(8)
+
+    assert _fri_accepts(x7, dom, num_rounds=3)
+    assert not _fri_accepts(x8, dom, num_rounds=3)
+    # One fold too many erases the distinction: this is the defect.
+    assert _fri_accepts(x8, dom, num_rounds=4)
+
+    # The defaults must behave as three rounds, not four.
+    assert _fri_accepts(x7, dom)
+    assert not _fri_accepts(x8, dom)
+    assert _fri_accepts(x7, dom, degree_bound=TRACE_LENGTH)
+    assert not _fri_accepts(x8, dom, degree_bound=TRACE_LENGTH)
+
+
+def test_fri_degree_bound_validation():
+    codeword, dom = _honest_codeword()
+    for bad in (0, 1, 3, 32, 64):
+        with pytest.raises(ValueError):
+            _fri_accepts(codeword, dom, degree_bound=bad)
+    # num_rounds and degree_bound are two ways of saying one thing.
+    with pytest.raises(ValueError):
+        _fri_accepts(codeword, dom, degree_bound=8, num_rounds=3)
+
+
+def test_fri_default_degree_bound_on_four_point_domain():
+    # The smallest domain the package accepts is four points, where the
+    # rate-1/4 default would be a degree bound of 1 and zero folds; the
+    # default floors at 2, one fold, so a default call still proves.
+    prime = DEFAULT_PRIME
+    dom = [1, 22, 96, 75]  # order-4 subgroup of F_97: 22^2 = -1, dom[i + 2] = -dom[i]
+    line = [(7 + 3 * x) % prime for x in dom]
+    assert _fri_accepts(line, dom)
+    quadratic = [(x * x) % prime for x in dom]
+    assert not _fri_accepts(quadratic, dom)

@@ -10,9 +10,15 @@ polynomial commitment, demonstrating three things:
    roughly half the domain size via f'(y) = (f(x) + f(-x))/2 +
    beta * (f(x) - f(-x))/(2x), where y = x^2 and beta is a verifier-
    supplied challenge.
-2. The consistency check: after log_2(|L|) folds, the prover commits
-   to a constant; the verifier queries consistency at random points
-   along the folding chain.
+2. The consistency check: after log_2(d) folds of a codeword of degree
+   below d, the folded vector on |L| / d points is constant; the
+   verifier checks that constancy and queries consistency at random
+   points along the folding chain. This toy folds the full log_2(|L|)
+   rounds down to a single point so the whole chain can be inspected,
+   which is past where the protocol would stop: one fold more than
+   log_2(d) flattens degree below 2d as well, so the round count is a
+   protocol parameter. Chapter 34's package derives it from the degree
+   bound.
 3. The proximity-gap structure: a function far from low-degree passes
    the consistency check with negligible probability, bounded by the
    Ben-Sasson-Bentov-Horesh-Riabzev proximity argument
@@ -151,12 +157,16 @@ def fold_to_constant(
 ) -> list[FRIFoldRound]:
     """Fold an initial evaluation vector down to a constant.
 
-    Applies ``len(betas)`` folding rounds in sequence. The final round
-    must have a domain of size 2 and an evaluations list of length 2;
-    if the initial codeword is a polynomial of degree strictly less
-    than ``2^(log2(N) - len(betas))``, the final folded values are
-    constant across the final domain. Returns the list of intermediate
-    rounds including the initial state.
+    Applies ``len(betas)`` folding rounds in sequence and requires
+    exactly ``log2(N)`` of them, so the final round has a domain of
+    size 1. This is a chain for inspection, not the protocol's stopping
+    rule: a codeword of degree strictly less than ``2^r`` is constant on
+    every domain from round ``r`` onward, and FRI proper stops at round
+    ``r = log2(d)`` for its degree bound ``d`` and checks constancy on
+    ``N / d`` points, because folding further flattens higher degrees
+    too. Chapter 34's ``fri_full`` derives its round count that way.
+    Returns the list of intermediate rounds including the initial
+    state.
     """
     n = len(initial_domain)
     if n != len(initial_evals):

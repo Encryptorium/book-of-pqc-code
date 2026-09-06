@@ -13,9 +13,10 @@ every forging attempt.
 Symbols (reserved per Chapter 34's symbol table):
 
 - ``N`` is the LDE domain size (``len(initial_domain)``).
-- ``r_FRI`` is the number of folding rounds, equal to ``log_2(N) - 1``
-  in the toy (the chapter stops one fold short of a single-point
-  codeword, matching Chapter 32's Block 4 convention).
+- ``r_FRI`` is the number of folding rounds, ``log_2(L)`` for a
+  codeword claimed to have degree below the trace length ``L`` (3 for
+  the toy: 32 points fold to 4, on which the honest codeword is
+  constant). One fold more would accept degree below ``2L``.
 - ``mu`` is the number of queries per round (``num_queries``).
 - ``g`` is the grinding-bit count.
 
@@ -198,6 +199,25 @@ def _find_grinding_nonce(state: bytes, grinding_bits: int) -> int:
     return nonce
 
 
+def _rounds_for_degree_bound(n: int, degree_bound: int | None) -> int:
+    """Number of folds that turn "degree < degree_bound" into "constant".
+
+    Each fold halves the degree bound, so log_2(degree_bound) folds reduce
+    a polynomial of degree less than degree_bound to a constant on the final
+    domain of n / degree_bound points. One fold more would also fold any
+    polynomial of degree less than 2 * degree_bound to a constant, so the
+    constancy check at the end would accept twice the intended degree.
+    degree_bound must be a power of two in [2, n / 2]; None means n / 4,
+    the STARK's rate-1/4 default, floored at 2 so that a four-point
+    domain, the smallest the package accepts, still gets its one fold.
+    """
+    if degree_bound is None:
+        degree_bound = max(2, n // 4)
+    if degree_bound < 2 or degree_bound & (degree_bound - 1) or degree_bound > n // 2:
+        raise ValueError("degree_bound must be a power of two in [2, n / 2]")
+    return degree_bound.bit_length() - 1
+
+
 def fri_prove(
     initial_codeword: list[int],
     initial_domain: list[int],
@@ -206,11 +226,14 @@ def fri_prove(
     num_queries: int,
     grinding_bits: int,
     num_rounds: int | None = None,
+    degree_bound: int | None = None,
 ) -> FRIProof:
     """Produce a FRI proof for ``initial_codeword`` over ``initial_domain``.
 
-    Folds the codeword ``num_rounds`` times (or ``log_2(len(initial_domain))
-    - 1`` if None), committing to each intermediate codeword. For each
+    Folds the codeword ``log_2(degree_bound)`` times, committing to each
+    intermediate codeword; ``degree_bound`` defaults to a quarter of the
+    domain size, the STARK's rate. ``num_rounds`` sets the fold count
+    directly instead and cannot be combined with ``degree_bound``. For each
     fold round ``j`` and each of the ``num_queries`` queried positions,
     records the query's leaf and sibling values plus the Merkle path.
     Appends a grinding nonce on the final transcript state.
@@ -228,9 +251,11 @@ def fri_prove(
     if grinding_bits < 0:
         raise ValueError("grinding_bits must be non-negative")
 
-    max_rounds = n.bit_length() - 2  # log_2(n) - 1, matching Ch 32 convention
+    max_rounds = n.bit_length() - 2  # log_2(n) - 1: the final domain has 2 points
     if num_rounds is None:
-        num_rounds = max_rounds
+        num_rounds = _rounds_for_degree_bound(n, degree_bound)
+    elif degree_bound is not None:
+        raise ValueError("give num_rounds or degree_bound, not both")
     if num_rounds < 1 or num_rounds > max_rounds:
         raise ValueError(
             f"num_rounds must be in [1, {max_rounds}] for domain size {n}"
@@ -308,11 +333,14 @@ def fri_verify(
     num_queries: int,
     grinding_bits: int,
     num_rounds: int | None = None,
+    degree_bound: int | None = None,
 ) -> bool:
     """Verify a FRI proof produced by ``fri_prove``.
 
     Replays every transcript interaction, rederiving every beta
-    challenge and every query position. Checks each round's Merkle path
+    challenge and every query position. ``degree_bound`` and
+    ``num_rounds`` mean what they mean in ``fri_prove`` and must match
+    the prover's. Checks each round's Merkle path
     and each round-to-round fold consistency. Verifies the grinding
     nonce. Returns True on accept, False on any check failure.
     Raises ValueError for structurally malformed proofs.
@@ -327,7 +355,9 @@ def fri_verify(
 
     max_rounds = n.bit_length() - 2
     if num_rounds is None:
-        num_rounds = max_rounds
+        num_rounds = _rounds_for_degree_bound(n, degree_bound)
+    elif degree_bound is not None:
+        raise ValueError("give num_rounds or degree_bound, not both")
     if num_rounds < 1 or num_rounds > max_rounds:
         raise ValueError(
             f"num_rounds must be in [1, {max_rounds}] for domain size {n}"
@@ -429,11 +459,14 @@ def fri_verify(
         return False
 
     # Final codeword must be constant: after num_rounds of folding a
-    # codeword close to a polynomial of degree less than the rate-
-    # implied bound, the polynomial degree halves each round. For the
-    # Chapter 34 toy (trace length 8, LDE size 32, num_rounds 4), the
-    # final polynomial has degree less than one, so every value in the
-    # final codeword equals the same constant. A random codeword that
+    # codeword close to a polynomial of degree less than degree_bound,
+    # the polynomial degree bound halves each round. For the Chapter 34
+    # toy (trace length 8, LDE size 32, num_rounds 3), the final
+    # polynomial has degree less than one on a 4-point domain, so every
+    # value in the final codeword equals the same constant. One fold
+    # more would flatten every polynomial of degree below 16 as well,
+    # so the round count is what makes this check test the claimed
+    # degree and not twice it. A random codeword that
     # happens to pass every fold-consistency check by coincidence
     # cannot also make the final codeword constant except with the
     # negligible probability governed by the proximity-gap theorem.

@@ -16,14 +16,19 @@ What this module does capture is the load-bearing design pattern:
 
 - Binding reduces to the hardness of (Module-)SIS over the relevant
   algebraic structure.
-- Hiding is obtained via a small random error added to each commitment.
+- Hiding, in the real schemes, comes from independent Gaussian
+  randomness added to the commitment under Module-LWE; this toy
+  carries no such randomness and is binding only.
 - Openings reveal the committed vector; the verifier recomputes the
   commitment equation and compares.
 
-The toy does not add a rejection-sampling or noise-flooding randomizer
-on top, which production constructions need to make hiding hold under
-chosen-message use; the fixed-error commit demonstrates the binding
-equation only.
+Randomising the error alone would not make the toy hiding: a receiver
+holding two candidate messages subtracts ``A m`` for each from ``C``
+and keeps the one whose residual is short, which on these parameters
+identifies the message every time. The real constructions commit as
+``A_0 m + A_1 r + e`` with ``(r, e)`` drawn independently of ``m``, so
+that ``A_1 r + e`` is a Module-LWE sample masking the message. The
+fixed-error commit here demonstrates the binding equation only.
 
 Chapter 32 uses this module to exhibit SIS-style binding concretely and
 to let the reader verify that tampering with either the committed

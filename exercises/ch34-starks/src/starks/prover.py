@@ -13,11 +13,14 @@ Pedagogical simplification
 --------------------------
 
 The toy sends the trace in the clear as part of the proof. A
-production STARK hides the trace and uses an additional composition
-polynomial (a random linear combination of the constraint quotients)
-whose own LDE codeword is also Merkle-committed and FRI-proven. The
-toy's role is to demonstrate the four-stage pipeline at minimal
-complexity, not to implement privacy or optimize proof size. Chapter
+production STARK does not send it: the verifier checks the constraints
+through a composition polynomial (a random linear combination of the
+constraint quotients) whose own LDE codeword is also Merkle-committed
+and FRI-proven. Not sending the trace is not the same as hiding it;
+zero knowledge needs a separate randomisation of the trace and its
+commitments, which the toy also omits. The toy's role is to
+demonstrate the four-stage pipeline at minimal complexity, not to
+implement privacy or optimize proof size. Chapter
 35 connects the toy to Zcash, ZKsync, and Starknet, where the
 production version is deployed.
 

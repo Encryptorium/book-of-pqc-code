@@ -98,6 +98,7 @@ def stark_verify(
         transcript=transcript,
         num_queries=num_queries,
         grinding_bits=grinding_bits,
+        degree_bound=air.trace_length,
     )
     if not fri_ok:
         return False

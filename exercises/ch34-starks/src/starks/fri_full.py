@@ -13,9 +13,10 @@ every forging attempt.
 Symbols (reserved per Chapter 34's symbol table):
 
 - ``N`` is the LDE domain size (``len(initial_domain)``).
-- ``r_FRI`` is the number of folding rounds, equal to ``log_2(N) - 1``
-  in the toy (the chapter stops one fold short of a single-point
-  codeword, matching Chapter 32's Block 4 convention).
+- ``r_FRI`` is the number of folding rounds, ``log_2(L)`` for a
+  codeword claimed to have degree below the trace length ``L`` (3 for
+  the toy: 32 points fold to 4, on which the honest codeword is
+  constant). One fold more would accept degree below ``2L``.
 - ``mu`` is the number of queries per round (``num_queries``).
 - ``g`` is the grinding-bit count.
 
@@ -218,6 +219,25 @@ def _find_grinding_nonce(state: bytes, grinding_bits: int) -> int:
     return nonce
 
 
+def _rounds_for_degree_bound(n: int, degree_bound: int | None) -> int:
+    """Number of folds that turn "degree < degree_bound" into "constant".
+
+    Each fold halves the degree bound, so log_2(degree_bound) folds reduce
+    a polynomial of degree less than degree_bound to a constant on the final
+    domain of n / degree_bound points. One fold more would also fold any
+    polynomial of degree less than 2 * degree_bound to a constant, so the
+    constancy check at the end would accept twice the intended degree.
+    degree_bound must be a power of two in [2, n / 2]; None means n / 4,
+    the STARK's rate-1/4 default, floored at 2 so that a four-point
+    domain, the smallest the package accepts, still gets its one fold.
+    """
+    if degree_bound is None:
+        degree_bound = max(2, n // 4)
+    if degree_bound < 2 or degree_bound & (degree_bound - 1) or degree_bound > n // 2:
+        raise ValueError("degree_bound must be a power of two in [2, n / 2]")
+    return degree_bound.bit_length() - 1
+
+
 def fri_prove(
     initial_codeword: list[int],
     initial_domain: list[int],
@@ -226,11 +246,14 @@ def fri_prove(
     num_queries: int,
     grinding_bits: int,
     num_rounds: int | None = None,
+    degree_bound: int | None = None,
 ) -> FRIProof:
     """Produce a FRI proof for ``initial_codeword`` over ``initial_domain``.
 
-    Folds the codeword ``num_rounds`` times (or ``log_2(len(initial_domain))
-    - 1`` if None), committing to each intermediate codeword. For each
+    Folds the codeword ``log_2(degree_bound)`` times, committing to each
+    intermediate codeword; ``degree_bound`` defaults to a quarter of the
+    domain size, the STARK's rate. ``num_rounds`` sets the fold count
+    directly instead and cannot be combined with ``degree_bound``. For each
     fold round ``j`` and each of the ``num_queries`` queried positions,
     records the query's leaf and sibling values plus the Merkle path.
     Appends a grinding nonce on the final transcript state.
@@ -250,12 +273,18 @@ def fri_prove(
     # size, then for every round record each position reduced modulo that
     # round's size, along with the leaf value there, the value at the paired
     # index half a round-size away, and the Merkle path. Finally search for
-    # a grinding nonce over the transcript state and absorb it. Default
-    # num_rounds to log2(N) - 1, matching Ch 32's convention of stopping one
-    # fold short of a single point, and reject anything outside [1, that].
-    # Reject mismatched codeword and domain lengths, a domain below size
-    # four or not a power of two, num_queries below one, and negative
-    # grinding bits.
+    # a grinding nonce over the transcript state and absorb it. Derive the
+    # fold count from the degree bound: log2(degree_bound) folds turn degree
+    # below degree_bound into a constant on N / degree_bound points, and one
+    # fold more would flatten degree below 2 * degree_bound as well, so the
+    # count is what makes the final constancy check test the claimed degree
+    # and not twice it. Default degree_bound to N / 4, the STARK's rate,
+    # floored at 2 so a four-point domain still gets its one fold, and
+    # reject a bound that is not a power of two in [2, N / 2]; accept
+    # num_rounds as a direct override in [1, log2(N) - 1], but not together
+    # with degree_bound. Reject mismatched codeword and domain lengths, a
+    # domain below size four or not a power of two, num_queries below one,
+    # and negative grinding bits.
     #
     # Reference: Chapter 34, '4.3 FRI with Fiat-Shamir challenges' and '4.4 Transcript and grinding'
     #
@@ -273,11 +302,14 @@ def fri_verify(
     num_queries: int,
     grinding_bits: int,
     num_rounds: int | None = None,
+    degree_bound: int | None = None,
 ) -> bool:
     """Verify a FRI proof produced by ``fri_prove``.
 
     Replays every transcript interaction, rederiving every beta
-    challenge and every query position. Checks each round's Merkle path
+    challenge and every query position. ``degree_bound`` and
+    ``num_rounds`` mean what they mean in ``fri_prove`` and must match
+    the prover's. Checks each round's Merkle path
     and each round-to-round fold consistency. Verifies the grinding
     nonce. Returns True on accept, False on any check failure.
     Raises ValueError for structurally malformed proofs.
@@ -295,11 +327,13 @@ def fri_verify(
     # Across consecutive rounds, refold the pair by hand with that round's
     # beta and require the result to equal the successor round's opened leaf
     # value at the successor index. Finally the final codeword must recommit
-    # to the last root and must be constant, because num_rounds folds of a
-    # codeword close to a polynomial of degree below the trace length leave
-    # degree below one. Return False on any of those failures; raise
-    # ValueError only for structural malformation, such as a commitment or
-    # opening count that does not match num_rounds.
+    # to the last root and must be constant, because log2(degree_bound)
+    # folds of a codeword close to a polynomial of degree below degree_bound
+    # leave degree below one; derive the round count from degree_bound
+    # exactly as the prover does, since a verifier that folds once more
+    # accepts twice the claimed degree. Return False on any of those
+    # failures; raise ValueError only for structural malformation, such as a
+    # commitment or opening count that does not match num_rounds.
     #
     # Reference: Chapter 34, '4.3 FRI with Fiat-Shamir challenges' and '4.4 Transcript and grinding'
     #
