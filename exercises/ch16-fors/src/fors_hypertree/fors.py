@@ -1,17 +1,18 @@
 """FORS: Forest of Random Subsets.
 
 A few-time hash-based signature scheme.  The secret key consists of
-*k* binary Merkle trees, each with *t* random leaves.  Signing hashes
-the message to *k* indices (one per tree, each in {0, ..., t-1}) and
-reveals the selected leaves plus their authentication paths.  The
-verifier reconstructs the *k* tree roots and hashes them together to
-recover the public key.
+*k* lists of *t* random secret values; each list is committed to by a
+binary Merkle tree whose leaves are the hashes of those values.  Signing
+hashes the message to *k* indices (one per tree, each in {0, ..., t-1})
+and reveals the selected secret values plus their authentication paths.
+The verifier hashes each disclosed value into its leaf, reconstructs the
+*k* tree roots and hashes them together to recover the public key.
 
-FORS tolerates a bounded number of signatures before the birthday-bound
-collision probability on index values makes forgery feasible.  For *q*
-signatures, the probability that any single tree position is reused is
-approximately q^2 / (2t); over *k* trees the union bound gives
-q^2 * k / (2t).
+FORS is few-time: a forgery needs every one of the *k* indices a target
+selects to lie in the set already revealed for that tree, probability
+about (1 - (1 - 1/t)^q)^k after *q* signatures.  A repeated index,
+expected k*q*(q-1)/(2t) times, re-reveals a value the signer already
+exposed and is not by itself a forgery.
 """
 
 import hashlib
@@ -20,6 +21,16 @@ import math
 
 def _sha256(data: bytes) -> bytes:
     return hashlib.sha256(data).digest()
+
+
+def _leaf_node(secret: bytes, n: int) -> bytes:
+    """Merkle leaf for a FORS secret value: F(secret), not the secret itself.
+
+    FIPS 205 fors_node at height 0 (Algorithm 15, line 5).  Publishing the
+    secret at the leaf would hand the verifier the sibling's secret as the
+    first authentication-path element.
+    """
+    return _sha256(secret)[:n]
 
 
 # -- Merkle tree (1-indexed flat array, same pattern as Ch 14/14) ------
@@ -102,7 +113,8 @@ def fors_keygen(
     Returns
     -------
     sk_leaves : list[list[bytes]]
-        *k* lists of *t* secret leaf values (each *n* bytes).
+        *k* lists of *t* secret values (each *n* bytes); the Merkle
+        leaves are their hashes.
     trees : list[list[bytes]]
         *k* Merkle trees (1-indexed flat arrays).
     pk : bytes
@@ -115,13 +127,13 @@ def fors_keygen(
     for j in range(k):
         leaves: list[bytes] = []
         for i in range(t):
-            # Derive each leaf deterministically from the seed
+            # Derive each secret value deterministically from the seed
             leaf_val = _sha256(
                 seed + b"fors" + j.to_bytes(4, "big") + i.to_bytes(4, "big")
             )[:n]
             leaves.append(leaf_val)
         sk_leaves.append(leaves)
-        tree = _build_tree(leaves)
+        tree = _build_tree([_leaf_node(s, n) for s in leaves])
         trees.append(tree)
         roots += tree[1]  # root is at index 1
 
@@ -139,7 +151,7 @@ def fors_sign(
 ) -> list[tuple[bytes, list[bytes]]]:
     """Sign *message* with FORS.
 
-    Returns *k* tuples of ``(revealed_leaf, auth_path)``.
+    Returns *k* tuples of ``(revealed_secret, auth_path)``.
     """
     indices = message_indices(message, k, t)
     sig: list[tuple[bytes, list[bytes]]] = []
@@ -169,8 +181,8 @@ def fors_verify(
         leaf, path = sig[j]
         if len(path) != h:
             return False
-        # Reconstruct the root from the leaf and auth path
-        current = leaf
+        # Hash the disclosed secret into its leaf, then climb the auth path
+        current = _leaf_node(leaf, n)
         idx = indices[j]
         for sibling in path:
             if idx % 2 == 0:

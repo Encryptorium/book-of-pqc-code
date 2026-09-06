@@ -26,7 +26,7 @@ for j in range(k):
     all_leaves.append(leaves)
     tree = [b""] * (2 * t)
     for i, lf in enumerate(leaves):
-        tree[t + i] = lf
+        tree[t + i] = sha_n(lf, n)
     for i in range(t - 1, 0, -1):
         tree[i] = sha_n(tree[2 * i] + tree[2 * i + 1], n)
     all_trees.append(tree)
@@ -44,25 +44,25 @@ for idx_i in range(k):
 print(f"Indices: {indices}")
 # ==> Indices: [3, 0, 1]
 
-# Sign: reveal the selected leaf and its auth path from each tree.
+# Sign: reveal the selected secret value and its auth path from each tree.
 sig = []
 for j in range(k):
-    leaf = all_leaves[j][indices[j]]
+    secret = all_leaves[j][indices[j]]
     node = t + indices[j]
     path = []
     for _ in range(2):  # depth = log2(t) = 2
         path.append(all_trees[j][node ^ 1])
         node //= 2
-    sig.append((leaf, path))
-    print(f"Tree {j}: leaf[{indices[j]}] = {leaf.hex()}")
-# ==> Tree 0: leaf[3] = 176ff120
-# ==> Tree 1: leaf[0] = 9c88ece5
-# ==> Tree 2: leaf[1] = fe0e9264
+    sig.append((secret, path))
+    print(f"Tree {j}: secret[{indices[j]}] = {secret.hex()}")
+# ==> Tree 0: secret[3] = 176ff120
+# ==> Tree 1: secret[0] = 9c88ece5
+# ==> Tree 2: secret[1] = fe0e9264
 
-# Verify: reconstruct each root from the revealed leaf and auth path.
+# Verify: hash each revealed secret into its leaf, then climb the auth path.
 recon_roots = b""
 for j in range(k):
-    current = sig[j][0]
+    current = sha_n(sig[j][0], n)
     idx = indices[j]
     for sib in sig[j][1]:
         if idx % 2 == 0:

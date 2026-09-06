@@ -22,14 +22,14 @@ for j in range(k):
         leaves.append(leaf)
     tree = [b""] * (2 * t)
     for i, lf in enumerate(leaves):
-        tree[t + i] = lf
+        tree[t + i] = sha(lf)[:n]  # leaf = F(secret)
     for i in range(t - 1, 0, -1):
         tree[i] = sha(tree[2 * i] + tree[2 * i + 1])
     roots_concat += tree[1]
 
 pk = sha(roots_concat)[:n]
 print(f"pk: {pk.hex()[:16]}...")
-# ==> pk: 957d094bad6b0cf9...
+# ==> pk: 5618a209f1b98db8...
 print(f"Secret key: {k * t * n} bytes")
 # ==> Secret key: 3072 bytes
 print(f"Signature: {k * (n + 4 * n)} bytes")

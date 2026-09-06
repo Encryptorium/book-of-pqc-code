@@ -15,7 +15,7 @@ def sha_n(data, n=4):
 seed = b"ch16-fors-toy"
 k, t, n = 3, 4, 4
 
-# Generate k trees of t secret leaves each.
+# Generate k lists of t secret values; each tree's leaves are their hashes.
 all_leaves = []
 all_trees = []
 roots = b""
@@ -29,7 +29,7 @@ for j in range(k):
     # Merkle tree: 1-indexed flat array, same layout as Chapter 14.
     tree = [b""] * (2 * t)
     for i, lf in enumerate(leaves):
-        tree[t + i] = lf
+        tree[t + i] = sha_n(lf, n)  # the leaf is F(secret), never the secret
     for i in range(t - 1, 0, -1):
         tree[i] = sha_n(tree[2 * i] + tree[2 * i + 1], n)
     all_trees.append(tree)
@@ -37,10 +37,10 @@ for j in range(k):
 
 pk = sha_n(roots, n)
 print(f"Tree 0 root: {all_trees[0][1].hex()}")
-# ==> Tree 0 root: 792c2503
+# ==> Tree 0 root: 8a6b98ad
 print(f"Tree 1 root: {all_trees[1][1].hex()}")
-# ==> Tree 1 root: b5f1cd02
+# ==> Tree 1 root: c9a89a2e
 print(f"Tree 2 root: {all_trees[2][1].hex()}")
-# ==> Tree 2 root: 56b3aea7
+# ==> Tree 2 root: 69143929
 print(f"pk = {pk.hex()}")
-# ==> pk = 7a77420a
+# ==> pk = 969f73b4

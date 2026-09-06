@@ -2,8 +2,8 @@
 
 FORS signs by revealing selected leaves from k binary Merkle trees.
 Each leaf is the hash of a PRF-derived secret value passed through the
-tweakable function F, restoring the secret/public separation that
-Chapter 16's teaching implementation omitted.
+tweakable function F, binding it to its address, which Chapter 16's bare
+hash did not.
 """
 
 from __future__ import annotations

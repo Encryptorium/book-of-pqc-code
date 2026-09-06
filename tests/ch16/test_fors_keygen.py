@@ -1,7 +1,7 @@
 """Tests for FORS key generation."""
 
 import hashlib
-from fors_hypertree.fors import fors_keygen, _build_tree, _sha256
+from fors_hypertree.fors import fors_keygen, _build_tree, _leaf_node, _sha256
 
 
 def test_keygen_returns_correct_shapes():
@@ -41,9 +41,9 @@ def test_tree_roots_match_manual_computation():
     k, t, n = 3, 4, 32
     sk_leaves, trees, pk = fors_keygen(seed, k=k, t=t, n=n)
 
-    # Manually build tree 0
+    # Manually build tree 0: each leaf is the hash of a secret value
     leaves = sk_leaves[0]
-    manual_tree = _build_tree(leaves)
+    manual_tree = _build_tree([_leaf_node(s, n) for s in leaves])
     assert manual_tree[1] == trees[0][1]
 
 

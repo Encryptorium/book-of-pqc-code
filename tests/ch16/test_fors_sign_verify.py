@@ -5,6 +5,7 @@ from fors_hypertree.fors import (
     fors_sign,
     fors_verify,
     message_indices,
+    _leaf_node,
     _verify_path,
 )
 
@@ -69,7 +70,7 @@ def test_auth_paths_reconstruct_roots():
     for j in range(k):
         leaf, path = sig[j]
         root = trees[j][1]
-        assert _verify_path(leaf, indices[j], path, root)
+        assert _verify_path(_leaf_node(leaf, n), indices[j], path, root)
 
 
 def test_multiple_messages():
