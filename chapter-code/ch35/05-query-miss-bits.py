@@ -1,6 +1,6 @@
 # The Encryptorium Book of Post-Quantum Cryptography
 # Chapter 35: Case studies: Zcash, ZKsync, Starknet
-# Section: "Starknet: legacy ethSTARK and current Stwo"
+# Section: "Starknet: Stone at the root, Stwo at the leaves"
 # https://book.encryptorium.com/part-6-post-quantum-zero-knowledge/ch35-case-studies/
 #
 # Generated from the chapter text. Edits here do not reach the book.
