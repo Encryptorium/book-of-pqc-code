@@ -46,7 +46,7 @@ def lookup(layer, candidate):
     return MATRIX[layer][candidate]
 
 
-# Print the load-bearing on-chain layers (L2 and L4) for a small
+# Print the on-chain layers (L2 and L4) for a small
 # candidate set. The off-chain layers L1 and L3 carry no on-chain
 # decision.
 print(f"{'layer':<19} {'candidate':<14} pq_status")
