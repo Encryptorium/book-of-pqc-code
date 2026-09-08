@@ -74,7 +74,7 @@ A clone carries all 41 chapters. Run a chapter's suite from the repository root:
 pytest tests/ch01
 ```
 
-The suite defaults to the reference implementation, so a clone is green on the first run. On a fresh clone `pytest tests/` reports 2,209 passed and 16 skipped: six Chapter 17 signature-generation sets, nine Chapter 21 known-answer checks awaiting vendored vectors, and Chapter 27's million-iteration vector. Pytest prints an `s` for each without saying why; add `-rs` to print every reason.
+The suite defaults to the reference implementation, so a clone is green on the first run. On a fresh clone `pytest tests/` reports 2,222 passed and 16 skipped: six Chapter 17 signature-generation sets, nine Chapter 21 known-answer checks awaiting vendored vectors, and Chapter 27's million-iteration vector. Pytest prints an `s` for each without saying why; add `-rs` to print every reason.
 
 The continuous integration named at the top of this README runs in the book's source repository, which is private; this repository carries no workflow of its own. The four trees here are published from that gated source. The claim a reader can verify independently is the one the gate enforces: from a clone in the environment above, `pytest tests/` collects every chapter's suite and passes, apart from the skips this README already names (Chapter 17's slow signature-generation sets, Chapter 27's million-iteration vector, and Chapter 21's known-answer checks until you vendor the official vectors).
 
