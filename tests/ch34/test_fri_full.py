@@ -136,6 +136,7 @@ def test_fri_rejects_corrupted_query_leaf():
         leaf_value=(opening.leaf_value + 1) % prime,
         sibling_value=opening.sibling_value,
         merkle_path=opening.merkle_path,
+        sibling_path=opening.sibling_path,
     )
     verifier_transcript = Transcript(b"fri-test")
     assert not fri_verify(
@@ -381,3 +382,133 @@ def test_fri_default_degree_bound_on_four_point_domain():
     assert _fri_accepts(line, dom)
     quadratic = [(x * x) % prime for x in dom]
     assert not _fri_accepts(quadratic, dom)
+
+
+def _fri_kwargs(num_queries, grinding_bits, **extra):
+    return dict(num_queries=num_queries, grinding_bits=grinding_bits, **extra)
+
+
+def test_fri_rejects_corrupted_sibling_value():
+    # Track 2 round 12, P1-01. The fold equation reads two values per
+    # query, and the verifier authenticated only one of them: the
+    # sibling was trusted because "the next round's commitment binds
+    # it", which is false, since a prover who picks the sibling picks
+    # the folded value and then commits to whatever that produces.
+    # An honest proof with one sibling value nudged must now fail on
+    # the sibling's own Merkle path.
+    codeword, dom = _honest_codeword()
+    prime = DEFAULT_PRIME
+    proof = fri_prove(codeword, dom, prime, Transcript(b"fri-test"), 4, 0)
+    opening = proof.query_openings[0][0]
+    proof.query_openings[0][0] = QueryOpening(
+        leaf_index=opening.leaf_index,
+        leaf_value=opening.leaf_value,
+        sibling_value=(opening.sibling_value + 1) % prime,
+        merkle_path=opening.merkle_path,
+        sibling_path=opening.sibling_path,
+    )
+    assert not fri_verify(proof, dom, prime, Transcript(b"fri-test"), 4, 0)
+
+
+def test_fri_rejects_unbound_sibling_forgery_of_degree_claim():
+    # Track 2 round 12, P1-01, the reviewer's counterexample. Commit
+    # the evaluations of x^8 + c (degree 8) under a degree-below-8
+    # claim with the corrected three-fold schedule. Every queried leaf
+    # and every leaf path is genuine; every later codeword is the zero
+    # vector, honestly committed; and each round's sibling value is
+    # CHOSEN so that the fold lands on zero. Before the fix the
+    # verifier accepted this with all 32 positions queried. The forged
+    # openings carry the genuine path of the position the fake value
+    # claims to sit at, which is the strongest form the forgery can
+    # take: the value is wrong and everything around it is right.
+    from starks.fri_full import FRIProof, _merkle_path, _squeeze_beta
+
+    prime = DEFAULT_PRIME
+    dom = lde_domain()
+    n = len(dom)
+    rounds = 3
+    queries = 32
+    two_inv = mod_inv(2, prime)
+
+    for shift in range(prime):
+        codewords = [[(pow(x, 8, prime) + shift) % prime for x in dom]]
+        codewords += [[0] * (n >> (j + 1)) for j in range(rounds)]
+        domains = [list(dom)]
+        transcript = Transcript(b"fri-forge")
+        commitments, trees, betas = [], [], []
+        for j, cw in enumerate(codewords):
+            root, tree = commit_codeword(cw, prime)
+            commitments.append(root)
+            trees.append(tree)
+            transcript.absorb(b"fri-commit-" + j.to_bytes(4, "big"), root)
+            if j < rounds:
+                betas.append(_squeeze_beta(transcript, prime, j))
+                domains.append([x * x % prime for x in domains[-1][: len(cw) // 2]])
+        if betas[0] in set(dom):
+            continue  # degenerate beta: a fold coefficient vanishes
+        # Grinding at g = 0 is the nonce 0, absorbed before the queries.
+        transcript.absorb_int(b"fri-grinding", 0, num_bytes=8)
+        positions = [
+            transcript.squeeze_index(b"fri-query-" + k.to_bytes(4, "big"), n)
+            for k in range(queries)
+        ]
+        openings = []
+        for j, cw in enumerate(codewords):
+            size = len(cw)
+            half = size // 2
+            row = []
+            for q in positions:
+                idx = q % size
+                sib = (idx + half) % size
+                leaf, sibling = cw[idx], cw[sib]
+                if j < rounds:
+                    x = domains[j][idx % half]
+                    ratio = betas[j] * mod_inv(x, prime) % prime
+                    a = (1 + ratio) * two_inv % prime
+                    b = (1 - ratio) * two_inv % prime
+                    # Solve a * f(x) + b * f(-x) = 0 for the free input.
+                    if idx < half:
+                        sibling = (-a * leaf * mod_inv(b, prime)) % prime
+                    else:
+                        sibling = (-b * leaf * mod_inv(a, prime)) % prime
+                row.append(
+                    QueryOpening(
+                        leaf_index=idx,
+                        leaf_value=leaf,
+                        sibling_value=sibling,
+                        merkle_path=_merkle_path(trees[j], idx),
+                        sibling_path=_merkle_path(trees[j], sib),
+                    )
+                )
+            openings.append(row)
+        forged = FRIProof(commitments, openings, codewords[-1], 0)
+        assert not fri_verify(
+            forged, dom, prime, Transcript(b"fri-forge"), queries, 0, degree_bound=8
+        )
+        break
+    else:  # pragma: no cover
+        raise AssertionError("no non-degenerate beta found")
+
+
+def test_fri_grinding_nonce_decides_the_query_positions():
+    # Track 2 round 12, P1-02. Grinding is priced as 2^g work per
+    # query set a forger gets to see, which is only true if the nonce
+    # is absorbed BEFORE the positions are squeezed. The old order
+    # squeezed the positions first and ground last, so proofs at g = 0
+    # and g = 12 carried identical openings and differed in the nonce
+    # alone: a forger could search for a favourable query set for free
+    # and pay the proof of work once at the end.
+    codeword, dom = _honest_codeword()
+    prime = DEFAULT_PRIME
+    p0 = fri_prove(codeword, dom, prime, Transcript(b"fri-test"), 8, 0)
+    p12 = fri_prove(codeword, dom, prime, Transcript(b"fri-test"), 8, 12)
+    assert p0.grinding_nonce == 0 and p12.grinding_nonce != 0
+    assert fri_verify(p0, dom, prime, Transcript(b"fri-test"), 8, 0)
+    assert fri_verify(p12, dom, prime, Transcript(b"fri-test"), 8, 12)
+    positions0 = [o.leaf_index for o in p0.query_openings[0]]
+    positions12 = [o.leaf_index for o in p12.query_openings[0]]
+    assert positions0 != positions12
+    # And a nonce that did not pay for these positions is refused even
+    # when it satisfies the trailing-zero test on some other state.
+    p12.grinding_nonce = p0.grinding_nonce
+    assert not fri_verify(p12, dom, prime, Transcript(b"fri-test"), 8, 12)

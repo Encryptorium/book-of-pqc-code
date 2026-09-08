@@ -6,9 +6,12 @@ monomial for each of m quadratic forms, and at GF(16) two coefficients pack
 into a byte. The second is the Kipnis-Shamir cost model, whose exponent is what
 forces the unbalanced choice n > 2m.
 
-Every figure in ``ROUND2_SIZES`` is read from the round-2 submission package of
-the scheme named, and ``tests/ch24/test_sizes.py`` checks the derived
-quantities against it. The sizes are round-2 figures and may be revised.
+Every figure in ``SUBMISSION_SIZES`` is read from the submission package the
+entry's ``source`` names, and ``tests/ch24/test_sizes.py`` checks the derived
+quantities against it. UOV and SNOVA are round-2 figures. MAYO's are from the
+round-3 specification of 31 August 2026, which reparameterised MAYO1 and
+MAYO2 and changed the construction (Track 2 round 12, P1-09); the round-2
+figures it replaced are kept in each entry's ``source`` for the record.
 """
 
 from __future__ import annotations
@@ -39,7 +42,7 @@ def uov_public_key_bytes(n: int, m: int, elements_per_byte: int = 2) -> int:
 
     This models the expanded key. UOV also ships public-key-compressed
     versions, whose key is a 16-byte seed plus only the oil-oil part of each
-    form, and those are much smaller; see ``ROUND2_SIZES``.
+    form, and those are much smaller; see ``SUBMISSION_SIZES``.
     """
     if elements_per_byte < 1:
         raise ValueError("elements_per_byte must be at least 1")
@@ -86,7 +89,7 @@ class SchemeSizes:
     source: str
 
 
-ROUND2_SIZES: dict[str, SchemeSizes] = {
+SUBMISSION_SIZES: dict[str, SchemeSizes] = {
     "uov-Is": SchemeSizes(
         name="uov-Is",
         nist_level=1,
@@ -111,16 +114,18 @@ ROUND2_SIZES: dict[str, SchemeSizes] = {
     "MAYO1": SchemeSizes(
         name="MAYO1",
         nist_level=1,
-        public_key=1_420,
-        signature=454,
-        source="MAYO round-2 specification, Table 2.1",
+        public_key=1_456,
+        signature=464,
+        source="MAYO round-3 specification (31 August 2026), Table 2.1; "
+        "round 2 had 1,420 B and 454 B at m = 78",
     ),
     "MAYO2": SchemeSizes(
         name="MAYO2",
         nist_level=1,
-        public_key=4_912,
-        signature=186,
-        source="MAYO round-2 specification, Table 2.1",
+        public_key=2_928,
+        signature=239,
+        source="MAYO round-3 specification (31 August 2026), Table 2.1; "
+        "round 2 had 4,912 B and 186 B before the wedge attack",
     ),
     "SNOVA-(24,5,16,4)": SchemeSizes(
         name="SNOVA-(24,5,16,4)",

@@ -16,7 +16,7 @@ It is a toy. It is not UOV, and it must not sign anything.
 | `multivariate.gf` | GF(q) inversion by the Fermat power, and the matrix operations `matmul`, `transpose`, `mat_vec`, `quadratic_eval` |
 | `multivariate.linalg` | Gaussian elimination over GF(q): `is_invertible`, `invert_mat`, `solve_linear` |
 | `multivariate.uov` | `UOVParams`, key generation, the oil-vinegar collapse, `sign`, `verify` |
-| `multivariate.sizes` | Public-key size arithmetic, the Kipnis-Shamir cost model, and `ROUND2_SIZES` |
+| `multivariate.sizes` | Public-key size arithmetic, the Kipnis-Shamir cost model, and `SUBMISSION_SIZES` |
 
 Standard library only: `random`, `dataclasses`, and `math`. No NumPy.
 
@@ -83,7 +83,7 @@ against the UOV submission.
 
 ## Where the recorded sizes come from
 
-`ROUND2_SIZES` in `multivariate.sizes` records public-key and signature sizes
+`SUBMISSION_SIZES` in `multivariate.sizes` records public-key and signature sizes
 for seven parameter sets, each with the table it was read from: UOV Table 1,
 MAYO Table 2.1, SNOVA Table 6. `test_sizes.py` recomputes both UOV expanded-key
 entries from `uov_public_key_bytes` and checks them against the recorded

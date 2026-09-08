@@ -5,10 +5,20 @@ interactive oracle proof: the verifier sent the fold challenges. This
 module carries the same mechanics into the non-interactive setting.
 Each round's beta challenge is squeezed from a transcript. Each
 round's folded codeword is Merkle-committed; the commitment's root is
-absorbed into the transcript before the next squeeze. The prover
-appends a grinding nonce whose hash has a configurable number of
-trailing zero bits, which forces the forger to do proof-of-work before
-every forging attempt.
+absorbed into the transcript before the next squeeze. Once every
+commitment is absorbed, the prover searches for a grinding nonce whose
+transcript hash has a configurable number of trailing zero bits and
+absorbs it; only then are the query positions squeezed, so each query
+set a forger sees costs a fresh proof-of-work (Track 2 round 12,
+P1-02: grinding drawn after the queries priced nothing, because the
+positions were already fixed before the nonce existed).
+
+Every query opens both members of its fold pair against the round's
+Merkle root: the queried leaf and the sibling at ``leaf_index + half``
+each carry their own authentication path (Track 2 round 12, P1-01: an
+unauthenticated sibling let a prover choose the fold's second input
+freely, and a codeword of degree 8 passed a degree-below-8 claim with
+every leaf and path genuine).
 
 Symbols (reserved per Chapter 34's symbol table):
 
@@ -42,15 +52,19 @@ class QueryOpening:
     ``leaf_index`` names the position in the round's codeword.
     ``leaf_value`` is the field element stored at that position.
     ``sibling_value`` is the field element at the paired index
-    ``leaf_index XOR half`` (the sibling required for fold-consistency).
-    ``merkle_path`` is the list of sibling digests from the leaf up to
-    the round's Merkle root.
+    ``(leaf_index + half) mod size`` (the sibling required for
+    fold-consistency). ``merkle_path`` is the list of sibling digests
+    from the leaf up to the round's Merkle root, and ``sibling_path``
+    is the same for the paired index. Both values are authenticated:
+    the fold-consistency equation has two inputs, and a verifier that
+    binds only one of them lets the prover choose the other.
     """
 
     leaf_index: int
     leaf_value: int
     sibling_value: int
     merkle_path: list[bytes]
+    sibling_path: list[bytes]
 
 
 @dataclass
@@ -65,7 +79,8 @@ class FRIProof:
     of the final domain, along with the implicit rest of the codeword
     that the verifier checks against the final Merkle root).
     ``grinding_nonce`` is the nonce whose transcript hash has the
-    required trailing-zero bit count.
+    required trailing-zero bit count; it is absorbed before the query
+    positions are squeezed, so it decides which positions are queried.
     """
 
     commitments: list[bytes]
@@ -233,10 +248,11 @@ def fri_prove(
     Folds the codeword ``log_2(degree_bound)`` times, committing to each
     intermediate codeword; ``degree_bound`` defaults to a quarter of the
     domain size, the STARK's rate. ``num_rounds`` sets the fold count
-    directly instead and cannot be combined with ``degree_bound``. For each
-    fold round ``j`` and each of the ``num_queries`` queried positions,
-    records the query's leaf and sibling values plus the Merkle path.
-    Appends a grinding nonce on the final transcript state.
+    directly instead and cannot be combined with ``degree_bound``. Once
+    every commitment is absorbed, finds the grinding nonce, absorbs it,
+    and only then squeezes the query positions. For each fold round
+    ``j`` and each of the ``num_queries`` queried positions, records the
+    query's leaf and sibling values plus a Merkle path for each.
 
     Raises ValueError for non-power-of-two domain sizes, mismatched
     codeword and domain lengths, or non-positive ``num_queries``.
@@ -283,6 +299,12 @@ def fri_prove(
         trees.append(tree)
         transcript.absorb(b"fri-commit-" + (j + 1).to_bytes(4, "big"), root)
 
+    # Grinding over the committed transcript, before any query position
+    # exists: the nonce is absorbed first, so the positions depend on it
+    # and every fresh query set costs the forger a fresh search.
+    nonce = _find_grinding_nonce(transcript.state(), grinding_bits)
+    transcript.absorb_int(b"fri-grinding", nonce, num_bytes=8)
+
     # Draw query positions against the initial domain.
     query_positions = [
         transcript.squeeze_index(b"fri-query-" + k.to_bytes(4, "big"), n)
@@ -306,14 +328,10 @@ def fri_prove(
                     leaf_value=round_codeword[idx],
                     sibling_value=round_codeword[sibling_idx],
                     merkle_path=_merkle_path(round_tree, idx),
+                    sibling_path=_merkle_path(round_tree, sibling_idx),
                 )
             )
         query_openings.append(round_openings)
-
-    # Grinding on the final transcript state.
-    state_for_grind = transcript.state()
-    nonce = _find_grinding_nonce(state_for_grind, grinding_bits)
-    transcript.absorb_int(b"fri-grinding", nonce, num_bytes=8)
 
     final_codeword = codewords[-1]
 
@@ -338,11 +356,12 @@ def fri_verify(
     """Verify a FRI proof produced by ``fri_prove``.
 
     Replays every transcript interaction, rederiving every beta
-    challenge and every query position. ``degree_bound`` and
+    challenge, checking and absorbing the grinding nonce, and only then
+    rederiving every query position. ``degree_bound`` and
     ``num_rounds`` mean what they mean in ``fri_prove`` and must match
-    the prover's. Checks each round's Merkle path
-    and each round-to-round fold consistency. Verifies the grinding
-    nonce. Returns True on accept, False on any check failure.
+    the prover's. Checks both Merkle paths of every opening, the
+    queried leaf's and its fold partner's, and each round-to-round fold
+    consistency. Returns True on accept, False on any check failure.
     Raises ValueError for structurally malformed proofs.
     """
     n = len(initial_domain)
@@ -377,15 +396,16 @@ def fri_verify(
         betas.append(_squeeze_beta(transcript, prime, j))
         transcript.absorb(b"fri-commit-" + (j + 1).to_bytes(4, "big"), proof.commitments[j + 1])
 
+    # Grinding, checked against the committed transcript and absorbed
+    # before the query positions are derived, mirroring the prover.
+    if not _check_grinding(transcript.state(), proof.grinding_nonce, grinding_bits):
+        return False
+    transcript.absorb_int(b"fri-grinding", proof.grinding_nonce, num_bytes=8)
+
     query_positions = [
         transcript.squeeze_index(b"fri-query-" + k.to_bytes(4, "big"), n)
         for k in range(num_queries)
     ]
-
-    # Grinding.
-    if not _check_grinding(transcript.state(), proof.grinding_nonce, grinding_bits):
-        return False
-    transcript.absorb_int(b"fri-grinding", proof.grinding_nonce, num_bytes=8)
 
     # Per-query Merkle path checks and fold-consistency checks.
     # Maintain the implicit domain sizes so we can recompute (x, -x) pairs.
@@ -416,16 +436,16 @@ def fri_verify(
                 proof.commitments[j], leaf_digest, opening.leaf_index, opening.merkle_path
             ):
                 return False
-            # Verify the sibling value at its own position via a second
-            # Merkle path embedded in the paired query's opening. In the
-            # toy, each query's sibling is reported but its Merkle
-            # binding is left to the paired position's own opening
-            # within the query set. When the query at ``q XOR half`` is
-            # drawn independently, that opening binds the sibling; in
-            # the simplified protocol we trust the prover's sibling
-            # value because FRI folds it into the next round's
-            # committed codeword, whose Merkle root we will check.
-            _ = expected_sibling
+            # Verify the sibling value against the same root at its own
+            # position. The fold equation below reads both values, and
+            # the next round's commitment cannot bind this one: a prover
+            # who chooses the sibling freely chooses the folded value
+            # freely, and commits to whatever that choice produces.
+            sibling_digest = _hash_leaf(opening.sibling_value, prime)
+            if not _verify_merkle_path(
+                proof.commitments[j], sibling_digest, expected_sibling, opening.sibling_path
+            ):
+                return False
         # Fold-consistency across rounds.
         for j in range(num_rounds):
             current = proof.query_openings[j][k]

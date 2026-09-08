@@ -5,7 +5,7 @@ import math
 import pytest
 
 from multivariate.sizes import (
-    ROUND2_SIZES,
+    SUBMISSION_SIZES,
     kipnis_shamir_log2_cost,
     kipnis_shamir_search_exponent,
     upper_triangular_count,
@@ -32,19 +32,19 @@ def test_upper_triangular_count_rejects_negative_n():
 def test_uov_Is_public_key_matches_the_specification():
     """uov-Is expanded public key is 412,160 bytes in Table 1 of the round-2 spec."""
     assert uov_public_key_bytes(n=160, m=64, elements_per_byte=2) == 412_160
-    assert uov_public_key_bytes(n=160, m=64, elements_per_byte=2) == ROUND2_SIZES["uov-Is"].public_key
+    assert uov_public_key_bytes(n=160, m=64, elements_per_byte=2) == SUBMISSION_SIZES["uov-Is"].public_key
 
 
 def test_uov_Ip_public_key_matches_the_specification():
     """uov-Ip is over GF(256), so one element per byte, and n = 112, m = 44."""
     assert uov_public_key_bytes(n=112, m=44, elements_per_byte=1) == 278_432
-    assert uov_public_key_bytes(n=112, m=44, elements_per_byte=1) == ROUND2_SIZES["uov-Ip"].public_key
+    assert uov_public_key_bytes(n=112, m=44, elements_per_byte=1) == SUBMISSION_SIZES["uov-Ip"].public_key
 
 
 def test_compact_public_key_is_far_smaller_than_the_expanded_one():
     """The pkc version stores 66,576 bytes where the classic one stores 412,160."""
-    expanded = ROUND2_SIZES["uov-Is"].public_key
-    compact = ROUND2_SIZES["uov-Is-pkc"].public_key
+    expanded = SUBMISSION_SIZES["uov-Is"].public_key
+    compact = SUBMISSION_SIZES["uov-Is-pkc"].public_key
     assert compact < expanded
     assert 6.1 < expanded / compact < 6.3
 
@@ -53,7 +53,7 @@ def test_uov_Is_signature_is_packed_nibbles_plus_a_salt():
     """96 bytes is 160 GF(16) nibbles (80 bytes) plus a 16-byte salt."""
     packed = 160 // 2
     salt = 16
-    assert packed + salt == ROUND2_SIZES["uov-Is"].signature
+    assert packed + salt == SUBMISSION_SIZES["uov-Is"].signature
 
 
 def test_uov_public_key_bytes_rejects_zero_packing():
@@ -91,7 +91,7 @@ def test_cost_model_rejects_overbalanced_parameters():
 
 def test_round2_sizes_are_internally_consistent():
     """Every recorded set names its source and targets a NIST level."""
-    for name, entry in ROUND2_SIZES.items():
+    for name, entry in SUBMISSION_SIZES.items():
         assert entry.name == name
         assert entry.nist_level in (1, 3, 5)
         assert entry.public_key > 0
@@ -101,7 +101,7 @@ def test_round2_sizes_are_internally_consistent():
 
 def test_mayo1_is_smaller_keyed_and_larger_signed_than_uov_Is():
     """The headline multivariate tradeoff, as the chapter's table states it."""
-    uov = ROUND2_SIZES["uov-Is"]
-    mayo = ROUND2_SIZES["MAYO1"]
+    uov = SUBMISSION_SIZES["uov-Is"]
+    mayo = SUBMISSION_SIZES["MAYO1"]
     assert mayo.public_key < uov.public_key
     assert mayo.signature > uov.signature

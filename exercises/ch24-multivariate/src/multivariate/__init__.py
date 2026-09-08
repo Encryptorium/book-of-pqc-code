@@ -31,7 +31,7 @@ from .sizes import (
     kipnis_shamir_log2_cost,
     kipnis_shamir_search_exponent,
     SchemeSizes,
-    ROUND2_SIZES,
+    SUBMISSION_SIZES,
 )
 
 __all__ = [
@@ -60,5 +60,5 @@ __all__ = [
     "kipnis_shamir_log2_cost",
     "kipnis_shamir_search_exponent",
     "SchemeSizes",
-    "ROUND2_SIZES",
+    "SUBMISSION_SIZES",
 ]
