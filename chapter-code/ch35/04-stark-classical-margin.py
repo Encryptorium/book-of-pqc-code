@@ -57,8 +57,10 @@ def dfms20_exact_cbits(k_target: int, q_bits: int, r_FS: int) -> int:
 
 # Illustrative ethSTARK-style reference point at blowup 16, mu = 48,
 # r_FRI = 20, grinding = 20. Not a verified deployed Starknet
-# parameter table; see ethSTARK Documentation v1.2 Section 6 for the
-# concrete (s = 79 / 105 / 141)-style settings. The challenge-field
+# parameter table; see ethSTARK Documentation v1.2 Section 7.1.1 for
+# its concrete settings (s = 79 / 105 / 141 queries at 80 / 100 / 128
+# bits, with grinding; Section 6 is the round-by-round soundness proof
+# and prints none of them). The challenge-field
 # width 244 corresponds to F_{p^4} per ethSTARK Documentation v1.2
 # Section 5.10.2 for provable 128-bit IOP knowledge soundness; the
 # conjectured-soundness path uses F_{p^3} at 183 bits. The DFMS20
