@@ -194,6 +194,8 @@ def _check_grinding(state: bytes, nonce: int, grinding_bits: int) -> bool:
     """Return True if ``sha256(state || nonce)`` has ``grinding_bits`` trailing zero bits."""
     if grinding_bits < 0:
         raise ValueError("grinding_bits must be non-negative")
+    if not 0 <= nonce < (1 << 64):
+        raise ValueError("grinding nonce must fit in 8 bytes")
     if grinding_bits == 0:
         return True
     digest = hashlib.sha256(state + nonce.to_bytes(8, "big")).digest()
@@ -388,6 +390,8 @@ def fri_verify(
     for openings in proof.query_openings:
         if len(openings) != num_queries:
             raise ValueError("each round must have num_queries openings")
+    if len(proof.final_codeword) != n >> num_rounds:
+        raise ValueError("final codeword length does not match num_rounds")
 
     # Replay the transcript.
     transcript.absorb(b"fri-commit-0", proof.commitments[0])
@@ -430,6 +434,9 @@ def fri_verify(
                 expected_sibling = opening.leaf_index
             if opening.leaf_index != q % round_size:
                 return False
+            depth = round_size.bit_length() - 1
+            if len(opening.merkle_path) != depth or len(opening.sibling_path) != depth:
+                raise ValueError("Merkle path length does not match the round's tree")
             # Verify Merkle opening.
             leaf_digest = _hash_leaf(opening.leaf_value, prime)
             if not _verify_merkle_path(

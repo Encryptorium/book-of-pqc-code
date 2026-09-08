@@ -13,6 +13,7 @@ from starks.arithmetization import (
     interpolate_trace,
 )
 from starks.fri_full import (
+    FRIProof,
     QueryOpening,
     _fold_codeword,
     commit_codeword,
@@ -394,8 +395,11 @@ def test_fri_rejects_corrupted_sibling_value():
     # sibling was trusted because "the next round's commitment binds
     # it", which is false, since a prover who picks the sibling picks
     # the folded value and then commits to whatever that produces.
-    # An honest proof with one sibling value nudged must now fail on
-    # the sibling's own Merkle path.
+    # An honest proof with one sibling value nudged must fail. This
+    # test does not pin the sibling path check on its own: a lone
+    # nudge also breaks the fold equation, so a verifier without the
+    # path check rejects it too (round 13). The pin is the degree
+    # forgery below, whose siblings satisfy the fold equation.
     codeword, dom = _honest_codeword()
     prime = DEFAULT_PRIME
     proof = fri_prove(codeword, dom, prime, Transcript(b"fri-test"), 4, 0)
@@ -440,7 +444,13 @@ def test_fri_rejects_unbound_sibling_forgery_of_degree_claim():
             root, tree = commit_codeword(cw, prime)
             commitments.append(root)
             trees.append(tree)
-            transcript.absorb(b"fri-commit-" + j.to_bytes(4, "big"), root)
+            # Round 0 is labelled with the ASCII "0", later rounds with a
+            # four-byte index; the verifier does the same. Round 13 found
+            # this forgery labelling round 0 with four bytes, which made
+            # the verifier reject it at the position check, before the
+            # sibling check it exists to exercise.
+            label = b"fri-commit-0" if j == 0 else b"fri-commit-" + j.to_bytes(4, "big")
+            transcript.absorb(label, root)
             if j < rounds:
                 betas.append(_squeeze_beta(transcript, prime, j))
                 domains.append([x * x % prime for x in domains[-1][: len(cw) // 2]])
@@ -512,3 +522,42 @@ def test_fri_grinding_nonce_decides_the_query_positions():
     # when it satisfies the trailing-zero test on some other state.
     p12.grinding_nonce = p0.grinding_nonce
     assert not fri_verify(p12, dom, prime, Transcript(b"fri-test"), 8, 12)
+
+
+def test_fri_malformed_proof_shapes_raise():
+    # Round 13. The docstring promises ValueError for a structurally
+    # malformed proof; a resized final layer and a wrong-length Merkle
+    # path were rejected by value instead, and an out-of-range nonce
+    # surfaced as OverflowError. None accepted anything; the contract
+    # is what changed.
+    codeword, dom = _honest_codeword()
+    prime = DEFAULT_PRIME
+    proof = fri_prove(codeword, dom, prime, Transcript(b"fri-test"), 4, 4)
+    assert fri_verify(proof, dom, prime, Transcript(b"fri-test"), 4, 4)
+
+    resized = FRIProof(
+        proof.commitments, proof.query_openings,
+        proof.final_codeword * 2, proof.grinding_nonce,
+    )
+    with pytest.raises(ValueError):
+        fri_verify(resized, dom, prime, Transcript(b"fri-test"), 4, 4)
+
+    opening = proof.query_openings[0][0]
+    short = [row[:] for row in proof.query_openings]
+    short[0][0] = QueryOpening(
+        leaf_index=opening.leaf_index,
+        leaf_value=opening.leaf_value,
+        sibling_value=opening.sibling_value,
+        merkle_path=opening.merkle_path[:-1],
+        sibling_path=opening.sibling_path,
+    )
+    with pytest.raises(ValueError):
+        fri_verify(FRIProof(proof.commitments, short, proof.final_codeword,
+                            proof.grinding_nonce),
+                   dom, prime, Transcript(b"fri-test"), 4, 4)
+
+    for bad_nonce in (-1, 1 << 64):
+        with pytest.raises(ValueError):
+            fri_verify(FRIProof(proof.commitments, proof.query_openings,
+                                proof.final_codeword, bad_nonce),
+                       dom, prime, Transcript(b"fri-test"), 4, 4)
