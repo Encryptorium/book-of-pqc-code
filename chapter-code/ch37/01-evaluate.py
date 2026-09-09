@@ -13,8 +13,9 @@ ETH_BLOCK_GAS_LIMIT = 60_000_000  # EIP-7935 / Fusaka, Dec 2025
 ETH_TX_BASE_GAS = 21_000
 ETH_GAS_PER_NONZERO_CALLDATA_BYTE = 16
 
-# ECDSA-secp256k1 is the Taproot key-path baseline: the tweaked public
-# key lives in the output script, so the witness reveals only the sig.
+# The 64-byte classical row is the Taproot key-path baseline, where the
+# signature is BIP-340 Schnorr: the tweaked public key lives in the
+# output script, so the witness reveals only the signature.
 # The PQ candidates are modeled as P2WPKH-style commit-then-reveal,
 # so the spend witness reveals both the public key and the signature.
 CANDIDATES = {
