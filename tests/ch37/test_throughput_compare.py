@@ -18,8 +18,9 @@ def test_rank_btc_returns_descending_throughput(candidate_set):
         assert counts[i] >= counts[i + 1]
 
 
-def test_rank_btc_ecdsa_is_first():
-    """ECDSA dominates per-block tx throughput on Bitcoin."""
+def test_rank_btc_classical_is_first():
+    """The classical secp256k1 baseline dominates per-block tx throughput on
+    Bitcoin, where it is a BIP-340 Schnorr key-path spend."""
     ranking = throughput_compare.rank("btc")
     assert ranking[0][0] == "classical-secp256k1"
 
@@ -49,14 +50,14 @@ def test_rank_unknown_budget_assertion():
         throughput_compare.rank("solana")
 
 
-def test_relative_throughput_ecdsa_self_is_one():
+def test_relative_throughput_classical_self_is_one():
     """Relative throughput of a primitive against itself is 1.0."""
     assert throughput_compare.relative_throughput(
         "classical-secp256k1", "classical-secp256k1"
     ) == 1.0
 
 
-def test_relative_throughput_pq_below_ecdsa():
+def test_relative_throughput_pq_below_classical():
     """All PQ candidates report relative throughput strictly below 1.0."""
     for pq in ("ML-DSA-65", "SLH-DSA-128s", "Ed25519+ML-DSA-65"):
         for budget in ("btc", "eth"):

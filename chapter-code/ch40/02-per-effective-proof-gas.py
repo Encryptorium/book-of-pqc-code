@@ -12,8 +12,9 @@ ETH_BLOCK_GAS_LIMIT = 60_000_000  # EIP-7935 EL-client default; Fusaka, December
 
 # Per-proof gas anchors at chain-tip 2026 (ethSTARK-shaped). All three
 # are illustrative pedagogical anchors, not measured benchmarks from a
-# primary source. The block gas limit above is a published protocol
-# parameter and is the one figure here that is not assumed.
+# primary source. The block gas limit above is a scenario too, matching
+# the 60M execution-layer client default EIP-7935 recommends, which is
+# a validator-and-client-default regime and not a fixed protocol constant.
 GAS_PER_PROOF = {
     "legacy-sha256-stark":      5_000_000,
     "wider-hash-stark":         6_500_000,

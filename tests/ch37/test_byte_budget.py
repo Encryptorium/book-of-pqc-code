@@ -58,9 +58,9 @@ def test_eth_gas_limit_anchor(budget_anchors):
 
 
 def test_witness_reveals_pk_only_for_pq_candidates():
-    """ECDSA (P2TR-style) hides the pk in scriptPubKey; PQ candidates reveal it.
+    """The classical row (P2TR-style) hides the pk in scriptPubKey; PQ candidates reveal it.
 
-    The Bitcoin throughput model uses two output patterns. ECDSA at the
+    The Bitcoin throughput model uses two output patterns. The classical row at the
     Taproot baseline keeps the tweaked public key in the output script,
     so the witness on spend is the signature alone. Any future PQ
     signature soft fork is assumed to follow a P2WPKH-style commit-
@@ -73,15 +73,15 @@ def test_witness_reveals_pk_only_for_pq_candidates():
 
 
 def test_witness_bytes_match_output_pattern():
-    """witness_bytes sums sig + pk on PQ rows; sig alone on the ECDSA row."""
+    """witness_bytes sums sig + pk on PQ rows; sig alone on the classical row."""
     assert byte_budget.witness_bytes("classical-secp256k1") == 64
     assert byte_budget.witness_bytes("ML-DSA-65") == 1952 + 3309
     assert byte_budget.witness_bytes("SLH-DSA-128s") == 32 + 7856
     assert byte_budget.witness_bytes("Ed25519+ML-DSA-65") == (32 + 1952) + (64 + 3309)
 
 
-def test_btc_tx_per_block_ecdsa_baseline():
-    """ECDSA at 64-byte signatures yields ~9k transactions per Bitcoin block.
+def test_btc_tx_per_block_classical_baseline():
+    """The classical row at 64-byte signatures yields ~9k transactions per Bitcoin block.
 
     With 380-weight overhead and a 64-byte witness (P2TR key-path),
     each transaction costs 444 weight units. The 4 MB weight budget
@@ -101,7 +101,7 @@ def test_btc_tx_per_block_ml_dsa_includes_public_key():
     witness carries 1952 + 3309 = 5261 bytes. With 380 overhead the
     per-tx weight is 5641. The 4 MB budget yields floor(4_000_000 /
     5641) = 709 transactions per block, a 12.7-fold drop against the
-    ECDSA baseline.
+    classical baseline.
     """
     tx = byte_budget.transactions_per_btc_block("ML-DSA-65")
     assert tx == 4_000_000 // (380 + 1952 + 3309)
@@ -123,11 +123,11 @@ def test_btc_tx_per_block_composite_includes_public_key():
 
 
 def test_btc_tx_per_block_pq_candidates_lose_throughput():
-    """All three PQ candidates yield strictly fewer tx/block than ECDSA."""
-    ecdsa_tx = byte_budget.transactions_per_btc_block("classical-secp256k1")
+    """All three PQ candidates yield strictly fewer tx/block than the classical row."""
+    classical_tx = byte_budget.transactions_per_btc_block("classical-secp256k1")
     for pq in ("ML-DSA-65", "SLH-DSA-128s", "Ed25519+ML-DSA-65"):
         pq_tx = byte_budget.transactions_per_btc_block(pq)
-        assert pq_tx < ecdsa_tx, f"{pq} unexpectedly matches ECDSA throughput"
+        assert pq_tx < classical_tx, f"{pq} unexpectedly matches classical throughput"
 
 
 def test_slh_dsa_btc_throughput_lowest_of_pq():
@@ -156,7 +156,7 @@ def test_eth_tx_per_block_calldata_envelope():
 
     The marginal model is the legacy 16-gas-per-nonzero-byte rate
     that applies on the execution-gas-dominant branch of the
-    EIP-7623 max(). ECDSA: 21000 base + 64*16 = 22024 gas per tx.
+    EIP-7623 max(). Classical row: 21000 base + 64*16 = 22024 gas per tx.
     60M / 22024 = 2724. ML-DSA-65: 21000 + 3309*16 = 73944 gas per
     tx. 60M / 73944 = 811.
     """
@@ -199,7 +199,7 @@ def test_eth_tx_per_block_calldata_floor():
     """Per-block tx throughput under the EIP-7623 data-floor model.
 
     For an all-nonzero signature, per-tx gas = 21000 + 40*sig_bytes.
-    ECDSA: 21000 + 2560 = 23560. 60M / 23560 = 2546.
+    Classical row: 21000 + 2560 = 23560. 60M / 23560 = 2546.
     ML-DSA-65: 21000 + 132360 = 153360. 60M / 153360 = 391.
     SLH-DSA-128s: 21000 + 314240 = 335240. 60M / 335240 = 178.
     Ed25519+ML-DSA-65: 21000 + 134920 = 155920. 60M / 155920 = 384.
@@ -252,7 +252,7 @@ def test_deployment_shape_is_per_candidate():
 
     test_evaluate_returns_full_envelope asserts only that the shape is
     a member of the three-element vocabulary, which four candidates
-    drawn from three labels satisfy under any permutation: ECDSA can
+    drawn from three labels satisfy under any permutation: the classical row can
     read composite-cutover and ML-DSA-65 can read deployed-baseline
     with the whole suite green. The chapter's Tradeoffs table prints
     this column, so the label has to be pinned per row.

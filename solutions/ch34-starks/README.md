@@ -33,13 +33,17 @@ subgroup of `F_97^*`). The AIR has one transition constraint
 Three things this package is not, none of which the module names give away.
 
 **It is not zero-knowledge.** The prover sends the trace in the clear
-alongside the FRI proof. A production STARK hides the trace behind a
-composition polynomial, a random linear combination of the constraint
-quotients that FRI also proves low-degree, and this package has no
-composition polynomial at all. Chapter 34 Section 4.5 explains what that
-buys and what it costs; the soundness argument still closes, via a
-consistency check binding the sent trace to the committed codeword, but
-the "ZK" in zk-STARK is absent by construction.
+alongside the FRI proof, and not sending it would not be hiding it
+either: zero knowledge needs a separate randomisation of the trace and
+its commitments, which this package does not do. Separately, and it is a
+different omission, this package has no composition polynomial at all,
+the random linear combination of the constraint quotients that FRI also
+proves low-degree, so it drops the production route by which a verifier
+checks the constraints without receiving the trace. Restoring the
+composition polynomial alone would close that route and still supply no
+ZK. Chapter 34 Section 4.5 explains both; the soundness argument still
+closes, via a consistency check binding the sent trace to the committed
+codeword, but the "ZK" in zk-STARK is absent by construction.
 
 **It implements nothing standardised**, so there is no specification to be
 byte-compatible with and no known-answer tests to match. FRI, AIR and the
