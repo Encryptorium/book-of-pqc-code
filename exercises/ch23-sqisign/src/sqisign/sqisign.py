@@ -179,8 +179,12 @@ def sign(message: bytes, sk: SecretKey) -> Signature:
     # path. Note what this toy does not do: real SQIsign commits first,
     # derives the challenge from the commitment, and computes the response
     # from secret quaternion data, so the response reveals nothing. Here BFS
-    # finds the connecting isogeny without the secret at all, which is why
-    # the toy has no zero-knowledge property.
+    # finds the connecting isogeny from public data alone, so anyone can
+    # produce a valid toy signature without the signing secret. That is a
+    # failure of unforgeability, and it is not by itself an argument about
+    # zero knowledge; the toy has no zero-knowledge property for the
+    # separate reason that it omits the commitment and the sigma-protocol
+    # structure the real scheme's analysis rests on.
     #
     # Reference: Chapter 23, 'Toy SQIsign: sign'
     #

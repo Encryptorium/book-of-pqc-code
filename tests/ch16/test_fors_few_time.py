@@ -22,8 +22,13 @@ def test_index_collision_rate_grows_with_q():
                 collisions += 1
             used[j].add(indices[j])
 
-    # With q=50, k=6, t=16, expected collisions per tree ~ q^2/(2t) ~ 78.
-    # Over k=6 trees, total expected ~ 468.  We just check it is non-zero.
+    # The counter increments at most once per (message, tree), when that
+    # tree's index has been drawn before, so it counts repeated draws and not
+    # colliding pairs. Its ceiling is k*(q-1) = 294. The occupancy expectation
+    # for repeated draws is k*[q - t*(1 - (1 - 1/t)^q)] = 6*[50 - 16*(1 -
+    # (15/16)^50)] ~ 207.8, and this seed lands on 208. Expected colliding
+    # PAIRS would be k*C(q,2)/t ~ 459.4, a different statistic that this loop
+    # does not measure. The assertion only needs the count to be non-zero.
     assert collisions > 0, "Expected at least one index collision at q=50"
 
 

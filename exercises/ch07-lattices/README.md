@@ -20,4 +20,13 @@ pytest tests/ch07/
 
 The test suite covers determinant invariance under unimodular change of basis, the dual-of-dual identity, the Minkowski bound on small lattices, and change-of-basis detection.
 
-## Chapters 8 through 11 reuse this package.
+## What Chapters 8 through 11 take from this package
+
+The concepts, not the code. Nothing under any other `solutions/chNN-*`
+package imports `lattices`. Chapters 8 through 11 build on the geometry
+this package makes concrete (bases, determinants, duals, the shortest
+vector), and they reach for NumPy the same way, but they work in
+different objects: ML-KEM's arithmetic is over the polynomial ring
+`R_q = Z_q[x]/(x^n + 1)`, not over floating-point inverses of large real
+matrices. An exercise in those chapters depends on their own packages
+alone.

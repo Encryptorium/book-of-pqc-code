@@ -30,9 +30,15 @@ identifies the message every time. The real constructions commit as
 that ``A_1 r + e`` is a Module-LWE sample masking the message. The
 fixed-error commit here demonstrates the binding equation only.
 
-Chapter 32 uses this module to exhibit SIS-style binding concretely and
-to let the reader verify that tampering with either the committed
-vector or the error term is detected with probability one. The module
+Chapter 32 uses this module to exhibit SIS-style binding concretely.
+``verify`` is a deterministic recomputation of the equation, so it
+rejects any opening that does not satisfy it. That is not the same as
+detecting every tampering: a second opening in the kernel of ``A``
+produces the same commitment and is accepted. Binding is the claimed
+difficulty of finding such a second SHORT opening, which is Module-SIS,
+and not an injectivity property of a short modular linear map. On a
+matrix with two equal columns the unit vectors ``e_1`` and ``e_2`` are
+both short, both open the same commitment, and both verify. The module
 does not implement an evaluation-opening protocol because the toy
 parameters are too small to support a sensible evaluation procedure;
 the Chapter 32 prose cites Greyhound, Jindo, Hachi, and Serval for the
@@ -53,7 +59,7 @@ from dataclasses import dataclass
 DEFAULT_MODULUS = 257
 DEFAULT_DIMENSION = 8  # vector length
 DEFAULT_COMMIT_SIZE = 4  # number of commitment coordinates
-DEFAULT_ERROR_BOUND = 2  # small-error infinity norm for hiding
+DEFAULT_ERROR_BOUND = 2  # small-error infinity norm for the binding equation
 
 
 @dataclass
@@ -65,7 +71,8 @@ class LatticeParams:
     the committed vector m. ``commit_size`` is the length of the
     commitment vector (equivalently, the number of rows of the public
     matrix A). ``error_bound`` bounds the infinity norm of the random
-    error e used for hiding.
+    error e added to the binding equation; it supplies no hiding
+    guarantee, for the reason the module docstring gives.
     """
 
     modulus: int
@@ -151,10 +158,12 @@ def _centered(value: int, modulus: int) -> int:
 
 
 def sample_error(params: LatticeParams) -> list[int]:
-    """Sample a small-norm error vector for hiding.
+    """Sample a small-norm error vector for the binding equation.
 
     Each coordinate is uniform in ``[-error_bound, error_bound]``. The
-    returned representation is centered; the caller adds modulo q.
+    returned representation is centered; the caller adds modulo q. The
+    error carries no hiding guarantee: see the module docstring for the
+    short-residual distinguisher that recovers the message anyway.
     """
     # EXERCISE: implement this function.
     #
@@ -163,9 +172,13 @@ def sample_error(params: LatticeParams) -> list[int]:
     # subtract the bound. There are commit_size coordinates, one per
     # commitment coordinate rather than one per message coordinate, because
     # e is added after A*m. The result is in centered representation and the
-    # caller reduces modulo q. The error is what makes the commitment
-    # hiding; its smallness is what keeps the norm bound in the binding
-    # argument tight.
+    # caller reduces modulo q. The error supplies the small additive term of
+    # the binding equation, and its smallness is what keeps the norm bound
+    # in the SIS argument tight. It is not a hiding mechanism: a receiver
+    # holding two candidate messages subtracts A*m for each from C and keeps
+    # the one whose residual is short, which identifies the message every
+    # time at these parameters. Hiding in the real schemes comes from an
+    # independent Module-LWE term the toy has no analogue of.
     #
     # Reference: Chapter 32, 'Lattice PCS: SIS binding, recent literature'
     #
@@ -220,10 +233,12 @@ def verify(
     # coordinate against the stored commitment, returning a bool. There is
     # no evaluation protocol at these toy parameters: the opening reveals
     # the vector outright, so verification is the commit equation run a
-    # second time. Tampering with either the message or the error moves at
-    # least one coordinate and is caught with probability one here; it is
-    # the hardness of finding two openings that agree, not any probabilistic
-    # check, that carries binding.
+    # second time. The check is deterministic, so an opening that does not
+    # satisfy the equation is always rejected. That is weaker than catching
+    # every tampering: a second opening differing by a kernel vector of A
+    # recomputes to the same commitment and is accepted. Binding is the
+    # claimed hardness of finding a second SHORT opening, which is SIS,
+    # rather than any property of this recomputation.
     #
     # Reference: Chapter 32, 'Lattice PCS: SIS binding, recent literature'
     #

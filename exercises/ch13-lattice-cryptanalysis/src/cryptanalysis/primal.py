@@ -56,9 +56,12 @@ def primal_success(beta: int, k: int, n: int, q: int, zeta: float, m: int) -> bo
     # Set d = m + k * n + 1, the Kannan embedding dimension for a Module-LWE
     # instance of rank k and degree n, and take delta = delta_beta(beta).
     # Return True when log(zeta * sqrt(beta)) is at most (2 * beta - d - 1)
-    # * log(delta) + (m / d) * log(q). Stay in log space: at Kyber-scale d
-    # both delta ** (2 * beta - d - 1) and q ** (m / d) overflow or
-    # underflow a float. Note the exponent 2 * beta - d - 1 is negative in
+    # * log(delta) + (m / d) * log(q). Stay in log space, not because either
+    # factor overflows (d = m + kn + 1 exceeds m, so q ** (m / d) sits
+    # strictly between 1 and 3329, and the delta factor over the search
+    # range is modest too) but because comparing multiplicative factors as
+    # sums of logs is the stable form, and it is the form the chapter writes
+    # the inequality in. Note the exponent 2 * beta - d - 1 is negative in
     # this regime, so raising m helps the attacker through q ** (m / d) and
     # hurts through the growing d.
     #

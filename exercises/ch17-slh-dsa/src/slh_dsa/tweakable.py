@@ -136,10 +136,13 @@ def PRF(params: SLHDSAParams, pk_seed: bytes, sk_seed: bytes,
     # where M1 sits: SHA-256(PK.seed || toByte(0, 64 - n) || ADRS_compressed
     # || SK.seed) truncated to n, on SHA-256 for every SHA2 set. The SHAKE
     # branch is SHAKE256(PK.seed || ADRS || SK.seed) to n bytes. The address
-    # is the entire reason one SK.seed can expand into every WOTS+ and FORS
-    # secret in the key without two of them ever coinciding, so a copy with
-    # a stale chain address silently produces the wrong secret rather than
-    # an error.
+    # is what gives every WOTS+ and FORS position in the key its own
+    # derivation input from a single SK.seed. It does not promise the n-byte
+    # outputs never coincide, which is a computational assumption on the
+    # hash rather than an injectivity claim; FIPS 205 sizes the construction
+    # so the probability stays inside the security target. A copy with a
+    # stale chain address silently produces the wrong secret rather than an
+    # error.
     #
     # Reference: Chapter 17, 'Tweakable hash functions' (FIPS 205 Sections 11.1, 11.2.1, 11.2.2)
     #

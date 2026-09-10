@@ -74,7 +74,7 @@ A clone carries all 41 chapters. Run a chapter's suite from the repository root:
 pytest tests/ch01
 ```
 
-The suite defaults to the reference implementation, so a clone is green on the first run. On a fresh clone `pytest tests/` reports 2,224 passed and 16 skipped: six Chapter 17 signature-generation sets, nine Chapter 21 known-answer checks awaiting vendored vectors, and Chapter 27's million-iteration vector. Pytest prints an `s` for each without saying why; add `-rs` to print every reason.
+The suite defaults to the reference implementation, so a clone is green on the first run. On a fresh clone `pytest tests/` reports 2,225 passed and 16 skipped: six Chapter 17 signature-generation sets, nine Chapter 21 known-answer checks awaiting vendored vectors, and Chapter 27's million-iteration vector. Pytest prints an `s` for each without saying why; add `-rs` to print every reason.
 
 The continuous integration named at the top of this README runs in the book's source repository, which is private; this repository carries no workflow of its own. The four trees here are published from that gated source. The claim a reader can verify independently is the one the gate enforces: from a clone in the environment above, `pytest tests/` collects every chapter's suite and passes, apart from the skips this README already names (Chapter 17's slow signature-generation sets, Chapter 27's million-iteration vector, and Chapter 21's known-answer checks until you vendor the official vectors).
 
@@ -83,6 +83,19 @@ The continuous integration named at the top of this README runs in the book's so
 ```
 PQC_IMPL=exercises pytest tests/ch01
 ```
+
+On Windows PowerShell that one line is three: an assignment, a run, and a reset,
+because `PQC_IMPL=... command` is POSIX shell syntax that PowerShell does not
+parse.
+
+```
+$env:PQC_IMPL = 'exercises'
+python -m pytest tests/ch01
+Remove-Item Env:PQC_IMPL
+```
+
+Leaving the variable set is the failure worth knowing about: every later `pytest`
+in that session runs against the stubs.
 
 Every stubbed function raises `NotImplementedError` until you write it, so the first run is red by design. Open `exercises/ch01-quantum-threat/`, implement one function, run again. Each stub keeps the reference implementation's signature and adds a contract block naming what it owes its caller, where the book covers it, and which test proves it. Most stubs keep the reference docstring too, so the contract you implement against is the one the book describes rather than a paraphrase. The remaining eighteen are functions the reference itself wrote without one: seven one-line address accessors in Chapter 17, five dataclass `__post_init__` validators in Chapters 7 through 10, and six helpers covering curve and quaternion arithmetic, key derivation, and configuration parsing. There the contract block is the whole contract.
 
@@ -100,7 +113,7 @@ Nothing is hidden: `solutions/` is in this clone. Reading it costs you the exerc
 
 **`python3 --version` reports 3.8 or 3.9.** Some reference packages annotate an optional argument with a PEP 604 union such as `bytes | None` and do not import `annotations` from `__future__`. On both versions the annotation is evaluated when the function is defined, so importing one of those modules raises `TypeError: unsupported operand type(s) for |` rather than a `SyntaxError`. The official installer at python.org bypasses a system package manager's pin.
 
-**The venv activates but `which python` still points at the system CPython.** The activate script was run rather than sourced, so its `PATH` edit never reached the shell you are in. Run `source .venv/bin/activate` from the directory holding `.venv`, then check `which python` again.
+**The venv activates but `which python` still points at the system CPython.** The activate script was run rather than sourced, so its `PATH` edit never reached the shell you are in. Run `source .venv/bin/activate` from the directory holding `.venv`, then check `which python` again. On PowerShell the equivalent check is `Get-Command python`, and the activation line to run is `.venv\Scripts\Activate.ps1`.
 
 [Appendix C](https://book.encryptorium.com/appendices/appendix-c-environment-setup/) covers the environment contract in full.
 

@@ -222,10 +222,11 @@ def test_system_profile_includes_citation_key():
 def test_system_profile_inner_only_flag_is_set():
     """system_profile reports inner_only=True so callers cannot misread the scope.
 
-    The data model captures the inner four-layer decomposition only; the outer
-    pairing wrapper claim (ZKsync) is engineering inference per the Ch 35 hedge
-    and sits outside the model. The inner_only and outer_wrapper_note keys are
-    the data-model-side hedge that mirrors the docstring.
+    The data model captures the inner four-layer decomposition only; ZKsync's
+    documented outer pairing wrapper sits outside this returned profile rather
+    than outside the model, since it has four layers of its own. The inner_only
+    and outer_wrapper_note keys are what stop a caller reading the inner
+    profile as the whole system.
     """
     for system in ("ZKsync-Era-Boojum", "Starknet-ethSTARK"):
         profile = vl.system_profile(system)

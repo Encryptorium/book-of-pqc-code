@@ -133,9 +133,11 @@ def signature_bytes(primitive: str) -> int:
     #
     # Assert the name is a key of CANDIDATES so an unknown primitive crashes
     # with the name echoed back, then return that row's sig_bytes. The four
-    # figures are fixed by standards rather than derived: 64 for the BIP-340
-    # canonical ECDSA form, 3309 for ML-DSA-65 per FIPS 204 Table 2, 7856
-    # for SLH-DSA-128s per FIPS 205 Table 2, and 64 + 3309 for the
+    # figures are fixed by standards rather than derived: 64 for the
+    # classical-secp256k1 row, which is a BIP-340 Schnorr signature at its
+    # exact on-chain size on the Bitcoin side and a canonical ECDSA (r, s)
+    # pair on the Ethereum side, 3309 for ML-DSA-65 per FIPS 204 Table 2,
+    # 7856 for SLH-DSA-128s per FIPS 205 Table 2, and 64 + 3309 for the
     # composite.
     #
     # Reference: Chapter 37, 'Sizes and primitives at chain-tip 2026'
@@ -152,9 +154,10 @@ def public_key_bytes(primitive: str) -> int:
     # The same lookup against pk_bytes, with the same assert. Note how far
     # apart the two hash-based and lattice rows sit: SLH-DSA-128s pairs its
     # 7856-byte signature with a 32-byte public key, while ML-DSA-65 pairs a
-    # smaller signature with a 1952-byte key. That asymmetry is what makes
-    # the Bitcoin witness model, which reveals both, rank the two
-    # differently than signature size alone would.
+    # smaller signature with a 1952-byte key. That asymmetry narrows
+    # ML-DSA-65's advantage under the Bitcoin witness model, which reveals
+    # both, without reversing it: 3309 + 1952 = 5261 still sits below 7856 +
+    # 32 = 7888.
     #
     # Reference: Chapter 37, 'Sizes and primitives at chain-tip 2026'
     #
@@ -203,7 +206,9 @@ def witness_bytes(primitive: str) -> int:
     # Start from signature_bytes and add public_key_bytes when
     # witness_reveals_pk is true. That one conditional is the whole Bitcoin
     # cost model: ML-DSA-65 costs 5261 witness bytes (3309 of signature plus
-    # 1952 of public key) where ECDSA costs 64.
+    # 1952 of public key) where the post-Taproot Schnorr baseline costs 64,
+    # because a P2TR key-path spend keeps its tweaked public key in the
+    # output script and reveals only the signature.
     #
     # Reference: Chapter 37, 'A Strand transaction migrating to ML-DSA-65'
     #
@@ -230,8 +235,8 @@ def transactions_per_btc_block(
     # tx_overhead_wu plus witness_bytes(primitive) weight units.
     # Floor-divide BTC_BLOCK_WEIGHT_LIMIT by that total. Use integer
     # division rather than rounding: a partial transaction does not fit in a
-    # block. ECDSA lands at 4000000 // 444 = 9009 and ML-DSA-65 at 4000000
-    # // 5641 = 709.
+    # block. classical-secp256k1 lands at 4000000 // 444 = 9009 and
+    # ML-DSA-65 at 4000000 // 5641 = 709.
     #
     # Reference: Chapter 37, 'Choose the candidate'
     #
@@ -311,9 +316,9 @@ def transactions_per_eth_block_calldata(
     #
     # Per-transaction gas is ETH_TX_BASE_GAS plus calldata_gas(primitive);
     # floor-divide gas_limit by that. The 21000-gas base is why Ethereum's
-    # throughput drop is shallower than Bitcoin's: it dwarfs ECDSA's 1024
-    # gas of signature calldata, so the baseline row is base-dominated while
-    # the post-quantum rows are calldata-dominated.
+    # throughput drop is shallower than Bitcoin's: it dwarfs the ECDSA
+    # contract wallet's 1024 gas of signature calldata, so the baseline row
+    # is base-dominated while the post-quantum rows are calldata-dominated.
     #
     # Reference: Chapter 37, 'Choose the candidate'
     #

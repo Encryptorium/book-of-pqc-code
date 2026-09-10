@@ -90,4 +90,5 @@ chapter and checked by hand rather than pinned by a test:
   implementations are not constant-time either, which the specification says
   outright in section 1.1.
 - Reference-KAT regression. A compliant test module would need the
-  251-bit-prime backend and the dimension-two translation described above.
+  326-bit-prime backend at the version-3.0 NIST-I characteristic
+  `p = 3 * 2**324 - 1`, and the dimension-two translation described above.

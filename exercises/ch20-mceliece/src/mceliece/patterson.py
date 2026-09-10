@@ -106,9 +106,10 @@ def _error_locator_from_sqrt(
     # where multiplying by x is prepending a zero coefficient. Normalize
     # sigma to monic with the field inverse of its leading coefficient so
     # the caller's root-finding and degree check see a canonical polynomial.
-    # The early stop is what makes decoding polynomial in t: a full GCD
-    # would run down to a constant and discard the a and b that carry the
-    # error positions.
+    # The early stop is not what makes decoding polynomial: a full extended
+    # Euclidean run is polynomial too. It is what keeps the a and b at the
+    # degree bound the locator needs, since running down to a constant
+    # discards exactly the pair that carries the error positions.
     #
     # Reference: Chapter 20, 'Patterson's decoding algorithm'
     #

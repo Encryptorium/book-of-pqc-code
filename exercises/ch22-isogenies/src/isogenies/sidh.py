@@ -203,8 +203,11 @@ def derive_bob(
     # The mirror of derive_alice: build the kernel phi_A(P_B) + beta *
     # phi_A(Q_B) on Alice's curve using a_A as the coefficient, walk E_B
     # steps of degree L_B, and return the j-invariant. Reduce beta modulo
-    # L_B ** E_B first, as keygen_bob did, or a large beta selects a
-    # different kernel here than it did there and the two sides disagree.
+    # L_B ** E_B first, as keygen_bob did, to take the scalar's canonical
+    # residue in the torsion subgroup. Correctness does not depend on it:
+    # phi_A(Q_B) has order 27, so [beta + 27] and [beta] send it to the same
+    # point, and both sides agree either way. It keeps the two call sites
+    # written the same and keeps the multiplication short.
     #
     # Reference: Chapter 22, 'The SIDH protocol'
     #

@@ -95,9 +95,12 @@ def isd_cost_estimate(n: int, k: int, w: int) -> float:
     # success probability. Compute it in the log domain and exponentiate at
     # the end: the falling factorials cancel the factorials, so the log is
     # sum(log2(n - i) for i in range(k)) minus sum(log2(n - w - i) for i in
-    # range(k)). Going through math.comb directly would build integers with
-    # hundreds of thousands of digits at Classic McEliece parameters. At n =
-    # 3488, k = 2720, w = 64 the answer is about 2^142.8.
+    # range(k)). Work in logs not because math.comb cannot cope, since
+    # C(3488, 2720) has only 797 decimal digits, but because the falling
+    # factorials cancel term by term there, the arithmetic happens in the
+    # bits the answer is quoted in, and no large intermediate is built at
+    # any parameter set. At n = 3488, k = 2720, w = 64 the answer is about
+    # 2^142.8.
     #
     # Reference: Chapter 19, 'Prange information-set decoding'
     #

@@ -3,8 +3,15 @@
 The durable-counter wrapper persists ``next_leaf`` to disk before
 calling Ch 15's ``xmss_sign``. These tests exercise: a missing
 counter file, a corrupt counter file, roundtrip sign/verify,
-restart semantics (a fresh process with the same counter file
-refuses to reuse leaves), and leaf exhaustion.
+persisted-state reread (a second signer reading the same counter file
+refuses to reuse a leaf), and leaf exhaustion.
+
+They run inside one pytest process and launch no subprocess, so the
+reread is a simulation of a restart rather than a restart, and nothing
+here establishes crash or power-loss durability. What the wrapper's
+persist-before-sign ordering gives is checked by reading the file back;
+proving it survives an interrupted process would need a real subprocess
+and a real kill.
 """
 
 import json

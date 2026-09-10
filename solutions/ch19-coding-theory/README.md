@@ -29,7 +29,9 @@ Four deliberate limitations, each of which the chapter states in prose:
 - **`goppa.py` is a `t = 1` construction over GF(2^3).** The support is seven
   elements and the parity-check matrix is 3-by-7. A code this small hides
   nothing at all; it exists to show the shape of the trapdoor, not to be one.
-  The full construction over GF(2^12) is Chapter 20's.
+  Chapter 20's teaching construction is larger but still a toy: GF(2^4) with
+  `t = 2`, giving a `[16, 8, >= 5]` code. GF(2^12) with `t = 64` is Classic
+  McEliece's real parameter set, which neither chapter builds.
 - **`isd.py` implements Prange only**, the 1962 baseline. Lee-Brickell, Stern,
   MMT, BJMM and May-Ozerov all improve on it and none is implemented here. Cost
   estimates from `isd_cost_estimate` are Prange iteration counts and are not a
@@ -55,6 +57,10 @@ Four deliberate limitations, each of which the chapter states in prose:
 | `goppa.py` | GF(2^3) arithmetic and the binary parity-check matrix of a `t = 1` Goppa code, as a structural example |
 | `isd.py` | Prange information-set decoding, plus the closed-form expected-iteration estimate `C(n, k) / C(n - w, k)` computed in the log domain |
 
-`isd_cost_estimate` works in logs on purpose: going through `math.comb` directly
-builds integers with hundreds of thousands of digits at Classic McEliece
-parameters, where the answer is about 2^142.8.
+`isd_cost_estimate` works in logs on purpose. Not because `math.comb` cannot
+cope: at Classic McEliece parameters `C(3488, 2720)` has 797 decimal digits and
+`C(3424, 2720)` has 754, which Python handles without complaint. It is that
+the falling factorials cancel term by term in the log domain, so the routine
+does the work-factor arithmetic directly in the bits the answer is quoted in,
+never builds the large intermediates, and stays well behaved at any parameter
+set a reader tries. The answer here is about 2^142.8.

@@ -32,7 +32,7 @@ pytest tests/ch12/
 
 Coverage: parameter table and derived lengths; NTT round-trip and
 multiply-vs-schoolbook (with PDF-pinned zeta landmarks); the rounding/hint algebra
-including the correctness lemma `UseHint(MakeHint(z, r), r) = HighBits(r + z)`;
+including the correctness lemma `UseHint(MakeHint(z, r), r) = HighBits(r + z)` for `||z||_inf <= gamma_2`, which is the premise and not a decoration: one bit cannot carry a correction wider than the window, and the chapter's exercises walk the failure at `gamma_2 + 1`;
 SHAKE known answers; the rejection samplers' bounds and determinism; bit-pack
 round-trips and the three HintBitUnpack rejection conditions; KeyGen/Sign/Verify
 correctness with the abort loop provably firing; and `test_vectors.py`, the NIST

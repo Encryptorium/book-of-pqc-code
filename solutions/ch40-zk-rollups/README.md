@@ -54,18 +54,34 @@ with the Chapter 37 package so the two chapters cannot drift.
 
 **`system_profile` records the inner verifier only.** Its `inner_only`
 flag is set to `True` and its `outer_wrapper_note` says why: an outer
-wrapper, if a system carries one, sits outside the four-layer model. The
-ZKsync outer pairing wrapper is engineering inference from public
-sources rather than a primary-specification claim, the same hedge
-Chapter 35 attaches to the same statement. A caller reading the profile
-alone must not conclude the system carries no Shor-broken cell.
+wrapper, where a system carries one, sits outside this returned inner
+profile. It does not sit outside the four-layer model. ZKsync Era's
+outer pairing wrapper is documented architecture, not inference:
+ZKsync's own Boojum announcement of 17 July 2023 says the STARK proofs
+are wrapped with a non-transparent pairing-based SNARK and that it is
+that SNARK which Ethereum verifies. What Chapter 35 hedges is the exact
+construction the wrapper instantiates, which the announcement leaves
+unnamed. The wrapper has its own L1 to L4 decomposition, and its
+pairing L2 is the dominant Shor-vulnerable acceptance surface, so a
+caller reading the inner profile alone must not conclude the system
+carries no Shor-broken cell.
 
-**The Starknet anchor is the older Stone framing.** The
-`Starknet-ethSTARK` entry in `SYSTEM_ANCHORS` records the ethSTARK and
-Stone verifier that ran through 2025. Stwo replaced Stone on mainnet in
-late October 2025, so the L1, L2, and L4 cells for Starknet should be
-checked against the current specification rather than inherited from
-this entry.
+**The Starknet anchor records the root, and Starknet has two surfaces.**
+The `Starknet-ethSTARK` entry in `SYSTEM_ANCHORS` records the ethSTARK
+and Stone configuration. Stwo took over leaf proving on mainnet in late
+October 2025, but it did not replace the recursion root: SHARP still
+proves the root with Stone, which the Starknet documentation says is
+deliberate, to avoid changing the deployed on-chain verifiers, and it
+is that Stone proof the Solidity verifier on Ethereum reads. So the
+entry's L1 and L2 cells describe the root and not the leaves, which run
+an AIR over the Mersenne-31 prime field under Circle FRI. Its `L4` of
+`SHA-256` is the book's own pedagogical transcript, not any deployed
+Starknet channel: the published Solidity verifier draws its channel
+randomness with Keccak-256. StarkWare announced on 31 March 2026 that
+the L1 verifier will be changed to verify an S-two circuit proof; on
+7 September 2026 no public record of that change shipping was found, so
+it is pending rather than shipped. Chapter 40's Starknet walkthrough
+states all of this.
 
 ## Running the tests
 

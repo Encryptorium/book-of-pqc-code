@@ -40,24 +40,26 @@ def test_primal_beta_reproduces_kyber_table_4(
     )
 
 
-def test_primal_success_is_monotone_in_beta() -> None:
-    """If primal_success holds at beta_0, it also holds at every beta > beta_0.
+def test_primal_success_flips_once_over_a_stated_beta_interval() -> None:
+    """The flag turns on once over beta in [500, 800] and stays on.
 
-    The left-hand side of equation 9 grows as sqrt(beta). The right-hand
-    side grows faster because delta(beta) < 1 (no, wait: delta > 1) and
-    the exponent 2*beta - d - 1 increases linearly in beta. So the RHS
-    grows exponentially in beta while the LHS grows only as sqrt(beta),
-    which makes success condition monotone in beta.
+    This is a statement about that interval, not a proof of monotonicity in
+    general. The right-hand side of equation 9 is not an exponential in beta
+    with a fixed base: delta is delta(beta), the root-Hermite factor, which the
+    estimator recomputes at every block size, so the exponent 2*beta - d - 1
+    and the base both move. What the sweep establishes is that on these
+    ML-KEM-768-like parameters the condition has a single threshold, which is
+    what primal_beta's search assumes when it reports the smallest beta.
     """
     k, n, q, zeta = 3, 256, 3329, 1.0
     m = 650
-    beta_low = 500
-    beta_high = 800
-    assert not primal_success(beta_low, k, n, q, zeta, m), (
-        "expected primal_success to fail at beta=500 for ML-KEM-768-like params"
-    )
-    assert primal_success(beta_high, k, n, q, zeta, m), (
-        "expected primal_success to hold at beta=800 for ML-KEM-768-like params"
+    flags = [primal_success(beta, k, n, q, zeta, m) for beta in range(500, 801)]
+    assert not flags[0], "expected primal_success to fail at beta=500"
+    assert flags[-1], "expected primal_success to hold at beta=800"
+    transitions = [i for i in range(1, len(flags)) if flags[i] != flags[i - 1]]
+    assert transitions == [125], (
+        "expected exactly one transition, at beta=625, got "
+        f"{[500 + i for i in transitions]}"
     )
 
 

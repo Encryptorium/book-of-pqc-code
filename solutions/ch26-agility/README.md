@@ -49,10 +49,12 @@ verification as legacy use. The `state` values in `registry.REGISTRY` are one
 organization's policy choices wearing NIST's vocabulary, and reading them as a
 transcription of NIST status would be wrong in both directions.
 
-**`permits` is stricter than Block 3's signer is.** `permits("deprecated",
+**Block 3's signer is stricter than `permits` is.** `permits("deprecated",
 "protect")` returns `True`, because deprecation signals risk rather than
-prohibition. Block 3's `sign` refuses `deprecated` anyway. Both are correct:
-the state says what is allowed, the signer applies a local policy on top.
+prohibition. Block 3's `sign` refuses `deprecated` anyway, alongside
+`disallowed`. Both are correct: the state says what is allowed, the signer
+applies a local policy on top, and here that local policy is the tighter of
+the two.
 
 ## What the suite does not establish
 

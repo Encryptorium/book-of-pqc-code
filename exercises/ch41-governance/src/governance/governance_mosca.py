@@ -116,16 +116,18 @@ def cadence_options(X: int, Y: int, Z: int) -> Dict[str, CadenceOption]:
     # build all four CadenceOption records. per-vote-cycle is always
     # feasible with interval 0 and cost 'prohibitive', because rotating the
     # committee's keys at every vote would need a multisig key ceremony plus
-    # on-chain registration each time; it is the zero-overhead lower bound
-    # and never the answer. every-N-vote-cycles is feasible when the safe
-    # window is at least one year and the breach is positive, carries the
-    # safe window as its interval, and costs 'medium'. governance-trigger is
-    # feasible only when the breach is non-positive, carries interval 0, and
-    # costs 'low', because the committee sets the tempo rather than the
-    # arithmetic. hard-fork-trigger is always feasible with interval 0 and
-    # cost 'high'. Key the returned dict by the four CADENCE_NAMES. The
-    # rationale strings are prose for the operator and nothing asserts on
-    # them.
+    # on-chain registration each time; it is the zero-interval lower bound,
+    # the shortest schedule the model can name, and never the answer; the
+    # zero is the rotation interval and not the overhead, which is the
+    # ceremony repeated every cycle. every-N-vote-cycles is feasible when
+    # the safe window is at least one year and the breach is positive,
+    # carries the safe window as its interval, and costs 'medium'.
+    # governance-trigger is feasible only when the breach is non-positive,
+    # carries interval 0, and costs 'low', because the committee sets the
+    # tempo rather than the arithmetic. hard-fork-trigger is always feasible
+    # with interval 0 and cost 'high'. Key the returned dict by the four
+    # CADENCE_NAMES. The rationale strings are prose for the operator and
+    # nothing asserts on them.
     #
     # Reference: Chapter 41, 'Plan the governance-rotation cadence'
     #

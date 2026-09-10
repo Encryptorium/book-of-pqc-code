@@ -348,10 +348,14 @@ def system_profile(system_name: str) -> Dict[str, object]:
     # each of the four full layer keys to a lookup of that layer against the
     # anchor's short-key candidate, so ZKsync Era Boojum resolves Plonkish,
     # FRI, FRI-IOP, SHA-256 and Starknet ethSTARK resolves AIR, FRI,
-    # FRI-IOP, SHA-256. The inner_only flag is the data-model half of the
-    # chapter's hedge: an outer pairing wrapper, if present, sits outside
-    # this four-layer model, so a caller reading the profile alone must not
-    # conclude the system carries no Shor-broken cell.
+    # FRI-IOP, SHA-256. The inner_only flag says what the returned profile
+    # covers: an outer wrapper, where a system carries one, sits outside
+    # this returned profile and not outside the four-layer model, because it
+    # has four layers of its own. ZKsync Era's outer pairing wrapper is
+    # documented in the Boojum announcement rather than inferred, and its
+    # pairing L2 is the dominant Shor-vulnerable acceptance surface, so a
+    # caller reading the inner profile alone must not conclude the system
+    # carries no Shor-broken cell.
     #
     # Reference: Chapter 40, 'Decompose the verifier into layers and pick a per-layer candidate'
     #

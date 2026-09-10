@@ -93,8 +93,10 @@ def sample_poly_cbd(eta: int, seed: bytes, nonce: int) -> np.ndarray:
     #
     # Expand PRF(eta, seed, nonce) to its 64 * eta bytes and hand them
     # straight to cbd_eta. Two lines, and the nonce carries all the
-    # separation: it is what makes row i of the secret and row i of the
-    # error independent draws from a single sigma.
+    # separation: it is what gives row i of the secret and row i of the
+    # error separate pseudorandom draws from a single sigma,
+    # independent-looking under the PRF assumption rather than independent
+    # as a statistical fact.
     #
     # Reference: Chapter 11, 'Sampling: CBD_eta and rejection-sampled uniform' (FIPS 203 §4.2)
     #

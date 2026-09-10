@@ -1,5 +1,7 @@
 """Pins every number Chapter 3 and its Appendix D print about the 2D lattice."""
 
+import pytest
+
 from hard_problems.lattice import (
     CHAPTER_BASIS,
     determinant,
@@ -25,6 +27,19 @@ def test_membership_congruence_is_the_chapter_s_7x_minus_2y(chapter_basis):
     for x in range(-15, 16):
         for y in range(-15, 16):
             assert in_lattice(chapter_basis, (x, y)) == ((7 * x - 2 * y) % 29 == 0)
+
+
+def test_membership_congruence_refuses_a_basis_it_cannot_decide():
+    """The congruence is only sufficient when the form is onto Z / abs(det B).
+
+    On ((2, 0), (0, 2)) it is not: the form is 0*x - 2*y, whose image mod 4 is
+    the even residues, so it would put (1, 0) inside 2*Z^2. The routine raises
+    rather than answering, and it still answers for the chapter's basis, whose
+    first row is primitive.
+    """
+    with pytest.raises(ValueError):
+        in_lattice(((2, 0), (0, 2)), (1, 0))
+    assert in_lattice(((1, 0), (0, 2)), (1, 0))
 
 
 def test_membership_congruence_agrees_with_solving_the_system(chapter_basis):

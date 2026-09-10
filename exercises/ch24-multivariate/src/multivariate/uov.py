@@ -64,9 +64,10 @@ class UOVParams:
         # broken in polynomial time by Kipnis-Shamir 1998; the unbalanced
         # choice is the whole response to that attack, and the attack cost
         # grows as q^(n - 2m), so the strict inequality is the security
-        # condition rather than a style preference. Note that n >= 2m is
-        # required for the scheme to make sense at all, since there are m
-        # oil variables.
+        # condition rather than a style preference. Keep that separate from
+        # what the map needs to exist: m oil variables ask only n >= m, and
+        # a nonempty vinegar part n > m. The n > 2m condition is the
+        # security choice, not the well-formedness one.
         #
         # Reference: Chapter 24, 'The MQ problem and the Oil-Vinegar trapdoor'
         #

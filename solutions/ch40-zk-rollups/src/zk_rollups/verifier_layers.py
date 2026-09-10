@@ -331,10 +331,14 @@ def system_profile(system_name: str) -> Dict[str, object]:
         "inner_only": True,
         "outer_wrapper_note": (
             "The four-layer decomposition above is the inner verifier "
-            "only. An outer wrapper, if present, sits outside this "
-            "model. ZKsync Era is reported to wrap its FRI inner proof "
-            "in an outer pairing-based proof for compression; this is "
-            "engineering inference, not a primary-spec claim. See Ch 35."
+            "only. An outer wrapper, where a system carries one, sits "
+            "outside this returned profile and not outside the model: "
+            "it has its own four layers. ZKsync Era wraps its FRI inner "
+            "proof in a pairing-based SNARK before on-chain "
+            "verification, which the Boojum announcement documents; "
+            "what is unnamed there is the exact construction. That "
+            "wrapper's pairing L2 is the dominant Shor-vulnerable "
+            "acceptance surface. See Ch 35."
         ),
         "layers": {},
     }

@@ -26,8 +26,11 @@ deployed.
 Divergences from what a real system does, in the order a reader is
 likely to trip over them:
 
-- **The R1CS field is `P = 97`.** A deployed SNARK works over a prime of
-  around 255 bits, for BLS12-381 the scalar field. Ninety-seven is small
+- **The R1CS field is `P = 97`.** A pairing-based system such as Groth16
+  works over a prime of around 255 bits, for BLS12-381 the scalar field.
+  Not every deployed SNARK does: Boojum runs over Goldilocks, Stwo over
+  Mersenne-31, and Binius commits over binary-field towers. Ninety-seven is
+  small
   enough that the toy system's arithmetic can be checked by hand, and far
   too small for anything else. `dot` and `check_r1cs` are the chapter's
   printed block verbatim.

@@ -23,6 +23,8 @@ Standard library only.
 
 from __future__ import annotations
 
+import math
+
 Basis = tuple[tuple[int, int], tuple[int, int]]
 Point = tuple[int, int]
 
@@ -41,6 +43,13 @@ def in_lattice(basis: Basis, point: Point) -> bool:
 
     Uses the membership congruence derived in the module docstring, which is why
     this is a single modulo rather than a search over coefficients.
+
+    The congruence is necessary for every basis and sufficient only when the
+    linear form `b12 * x - b11 * y` is onto `Z / abs(det B)`, which asks that
+    `gcd(b11, b12, abs(det B)) == 1`. The chapter's basis satisfies it with
+    `gcd(2, 7) == 1`. A basis that does not is rejected here rather than
+    answered wrongly: on `((2, 0), (0, 2))` the congruence alone would put
+    `(1, 0)` in `2 * Z^2`, which does not contain it.
     """
     # EXERCISE: implement this function.
     #
@@ -49,8 +58,12 @@ def in_lattice(basis: Basis, point: Point) -> bool:
     # the second by b11 and subtracting: what is left is b12*x - b11*y == -b
     # * det B. So the point is in the lattice exactly when b12*x - b11*y is
     # divisible by abs(det B). For the chapter's basis that is 7x - 2y == 0
-    # (mod 29), and the 29 is abs(det B) rather than a coincidence. Do not
-    # validate the input.
+    # (mod 29), and the 29 is abs(det B) rather than a coincidence.
+    # Divisibility is necessary for every basis and sufficient only when the
+    # form is onto Z / abs(det B), which asks that gcd(b11, b12, abs(det B))
+    # == 1; raise ValueError on a basis that fails it, because the
+    # congruence would otherwise answer wrongly rather than not at all. On
+    # ((2, 0), (0, 2)) it would put (1, 0) in 2*Z^2.
     #
     # Reference: Chapter 3, 'A lattice you can draw'
     #

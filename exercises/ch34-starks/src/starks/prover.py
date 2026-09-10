@@ -113,8 +113,13 @@ def stark_prove(
     # to the public statement. Run fri_prove on the codeword and return the
     # trace, the FRI proof's round-0 root as the trace commitment, and the
     # proof itself. Reject num_queries below one and negative grinding bits.
-    # The trace ships in the clear here: a production STARK hides it behind
-    # a composition polynomial, and the toy drops that for compactness.
+    # The trace ships in the clear here. A production STARK does not send
+    # it, because the verifier checks the constraints through a composition
+    # polynomial, the random linear combination of the constraint quotients
+    # that FRI also proves low-degree, and this toy drops that route for
+    # compactness. Not sending the trace would not be hiding it either: zero
+    # knowledge needs a separate randomisation of the trace and its
+    # commitments, which the toy also leaves out.
     #
     # Reference: Chapter 34, '4.5 Prover and verifier wiring' (Block 5)
     #

@@ -106,14 +106,22 @@ def test_forge_third_message_from_two_signatures():
             assert hashlib.sha256(forged_sig[i]).digest() == pk[i][needed_bit]
 
 
-def test_forgery_reaches_all_positions_when_digests_complement():
-    """When d1 and d2 differ at every bit, the adversary has all 512 secrets."""
+def test_two_signatures_expose_one_secret_pair_per_differing_bit():
+    """Exposure counts differing digest bits, one double-known slot each.
+
+    The limiting case, two digests differing at all 256 bits, would hand the
+    adversary all 512 secrets. This test does not reach it and does not claim
+    to: finding a SHA-256 preimage pair with complementary digests is the
+    infeasible search, not a fixture. What it measures is the relation that
+    holds at every distance, that the number of positions where both halves of
+    the one-time secret are now known equals the Hamming distance between the
+    two digests, over the highest-distance pair a small search finds.
+    """
     sk, pk = keygen(rng=SEED)
 
-    # Craft two messages whose SHA-256 digests differ at many bit positions.
-    # We search for a pair with high Hamming distance to demonstrate the
-    # principle.  For the strongest case, we just check that more positions
-    # means more forgery power.
+    # Search a small candidate pool for a pair with high Hamming distance.
+    # The distance is what the assertion below is about; the pool size only
+    # decides how far above 128 the sampled distance lands.
     m1 = b"alpha"
     best_m2 = None
     best_hd = 0
@@ -137,5 +145,7 @@ def test_forgery_reaches_all_positions_when_digests_complement():
 
     both_halves = sum(1 for i in range(256) if len(known[i]) == 2)
     assert both_halves == best_hd
-    # With ~1000 candidates, best_hd should be well above 128.
-    assert best_hd > 140, f"Best Hamming distance was only {best_hd}"
+    # ~1000 candidates put the best distance well above the 128 mean, which is
+    # what makes the equality above a non-trivial sample rather than a
+    # coincidence at the centre of the distribution. It is not 256.
+    assert 140 < best_hd < 256, f"Best Hamming distance was {best_hd}"

@@ -64,12 +64,16 @@ in EVM bytecode, which has no precompile and runs to millions of gas per call.
 Real per-block post-quantum throughput on Ethereum sits well below
 `transactions_per_eth_block_calldata_floor`.
 
-**The sizes are standards figures; the ECDSA row is not.** ML-DSA-65 and
-SLH-DSA-128s come from FIPS 204 and FIPS 205 Table 2, and Ed25519 from RFC 8032.
-The 64-byte ECDSA figure is the canonical `(r, s)` lower bound rather than
-Bitcoin's on-chain encoding, which wraps the same pair in 70 to 72 DER bytes
-plus a sighash flag. Comparisons against the ECDSA row are therefore generous to
-ECDSA by a few bytes.
+**The sizes are standards figures, and the 64-byte row carries two
+primitives.** ML-DSA-65 and SLH-DSA-128s come from FIPS 204 and FIPS 205
+Table 2, and Ed25519 from RFC 8032. The `classical-secp256k1` row is 64 bytes
+on both chains for different reasons. On the Bitcoin side the chapter models
+the post-Taproot P2TR key-path spend per BIP-341, where the witness reveals a
+BIP-340 Schnorr signature, and 64 bytes is that signature's exact on-chain size
+at the default sighash. On the Ethereum side it is an ECDSA contract-wallet
+baseline, where 64 bytes is the canonical `(r, s)` pair. Bitcoin's legacy
+pre-Taproot ECDSA spend, which wraps the same pair in 70 to 72 DER bytes plus a
+sighash flag, is the one shape neither column models.
 
 **Two anchors are conventions rather than consensus rules.**
 `BTC_TX_OVERHEAD_WU` is 380 weight units for a typical 1-in-1-out segwit

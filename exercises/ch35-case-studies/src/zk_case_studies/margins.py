@@ -58,11 +58,14 @@ class MarginTerms:
         # Name which of bad_beta, per_round and consistency contributes most
         # of the composed probability. The three fields are logarithms of
         # probabilities and therefore negative, so the dominant term is the
-        # largest, meaning the least negative, not the smallest. Return its
-        # field name as a string. This is the quantity the chapter's prose
-        # asks for when it asks which term a parameter change actually
-        # moves, and getting the sign convention backwards is the whole
-        # difficulty.
+        # largest, meaning the least negative, not the smallest. Compare
+        # bad_beta against per_round minus grinding and consistency minus
+        # grinding, because that is the form in which the three enter the
+        # sum: grinding attenuates the two query terms and leaves bad_beta
+        # alone. Return its field name as a string. This is the quantity the
+        # chapter's prose asks for when it asks which term a parameter
+        # change actually moves, and getting the sign convention backwards
+        # is the whole difficulty.
         #
         # Reference: Chapter 35, 'The (L2 x L4) grid and bit-margin arithmetic' (Blocks 3 and 4)
         #
@@ -132,14 +135,19 @@ def composed_margin(field_bits: int, L: int, N: int, mu: int, r_FRI: int,
     # decoding_radius at the chosen regime. The query-consistency term is mu
     # * log2((L - 1) / N), because two distinct polynomials of degree below
     # L agree at no more than L - 1 of the N LDE points. All three are
-    # base-2 logarithms of probabilities, so raise 2 to each, add, take the
-    # negative log2 of the sum, add the grinding bits, and round to one
-    # decimal. This is the chapter's three-term model, not BCIKS Theorem
-    # 1.2's error term, which is undefined at zero slack from the Johnson
-    # radius. Validate before computing: every count positive, grinding
-    # non-negative, and L strictly less than N. The consistency term is
-    # numerically inert at every parameter point the chapter prints, so a
-    # test reads it directly rather than through the total.
+    # base-2 logarithms of probabilities, so raise 2 to each, but attenuate
+    # only the two query terms by the grinding factor: the composed
+    # probability is 2^bad_beta + 2^-grinding * (2^per_round +
+    # 2^consistency). Ch 34 Section 5.5 puts the 2^-g factor on eps_query
+    # alone, and a forger who wins on a bad fold challenge never re-grinds,
+    # so grinding does not touch bad_beta. Take the negative log2 of that
+    # sum and round to one decimal. This is the chapter's three-term model,
+    # not BCIKS Theorem 1.2's error term, which is undefined at zero slack
+    # from the Johnson radius. Validate before computing: every count
+    # positive, grinding non-negative, and L strictly less than N. The
+    # consistency term is numerically inert at every parameter point the
+    # chapter prints, so a test reads it directly rather than through the
+    # total.
     #
     # Reference: Chapter 35, 'The (L2 x L4) grid and bit-margin arithmetic' (Blocks 3 and 4)
     #

@@ -5,7 +5,7 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "pki-migration"
 version = "0.1.0"
-description = "Chapter 29 of the Encryptorium Book of PQC: operator tooling for post-quantum PKI migration. Includes a JWKS composite-signature JWT verifier, an X.509 chain-algorithm analyzer, and a durable-counter wrapper around XMSS. Imports composite_sig_verify from solutions/ch27-hybrid and xmss_sign from solutions/ch15-xmss via sys.path. Uses only the Python standard library."
+description = "Chapter 29 of the Encryptorium Book of PQC: operator tooling for post-quantum PKI migration. Includes a JWKS composite-signature JWT verifier, an X.509 chain-algorithm analyzer, and a durable-counter wrapper around XMSS. Imports composite_sig_verify from solutions/ch27-hybrid and xmss_sign from solutions/ch15-xmss via sys.path. The Chapter 29 code is standard library only, but importing the Chapter 27 package runs its initializer, which pulls in Chapter 11's ML-KEM and therefore NumPy, so NumPy is a transitive runtime requirement of this package."
 requires-python = ">=3.10"
 dependencies = []
 

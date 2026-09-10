@@ -114,15 +114,17 @@ def cadence_options(X: int, Y: int, Z: int) -> Dict[str, CadenceOption]:
     # feasible with interval 0 and cost 'prohibitive', because rotating
     # verifier bytecode every one to two hours would need a full propose,
     # audit, approve, activate, transition choreography per cycle; it is the
-    # zero-overhead lower bound and never the answer. every-N-rollup-cycles
-    # is feasible when the safe window is at least one year and the breach
-    # is positive, carries the safe window as its interval, and costs
-    # 'medium'. governance-trigger is feasible only when the breach is
-    # non-positive, carries interval 0, and costs 'low', because the council
-    # sets the tempo rather than the arithmetic. hard-fork-trigger is always
-    # feasible with interval 0 and cost 'high'. Key the returned dict by the
-    # four CADENCE_NAMES. The rationale strings are prose for the operator
-    # and nothing asserts on them.
+    # zero-interval lower bound, the shortest schedule the model can name,
+    # and never the answer; the zero is the rotation interval and not the
+    # overhead, which is the ceremony repeated every cycle.
+    # every-N-rollup-cycles is feasible when the safe window is at least one
+    # year and the breach is positive, carries the safe window as its
+    # interval, and costs 'medium'. governance-trigger is feasible only when
+    # the breach is non-positive, carries interval 0, and costs 'low',
+    # because the council sets the tempo rather than the arithmetic.
+    # hard-fork-trigger is always feasible with interval 0 and cost 'high'.
+    # Key the returned dict by the four CADENCE_NAMES. The rationale strings
+    # are prose for the operator and nothing asserts on them.
     #
     # Reference: Chapter 40, 'Plan the verifier-upgrade cadence'
     #

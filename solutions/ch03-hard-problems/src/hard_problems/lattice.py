@@ -23,6 +23,8 @@ Standard library only.
 
 from __future__ import annotations
 
+import math
+
 Basis = tuple[tuple[int, int], tuple[int, int]]
 Point = tuple[int, int]
 
@@ -41,10 +43,23 @@ def in_lattice(basis: Basis, point: Point) -> bool:
 
     Uses the membership congruence derived in the module docstring, which is why
     this is a single modulo rather than a search over coefficients.
+
+    The congruence is necessary for every basis and sufficient only when the
+    linear form `b12 * x - b11 * y` is onto `Z / abs(det B)`, which asks that
+    `gcd(b11, b12, abs(det B)) == 1`. The chapter's basis satisfies it with
+    `gcd(2, 7) == 1`. A basis that does not is rejected here rather than
+    answered wrongly: on `((2, 0), (0, 2))` the congruence alone would put
+    `(1, 0)` in `2 * Z^2`, which does not contain it.
     """
     (b11, b12), _ = basis
     x, y = point
-    return (b12 * x - b11 * y) % abs(determinant(basis)) == 0
+    det = abs(determinant(basis))
+    if math.gcd(b11, b12, det) != 1:
+        raise ValueError(
+            "membership congruence is not sufficient for this basis: "
+            f"gcd({b11}, {b12}, {det}) != 1"
+        )
+    return (b12 * x - b11 * y) % det == 0
 
 
 def enumerate_coefficient_box(

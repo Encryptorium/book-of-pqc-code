@@ -75,7 +75,7 @@ Chapter 40 uses, not because the matrix has a research-grade cell.
 
 **`per-vote-cycle` is never the recommendation.** It is always feasible
 and always `prohibitive`, so `recommend_cadence` returns it inside the
-options dict as the zero-overhead lower bound and never as the pick. A
+options dict as the zero-interval lower bound and never as the pick. The zero is the rotation interval, the shortest the model can name; the overhead is the ceremony repeated every cycle, which is why the cost is prohibitive. A
 caller that wants it has to override the recommendation deliberately.
 
 ## Running the tests
