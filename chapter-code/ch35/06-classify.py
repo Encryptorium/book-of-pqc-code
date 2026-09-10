@@ -35,7 +35,11 @@ def classify(system: dict) -> dict:
         else:
             cnfl = "DLP forward forgery plus retroactive soundness erosion"
     else:
-        cnfl = "L2 hash binding (BHT/CNPS) plus L4 Fiat-Shamir parameter point, QROM-pending"
+        # The amber route depends on what the L2 commitment binds with:
+        # a FRI Merkle tree binds by hash, a lattice PCS by SIS.
+        l2_route = {"fri": "L2 hash binding (BHT/CNPS)",
+                    "lattice_pcs": "L2 SIS binding"}[system["l2"]]
+        cnfl = l2_route + " plus L4 Fiat-Shamir parameter point, QROM-pending"
     return {"cell": (l2_color, l4_color), "posture": dominant,
             "cnfl_route": cnfl}
 

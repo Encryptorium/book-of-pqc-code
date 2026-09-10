@@ -57,13 +57,14 @@ def sample_ntt(shake_input):
     return out
 
 
-# All-zero PRF input at eta=2 produces the zero polynomial because
-# every paired-bit x = y = 0 gives f[i] = 0. Non-zero inputs produce
-# coefficients in {-2, -1, 0, 1, 2} represented in Z_q.
+# An all-zero CBD input at eta=2, standing in for PRF output, produces
+# the zero polynomial because every paired-bit x = y = 0 gives f[i] = 0.
+# Other inputs produce coefficients in {-2, -1, 0, 1, 2} in Z_q.
 f_zero = cbd_eta(b"\x00" * 128, 2)
 print("CBD(0 bytes, eta=2) sums =", int(f_zero.sum()))
 
-# The rejection sampler consumes bytes until it has 256 valid ones.
+# The rejection sampler consumes bytes until it has accepted 256
+# coefficients below q.
 # Two distinct seeds produce distinct polynomials with overwhelming
 # probability.
 a = sample_ntt(b"\x00" * 34)

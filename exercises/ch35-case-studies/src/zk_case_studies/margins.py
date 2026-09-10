@@ -166,9 +166,11 @@ def dfms20_required_cbits(k_target: int, q_bits: int, r_FS: int) -> int:
 
 
 def dfms20_exact_cbits(k_target: int, q_bits: int, r_FS: int) -> int:
-    """Exact DFMS20 per-round width, ``2 log2(2q + 1) + k / r``.
+    """Exact per-round width under the DFMS20-shaped model, ``2 log2(2q + 1) + k / r``.
 
-    The approximation drops the ``log2(2q + 1)`` correction. That log is
+    Exact is arithmetic about the model and not a certified QROM bound: the
+    model drops the corollary's additive challenge-space term (Ch 33).
+    The approximation drops the ``log2(2q + 1)`` correction as well. That log is
     strictly greater than ``q_bits + 1`` by a vanishing amount (Ch 33), so a
     bound whose float value lands on an integer sits just above it and still
     needs the next width up; at these ``q_bits`` the excess is below float

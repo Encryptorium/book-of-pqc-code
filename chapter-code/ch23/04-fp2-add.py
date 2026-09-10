@@ -45,7 +45,7 @@ twice = iota(once, p)
 print(twice == (G[0], fp2_neg(G[1], p)))
 # ==> True
 
-# Verify iota . pi anticommutes with pi . iota on G.
+# Verify that iota and pi anticommute on G: iota(pi(G)) = -pi(iota(G)).
 left = iota(pi_frob(G, p), p)
 right = pi_frob(iota(G, p), p)
 neg_right = (right[0], fp2_neg(right[1], p))

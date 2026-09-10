@@ -16,8 +16,11 @@ LAYERS = (
 )
 
 # Per-cell decision: post-quantum status per (layer, candidate).
-# off-chain means the layer runs off-chain in the prover and the
-# verifier-contract never executes the layer's logic.
+# off-chain means the layer's work runs in the prover and the layer
+# carries no primitive the verifier contract can swap. It does not
+# mean the contract runs none of that layer: the L3 verifier
+# algorithm, its verification key, parameter constants and the
+# consistency checks against the L2 openings all execute on chain.
 MATRIX = {
     "L1-arithmetization": {
         "AIR":      "off-chain",
@@ -47,8 +50,8 @@ def lookup(layer, candidate):
 
 
 # Print the on-chain layers (L2 and L4) for a small
-# candidate set. The off-chain layers L1 and L3 carry no on-chain
-# decision.
+# candidate set. L1 and L3 carry no primitive-swap decision of
+# their own, which is the only decision this table records.
 print(f"{'layer':<19} {'candidate':<14} pq_status")
 for layer in ("L2-commitment", "L4-fiat-shamir"):
     for candidate in MATRIX[layer]:

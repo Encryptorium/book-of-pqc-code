@@ -7,7 +7,10 @@
 # Run: python3 chapter-code/ch31/01-dot.py
 
 # Block 1: pedagogical slice of the R1CS format used at L1 (stdlib only).
-P = 97  # small prime; a real SNARK uses a ~256-bit prime field.
+# A pairing-based SNARK like Groth16 uses a ~256-bit prime field. Other
+# systems in this Part do not: Boojum runs over Goldilocks and Stwo over
+# Mersenne-31 (Ch 35), and Binius commits over binary-field towers (Ch 32).
+P = 97  # toy prime, small enough to check by hand
 
 # Columns of z: (one, a, b, a*b, a+b)
 #   Constraint 1: (a) * (b) = (a*b)

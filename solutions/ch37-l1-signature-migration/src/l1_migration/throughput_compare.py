@@ -42,7 +42,7 @@ def relative_throughput(primitive: str, baseline: str, budget: str = "btc") -> f
 
     A return value of 0.05 means the candidate processes 5% as many
     transactions per block as the baseline. The chapter uses this
-    against ``ECDSA-secp256k1`` to size the migration tax on each
+    against ``classical-secp256k1`` to size the migration tax on each
     PQ candidate.
     """
     assert budget in VALID_BUDGETS, f"unknown budget: {budget!r}"

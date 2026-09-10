@@ -47,8 +47,8 @@ def sym(f):
 
 print("s_row_0[:8] =", sym(s_row_0[:8]))
 print("e_row_0[:8] =", sym(e_row_0[:8]))
-print("nonce 0 vs nonce 3 independent =",
+print("nonce 0 vs nonce 3 distinct =",
       bool(not np.array_equal(s_row_0, e_row_0)))
 # ==> s_row_0[:8] = [0, 0, -1, 0, 2, 0, 1, -1]
 # ==> e_row_0[:8] = [0, 0, 0, -1, 1, 0, 0, 0]
-# ==> nonce 0 vs nonce 3 independent = True
+# ==> nonce 0 vs nonce 3 distinct = True

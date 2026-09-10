@@ -3,14 +3,17 @@
 The chapter's running example pins four candidate primitives for the
 Strand transaction surface:
 
-- ``ECDSA-secp256k1`` is the legacy baseline. The 64-byte signature
-  size matches the BIP-340 canonical 64-byte form used by Taproot
-  key-path spends. Pre-Taproot DER-encoded ECDSA signatures range
-  70-72 bytes; the chapter prose calls this out and uses 64 bytes
-  as the toy-model lower-bound figure for the comparison. Taproot
-  key-path spends keep the tweaked public key in the output script
-  (on-chain since UTXO funding) and reveal only the signature in
-  the witness on spend.
+- ``classical-secp256k1`` is the deployed baseline on both chains,
+  and the primitive behind it differs by chain: BIP-340 Schnorr for a
+  Taproot key-path spend on the Bitcoin side, ECDSA for the Ethereum
+  contract wallet. Both are 64 bytes. Pre-Taproot DER-encoded ECDSA
+  signatures on Bitcoin range 70-72 bytes; the chapter prose calls
+  this out and uses 64 bytes as the toy-model lower-bound figure for
+  the comparison. Taproot key-path spends keep the tweaked public key
+  in the output script (on-chain since UTXO funding) and reveal only
+  the signature in the witness on spend, so the 33-byte ``pk_bytes``
+  below is the Ethereum compressed key; BIP-340's own key is 32-byte
+  x-only and never enters the Bitcoin figure.
 - ``ML-DSA-65`` is the lattice candidate per FIPS 204 (Table 2):
   3309-byte signature, 1952-byte public key.
 - ``SLH-DSA-128s`` is the hash-based candidate per FIPS 205 (Table 2):
@@ -53,7 +56,7 @@ class CandidateSizes(TypedDict):
 
 
 CANDIDATES: Dict[str, CandidateSizes] = {
-    "ECDSA-secp256k1": {
+    "classical-secp256k1": {
         "sig_bytes": 64,
         "pk_bytes": 33,
         "deployment_shape": "deployed-baseline",
@@ -139,7 +142,7 @@ def public_key_bytes(primitive: str) -> int:
 def witness_reveals_pk(primitive: str) -> bool:
     """Return whether the spend witness must reveal the public key.
 
-    The legacy ECDSA-secp256k1 baseline is modeled after Taproot
+    The legacy classical-secp256k1 baseline is modeled after Taproot
     key-path spends: the tweaked public key sits in the output
     script, so the witness carries the signature only. The
     post-quantum candidates are modeled after a P2WPKH-style
@@ -172,7 +175,7 @@ def transactions_per_btc_block(
 
     Models each transaction as ``tx_overhead_wu`` weight units plus
     the candidate's witness bytes at 1 weight unit per witness byte.
-    For ECDSA-secp256k1 (Taproot key-path baseline) the witness is the
+    For classical-secp256k1 (Taproot key-path baseline) the witness is the
     signature alone; for the post-quantum candidates the witness is
     the public key plus the signature, matching a P2WPKH-style
     commit-then-reveal output pattern.

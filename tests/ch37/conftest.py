@@ -34,7 +34,7 @@ if entry_str not in sys.path:
 def candidate_set() -> list[str]:
     """The fixed four-element candidate set for the Strand transaction surface."""
     return [
-        "ECDSA-secp256k1",
+        "classical-secp256k1",
         "ML-DSA-65",
         "SLH-DSA-128s",
         "Ed25519+ML-DSA-65",

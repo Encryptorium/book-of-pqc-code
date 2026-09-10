@@ -18,8 +18,8 @@
 # which is the discount Ch 34's closing aside records as having
 # fallen in late 2025. The DFMS20 parameter-bump check from Ch 33's
 # multi-round subsection then asks whether the deployed
-# challenge-space width absorbs the QROM loss at a target PQ
-# margin. Exact Boojum
+# challenge-space width meets the model's per-round requirement
+# at a target PQ margin. Exact Boojum
 # parameters are not published at the granularity below; values are
 # illustrative of a Goldilocks extension-field configuration.
 # Source: Ch 34 Sections 5.1 and 5.5; Ch 33 'Multi-round
@@ -56,12 +56,14 @@ def stark_classical_margin(field_bits: int, L: int, N: int, mu: int,
 def dfms20_exact_cbits(k_target: int, q_bits: int, r_FS: int) -> int:
     if k_target <= 0 or r_FS <= 0 or q_bits < 0:
         raise ValueError("k_target, r_FS must be positive; q_bits non-negative")
-    # Exact DFMS20 per-round width from Ch 33's quantum-oracle-cost
-    # section: c_bits >= 2 log2(2 q + 1) + k / r_FS. That log is
-    # strictly greater than q_bits + 1 by a vanishing amount, so a
-    # bound whose float value lands on an integer sits just above it
-    # and still needs the next width up; at these q_bits the excess is
-    # below float resolution, so the integer case is tested outright.
+    # Exact width under this chapter's DFMS20-shaped model, from Ch 33's
+    # quantum-oracle-cost section: c_bits >= 2 log2(2 q + 1) + k / r_FS.
+    # Exact is arithmetic about the model and not a certified QROM bound:
+    # the model drops the corollary's additive challenge-space term.
+    # That log is strictly greater than q_bits + 1 by a vanishing amount,
+    # so a bound whose float value lands on an integer sits just above
+    # it and still needs the next width up; at these q_bits the excess
+    # is below float resolution, so the integer case is tested outright.
     # The approximation 2 q_bits + ceil(k / r_FS) drops the
     # log2(2 q + 1) correction and lands about 2 bits short.
     exact = 2.0 * math.log2(2 * (2 ** q_bits) + 1) + k_target / r_FS

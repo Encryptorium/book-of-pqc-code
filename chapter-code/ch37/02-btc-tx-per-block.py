@@ -13,8 +13,10 @@ ETH_BLOCK_GAS_LIMIT = 60_000_000
 ETH_TX_BASE_GAS = 21_000
 ETH_GAS_PER_NONZERO_CALLDATA_BYTE = 16
 
+# The classical row is BIP-340 Schnorr on the Bitcoin side (Taproot
+# key path, no key in the witness) and ECDSA on the Ethereum side.
 CANDIDATES = {
-    "ECDSA-secp256k1":    {"sig": 64,       "pk":   33, "reveal_pk": False},
+    "classical-secp256k1":    {"sig": 64,       "pk":   33, "reveal_pk": False},
     "ML-DSA-65":          {"sig": 3309,     "pk": 1952, "reveal_pk": True},
     "SLH-DSA-128s":       {"sig": 7856,     "pk":   32, "reveal_pk": True},
     "Ed25519+ML-DSA-65":  {"sig": 64+3309,  "pk": 32+1952, "reveal_pk": True},
@@ -43,14 +45,14 @@ def rank(budget):
 for budget in ("btc", "eth"):
     print(f"-- {budget} --")
     for primitive, count in rank(budget):
-        print(f"{primitive:<19} {count:>6}")
+        print(f"{primitive:<20} {count:>6}")
 # ==> -- btc --
-# ==> ECDSA-secp256k1       9009
-# ==> ML-DSA-65              709
-# ==> Ed25519+ML-DSA-65      697
-# ==> SLH-DSA-128s           483
+# ==> classical-secp256k1    9009
+# ==> ML-DSA-65               709
+# ==> Ed25519+ML-DSA-65       697
+# ==> SLH-DSA-128s            483
 # ==> -- eth --
-# ==> ECDSA-secp256k1       2724
-# ==> ML-DSA-65              811
-# ==> Ed25519+ML-DSA-65      800
-# ==> SLH-DSA-128s           409
+# ==> classical-secp256k1    2724
+# ==> ML-DSA-65               811
+# ==> Ed25519+ML-DSA-65       800
+# ==> SLH-DSA-128s            409

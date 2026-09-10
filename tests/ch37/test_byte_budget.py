@@ -16,13 +16,14 @@ def test_signature_bytes_match_standards(candidate_set):
     """Per-primitive signature bytes match FIPS 204, FIPS 205, and BIP-340.
 
     Sources:
-    - ECDSA-secp256k1 64-byte form: BIP-340 canonical encoding.
+    - classical-secp256k1 64-byte form: BIP-340 canonical encoding on
+      the Bitcoin side, ECDSA (r, s) on the Ethereum side.
     - ML-DSA-65: FIPS 204 (Aug 2024) Table 2.
     - SLH-DSA-128s: FIPS 205 (Aug 2024) Table 2.
     - Composite: Ed25519 (RFC 8032) + ML-DSA-65 sum.
     """
     expected = {
-        "ECDSA-secp256k1": 64,
+        "classical-secp256k1": 64,
         "ML-DSA-65": 3309,
         "SLH-DSA-128s": 7856,
         "Ed25519+ML-DSA-65": 64 + 3309,
@@ -34,7 +35,7 @@ def test_signature_bytes_match_standards(candidate_set):
 def test_public_key_bytes_match_standards(candidate_set):
     """Public-key sizes match the same standards."""
     expected = {
-        "ECDSA-secp256k1": 33,
+        "classical-secp256k1": 33,
         "ML-DSA-65": 1952,
         "SLH-DSA-128s": 32,
         "Ed25519+ML-DSA-65": 32 + 1952,
@@ -66,14 +67,14 @@ def test_witness_reveals_pk_only_for_pq_candidates():
     then-reveal pattern, so the witness reveals both the public key
     and the signature.
     """
-    assert byte_budget.witness_reveals_pk("ECDSA-secp256k1") is False
+    assert byte_budget.witness_reveals_pk("classical-secp256k1") is False
     for pq in ("ML-DSA-65", "SLH-DSA-128s", "Ed25519+ML-DSA-65"):
         assert byte_budget.witness_reveals_pk(pq) is True
 
 
 def test_witness_bytes_match_output_pattern():
     """witness_bytes sums sig + pk on PQ rows; sig alone on the ECDSA row."""
-    assert byte_budget.witness_bytes("ECDSA-secp256k1") == 64
+    assert byte_budget.witness_bytes("classical-secp256k1") == 64
     assert byte_budget.witness_bytes("ML-DSA-65") == 1952 + 3309
     assert byte_budget.witness_bytes("SLH-DSA-128s") == 32 + 7856
     assert byte_budget.witness_bytes("Ed25519+ML-DSA-65") == (32 + 1952) + (64 + 3309)
@@ -88,7 +89,7 @@ def test_btc_tx_per_block_ecdsa_baseline():
     exists as the upper anchor for the migration tax on every PQ
     candidate.
     """
-    tx = byte_budget.transactions_per_btc_block("ECDSA-secp256k1")
+    tx = byte_budget.transactions_per_btc_block("classical-secp256k1")
     assert tx == 4_000_000 // (380 + 64)
     assert tx == 9009
 
@@ -123,7 +124,7 @@ def test_btc_tx_per_block_composite_includes_public_key():
 
 def test_btc_tx_per_block_pq_candidates_lose_throughput():
     """All three PQ candidates yield strictly fewer tx/block than ECDSA."""
-    ecdsa_tx = byte_budget.transactions_per_btc_block("ECDSA-secp256k1")
+    ecdsa_tx = byte_budget.transactions_per_btc_block("classical-secp256k1")
     for pq in ("ML-DSA-65", "SLH-DSA-128s", "Ed25519+ML-DSA-65"):
         pq_tx = byte_budget.transactions_per_btc_block(pq)
         assert pq_tx < ecdsa_tx, f"{pq} unexpectedly matches ECDSA throughput"
@@ -159,7 +160,7 @@ def test_eth_tx_per_block_calldata_envelope():
     60M / 22024 = 2724. ML-DSA-65: 21000 + 3309*16 = 73944 gas per
     tx. 60M / 73944 = 811.
     """
-    assert byte_budget.transactions_per_eth_block_calldata("ECDSA-secp256k1") == (
+    assert byte_budget.transactions_per_eth_block_calldata("classical-secp256k1") == (
         60_000_000 // (21_000 + 64 * 16)
     )
     assert byte_budget.transactions_per_eth_block_calldata("ML-DSA-65") == (
@@ -174,7 +175,7 @@ def test_eth_calldata_floor_gas_per_primitive():
     and TOTAL_COST_FLOOR_PER_TOKEN is 10, so an all-nonzero signature
     payload contributes 40 gas per byte on the floor branch.
     """
-    assert byte_budget.calldata_floor_gas("ECDSA-secp256k1") == 40 * 64
+    assert byte_budget.calldata_floor_gas("classical-secp256k1") == 40 * 64
     assert byte_budget.calldata_floor_gas("ML-DSA-65") == 40 * 3309
     assert byte_budget.calldata_floor_gas("SLH-DSA-128s") == 40 * 7856
     assert byte_budget.calldata_floor_gas("Ed25519+ML-DSA-65") == 40 * (64 + 3309)
@@ -203,7 +204,7 @@ def test_eth_tx_per_block_calldata_floor():
     SLH-DSA-128s: 21000 + 314240 = 335240. 60M / 335240 = 178.
     Ed25519+ML-DSA-65: 21000 + 134920 = 155920. 60M / 155920 = 384.
     """
-    assert byte_budget.transactions_per_eth_block_calldata_floor("ECDSA-secp256k1") == 2546
+    assert byte_budget.transactions_per_eth_block_calldata_floor("classical-secp256k1") == 2546
     assert byte_budget.transactions_per_eth_block_calldata_floor("ML-DSA-65") == 391
     assert byte_budget.transactions_per_eth_block_calldata_floor("SLH-DSA-128s") == 178
     assert byte_budget.transactions_per_eth_block_calldata_floor("Ed25519+ML-DSA-65") == 384
@@ -257,7 +258,7 @@ def test_deployment_shape_is_per_candidate():
     this column, so the label has to be pinned per row.
     """
     expected = {
-        "ECDSA-secp256k1": "deployed-baseline",
+        "classical-secp256k1": "deployed-baseline",
         "ML-DSA-65": "soft-fork-or-account-abstraction",
         "SLH-DSA-128s": "soft-fork-or-account-abstraction",
         "Ed25519+ML-DSA-65": "composite-cutover",

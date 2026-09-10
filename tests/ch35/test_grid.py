@@ -71,6 +71,18 @@ def test_a_fri_system_lands_amber_with_the_qrom_pending_route():
     assert "forgery" not in result["cnfl_route"]
 
 
+def test_a_lattice_pcs_lands_amber_with_a_sis_route_not_a_hash_one():
+    # Round 24, P2-01 in the external report: the amber branch attributed an
+    # L2 hash-binding route to every amber cell, including the lattice PCS,
+    # whose binding rests on SIS (Ch 32). The route dispatches on the L2 type.
+    result = classify({"l2": "lattice_pcs", "l4": "fs_tier1"})
+    assert result["cell"] == ("amber", "amber")
+    assert result["posture"] == "amber"
+    assert "SIS binding" in result["cnfl_route"]
+    assert "hash binding" not in result["cnfl_route"]
+    assert "QROM-pending" in result["cnfl_route"]
+
+
 def test_a_composite_reads_by_its_weakest_layer():
     # An amber L2 under a red L4 is dominant red: the wrapper is what the
     # on-chain verifier reads first.

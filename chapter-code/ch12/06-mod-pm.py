@@ -55,8 +55,9 @@ t1, t0 = power2round(t)
 print("power2round(t) = (t1, t0) =", (t1, t0))
 print("t1 * 2^d + t0 == t :", t1 * (1 << D) + t0 == t)
 
-# The hint lets a verifier that only knows HighBits recover HighBits(r + z)
+# The hint lets a verifier that knows r and the hint recover HighBits(r + z)
 # whenever the perturbation z stays within the low-order window gamma_2.
+# UseHint decomposes r itself and branches on the sign of the low part.
 rng = np.random.default_rng(seed=7)
 ok = True
 for _ in range(20000):

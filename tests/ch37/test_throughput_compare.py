@@ -21,7 +21,7 @@ def test_rank_btc_returns_descending_throughput(candidate_set):
 def test_rank_btc_ecdsa_is_first():
     """ECDSA dominates per-block tx throughput on Bitcoin."""
     ranking = throughput_compare.rank("btc")
-    assert ranking[0][0] == "ECDSA-secp256k1"
+    assert ranking[0][0] == "classical-secp256k1"
 
 
 def test_rank_btc_slh_dsa_is_last():
@@ -52,7 +52,7 @@ def test_rank_unknown_budget_assertion():
 def test_relative_throughput_ecdsa_self_is_one():
     """Relative throughput of a primitive against itself is 1.0."""
     assert throughput_compare.relative_throughput(
-        "ECDSA-secp256k1", "ECDSA-secp256k1"
+        "classical-secp256k1", "classical-secp256k1"
     ) == 1.0
 
 
@@ -61,7 +61,7 @@ def test_relative_throughput_pq_below_ecdsa():
     for pq in ("ML-DSA-65", "SLH-DSA-128s", "Ed25519+ML-DSA-65"):
         for budget in ("btc", "eth"):
             ratio = throughput_compare.relative_throughput(
-                pq, "ECDSA-secp256k1", budget
+                pq, "classical-secp256k1", budget
             )
             assert 0 < ratio < 1.0
 
@@ -75,10 +75,10 @@ def test_relative_throughput_ml_dsa_better_than_slh_dsa():
     """
     for budget in ("btc", "eth"):
         ml_ratio = throughput_compare.relative_throughput(
-            "ML-DSA-65", "ECDSA-secp256k1", budget
+            "ML-DSA-65", "classical-secp256k1", budget
         )
         slh_ratio = throughput_compare.relative_throughput(
-            "SLH-DSA-128s", "ECDSA-secp256k1", budget
+            "SLH-DSA-128s", "classical-secp256k1", budget
         )
         assert ml_ratio > slh_ratio
 
@@ -86,6 +86,6 @@ def test_relative_throughput_ml_dsa_better_than_slh_dsa():
 def test_relative_throughput_unknown_primitive_assertion():
     """Unknown primitive on either side raises an assertion."""
     with pytest.raises(AssertionError):
-        throughput_compare.relative_throughput("FN-DSA-512", "ECDSA-secp256k1")
+        throughput_compare.relative_throughput("FN-DSA-512", "classical-secp256k1")
     with pytest.raises(AssertionError):
-        throughput_compare.relative_throughput("ECDSA-secp256k1", "XMSS-MT")
+        throughput_compare.relative_throughput("classical-secp256k1", "XMSS-MT")

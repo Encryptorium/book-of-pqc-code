@@ -13,13 +13,17 @@ ETH_BLOCK_GAS_LIMIT = 60_000_000  # EIP-7935 / Fusaka, Dec 2025
 ETH_TX_BASE_GAS = 21_000
 ETH_GAS_PER_NONZERO_CALLDATA_BYTE = 16
 
-# The 64-byte classical row is the Taproot key-path baseline, where the
-# signature is BIP-340 Schnorr: the tweaked public key lives in the
-# output script, so the witness reveals only the signature.
+# The 64-byte classical row is the deployed baseline on both chains, and
+# the primitive differs by chain: BIP-340 Schnorr for a Taproot key-path
+# spend on the Bitcoin side, ECDSA for the Ethereum contract wallet.
+# Both are 64 bytes. On the Bitcoin side the tweaked public key lives in
+# the output script, so the witness reveals only the signature; pk_bytes
+# below is the 33-byte Ethereum compressed key, and BIP-340's own key is
+# 32-byte x-only and never enters the Bitcoin figure.
 # The PQ candidates are modeled as P2WPKH-style commit-then-reveal,
 # so the spend witness reveals both the public key and the signature.
 CANDIDATES = {
-    "ECDSA-secp256k1":     {"sig_bytes": 64,        "pk_bytes":   33, "reveal_pk": False},
+    "classical-secp256k1":     {"sig_bytes": 64,        "pk_bytes":   33, "reveal_pk": False},
     "ML-DSA-65":           {"sig_bytes": 3309,      "pk_bytes": 1952, "reveal_pk": True},
     "SLH-DSA-128s":        {"sig_bytes": 7856,      "pk_bytes":   32, "reveal_pk": True},
     "Ed25519+ML-DSA-65":   {"sig_bytes": 64+3309,   "pk_bytes": 32+1952, "reveal_pk": True},
@@ -42,8 +46,8 @@ def evaluate(primitive):
 
 for primitive in CANDIDATES:
     sig, pk, btc, eth = evaluate(primitive)
-    print(f"{primitive:<19} sig={sig:>5} pk={pk:>5} btc_tx={btc:>5} eth_tx={eth:>4}")
-# ==> ECDSA-secp256k1     sig=   64 pk=   33 btc_tx= 9009 eth_tx=2724
-# ==> ML-DSA-65           sig= 3309 pk= 1952 btc_tx=  709 eth_tx= 811
-# ==> SLH-DSA-128s        sig= 7856 pk=   32 btc_tx=  483 eth_tx= 409
-# ==> Ed25519+ML-DSA-65   sig= 3373 pk= 1984 btc_tx=  697 eth_tx= 800
+    print(f"{primitive:<20} sig={sig:>5} pk={pk:>5} btc_tx={btc:>5} eth_tx={eth:>4}")
+# ==> classical-secp256k1  sig=   64 pk=   33 btc_tx= 9009 eth_tx=2724
+# ==> ML-DSA-65            sig= 3309 pk= 1952 btc_tx=  709 eth_tx= 811
+# ==> SLH-DSA-128s         sig= 7856 pk=   32 btc_tx=  483 eth_tx= 409
+# ==> Ed25519+ML-DSA-65    sig= 3373 pk= 1984 btc_tx=  697 eth_tx= 800
