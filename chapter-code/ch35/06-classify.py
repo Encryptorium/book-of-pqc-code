@@ -8,9 +8,9 @@
 
 # Block 6: taxonomy grid classifier. Takes a dict describing a
 # deployed system's L2 and L4 layers and returns the grid cell color
-# per Figure 31.2 plus the CNFL route per the two specializations from
+# per Figure 35.1 plus the CNFL route per the two specializations from
 # the math-preliminaries section of this chapter. Red dominates amber
-# dominates green. Source: Ch 31 Figure 31.2; Renz (2026) Section 6.
+# dominates green. Source: Table 31.2 in Ch 31; Renz (2026) Section 6.
 L2_COLORS = {"pairing": "red", "ipa_dlp": "red",
              "fri": "amber", "lattice_pcs": "amber"}
 L4_COLORS = {"crs": "red", "fs_over_dlp": "red",
