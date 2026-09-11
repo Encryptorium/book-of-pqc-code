@@ -10,7 +10,9 @@
 # deployed system's L2 and L4 layers and returns the grid cell color
 # per Figure 35.1 plus the CNFL route per the two specializations from
 # the math-preliminaries section of this chapter. Red dominates amber
-# dominates green. Source: Table 31.2 in Ch 31; Renz (2026) Section 6.
+# dominates green. Grid: Table 31.2 in Ch 31. Renz (2026) Section 6
+# names the two specializations; assigning them to layers is this
+# chapter's own analysis.
 L2_COLORS = {"pairing": "red", "ipa_dlp": "red",
              "fri": "amber", "lattice_pcs": "amber"}
 L4_COLORS = {"crs": "red", "fs_over_dlp": "red",
@@ -31,9 +33,9 @@ def classify(system: dict) -> dict:
     dominant = min(l2_color, l4_color, key=lambda c: order[c])
     if dominant == "red":
         if system["l2"] == "pairing":
-            cnfl = "pairing forward forgery plus retroactive soundness erosion"
+            cnfl = "pairing forward forgery plus retroactive trust erosion"
         else:
-            cnfl = "DLP forward forgery plus retroactive soundness erosion"
+            cnfl = "DLP forward forgery plus retroactive trust erosion"
     else:
         # The amber route depends on what the L2 commitment binds with:
         # a FRI Merkle tree binds by hash, a lattice PCS by SIS.

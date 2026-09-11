@@ -6,7 +6,8 @@
 # Generated from the chapter text. Edits here do not reach the book.
 # Run: python3 chapter-code/ch27/02-hkdf-sha256.py
 
-# Block 2: end-to-end round-trip with two stubbed component KEMs, stdlib only.
+# Block 2: the encapsulation side of the combiner, with two stubbed
+# component KEMs. No decapsulation here. Stdlib only.
 import hashlib, hmac, os
 
 def hkdf_sha256(ikm, info, length=32):

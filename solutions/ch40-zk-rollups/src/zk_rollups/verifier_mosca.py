@@ -17,7 +17,8 @@ The four cadence options:
   rollup cycle (one to two hours at chain-tip 2026). Operationally
   prohibitive because every cycle would require a multisig propose-
   audit-approve-activate-transition choreography. Recorded as the
-  zero-overhead lower bound; never recommended in practice.
+  zero-interval lower bound, the shortest schedule the model can
+  name, and never recommended in practice.
 - ``every-N-rollup-cycles``: rotate every N rollup cycles where N
   implies an effective X_eff <= Z - Y. The default for a modest
   breach with Z > Y. Practical N values run from a few cycles
@@ -210,7 +211,7 @@ def evaluate_named_scenario(scenario: str) -> Dict[str, object]:
     The scenario names (narrow, central, wide) and Z values are locked
     at planning time. ``narrow`` is Z=4 (CRQC arrival sooner than the
     verifier-bytecode reuse window plus migration time, forcing a
-    breach with a one-year safe window), ``central`` is Z=9 (the
+    one-year breach with a two-year safe rotation window), ``central`` is Z=9 (the
     chapter's central NCSC-style estimate, which clears the on-chain-
     verifier surface), ``wide`` is Z=13 (a comfortable horizon for
     governance-paced rotation).

@@ -16,8 +16,9 @@ The four cadence options:
 - ``per-vote-cycle``: rotate the governance signing keys at every
   governance vote (per-vote rotation). Operationally prohibitive
   because every vote would require a multisig key-ceremony plus
-  on-chain registration. Recorded as the zero-overhead lower bound;
-  never recommended in practice.
+  on-chain registration. Recorded as the zero-interval lower bound,
+  the shortest schedule the model can name, and never recommended
+  in practice.
 - ``every-N-vote-cycles``: rotate every N governance votes where N
   implies an effective X_eff <= Z - Y. The default for a breach
   with a positive safe window (Y < Z < X+Y). Practical N values
