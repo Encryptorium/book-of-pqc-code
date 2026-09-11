@@ -1,11 +1,18 @@
-"""Tests demonstrating the checksum-bypass forgery.
+"""Tests demonstrating the checksum's role, at the digit level.
 
-Test 1: without the checksum, an adversary who sees a signature can
-forge by hashing chain values forward (increasing digit values).
+Both tests work on individual chain values and digits. Neither assembles
+a fresh message and a complete signature and puts it to the verifier, so
+neither is a message-level forgery; a demonstration of that would need a
+fresh-message fixture and a whole-signature acceptance assertion.
 
-Test 2: with the checksum, the same attack fails because increasing a
-message digit forces a decrease in a checksum digit, which requires
-inverting the hash function.
+Test 1: without the checksum, an adversary who sees a signature can hash
+a chain value forward one step and reach the public-key endpoint for the
+next digit up.
+
+Test 2: with the checksum, the same forward step forces a checksum digit
+DOWN, and the adversary cannot produce the lower chain value because
+that would mean inverting the hash. The test shows the message chain
+accepting and at least one checksum chain refusing.
 """
 
 import hashlib
@@ -29,7 +36,7 @@ W = 16
 N = 32
 
 
-def test_forgery_succeeds_without_checksum():
+def test_forward_hashing_reaches_the_next_digit_without_a_checksum():
     """Without the checksum, an adversary can forge by hashing forward.
 
     The adversary sees a signature where digit d[i] < w-1 at some
@@ -79,7 +86,7 @@ def test_forgery_succeeds_without_checksum():
     assert recomputed == pk_nc[forge_pos], "forged value reaches the pk endpoint"
 
 
-def test_forgery_fails_with_checksum():
+def test_the_checksum_forces_a_digit_the_adversary_cannot_reach():
     """With the checksum, increasing a message digit forces a checksum
     digit to decrease.  The adversary cannot hash backward on the
     checksum chains, so the forged signature fails verification against

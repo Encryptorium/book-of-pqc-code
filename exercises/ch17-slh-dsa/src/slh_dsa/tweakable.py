@@ -137,12 +137,18 @@ def PRF(params: SLHDSAParams, pk_seed: bytes, sk_seed: bytes,
     # || SK.seed) truncated to n, on SHA-256 for every SHA2 set. The SHAKE
     # branch is SHAKE256(PK.seed || ADRS || SK.seed) to n bytes. The address
     # is what gives every WOTS+ and FORS position in the key its own
-    # derivation input from a single SK.seed. It does not promise the n-byte
-    # outputs never coincide, which is a computational assumption on the
-    # hash rather than an injectivity claim; FIPS 205 sizes the construction
-    # so the probability stays inside the security target. A copy with a
-    # stale chain address silently produces the wrong secret rather than an
-    # error.
+    # derivation input from a single SK.seed. FIPS 205 Section 4.2 puts it
+    # that way: a different ADRS is used for each call, which for PRF
+    # generates many secret values from one seed and for F, H and T_l
+    # mitigates multi-target attacks. It does not promise the n-byte outputs
+    # are distinct, and the standard does not ask for that. Section 10.2
+    # says that even if it is feasible to compute collisions on these
+    # functions there is believed to be no adverse effect on the security of
+    # SLH-DSA, and what the twelve parameter sets target is EUF-CMA
+    # unforgeability at up to 2^64 signatures per key pair, not the absence
+    # of internal collisions. Chapter 3 states the risk in the form that
+    # survives: harmful key reuse or collision. A copy with a stale chain
+    # address silently produces the wrong secret rather than an error.
     #
     # Reference: Chapter 17, 'Tweakable hash functions' (FIPS 205 Sections 11.1, 11.2.1, 11.2.2)
     #

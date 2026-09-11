@@ -3,8 +3,13 @@
 from fors_hypertree.fors import fors_keygen, fors_sign, message_indices
 
 
-def test_index_collision_rate_grows_with_q():
-    """After many signatures, tree-position collisions appear."""
+def test_fifty_messages_repeat_per_tree_indices():
+    """One q=50 fixture, and repeated per-tree indices appear in it.
+
+    This is a single experiment at one q, not a comparison across q
+    values and not a rate. The arithmetic below says what the observed
+    count should be and why.
+    """
     seed = b"collision-rate"
     k, t, n = 6, 16, 32
     sk_leaves, trees, pk = fors_keygen(seed, k=k, t=t, n=n)
@@ -32,8 +37,14 @@ def test_index_collision_rate_grows_with_q():
     assert collisions > 0, "Expected at least one index collision at q=50"
 
 
-def test_no_full_forgery_at_low_q():
-    """At q=5, no two messages share all k indices (overwhelmingly likely)."""
+def test_no_full_index_tuple_collision_among_five_messages():
+    """At q=5, no two of the five messages share all k indices.
+
+    Tuple uniqueness among the sampled messages, not an unforgeability
+    result: a fresh tuple could in principle be assembled from indices
+    learned across several earlier signatures without equalling any one
+    of them, and nothing here puts a forged signature to a verifier.
+    """
     seed = b"no-full-collision"
     k, t = 6, 16
 

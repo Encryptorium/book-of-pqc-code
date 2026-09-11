@@ -20,11 +20,20 @@ def _j_key(j):
     return (j[0] % P, j[1] % P)
 
 
-def _find_ltorsion_points(a, b, p, l, gen, gen_order):
-    """Find points of order l on the curve by scaling a generator.
+def _neighbours_via_one_generator(a, b, p, l, gen, gen_order):
+    """Walk the order-l points inside ONE cyclic group and take their images.
 
-    Returns a list of (kernel_gen, order) pairs for each distinct
-    cyclic subgroup of order l.
+    This is a restricted search, not an enumeration of kernels. It scales
+    a single generator ``gen``, so every point it can reach lies in the
+    order-l subgroup of ``<gen>``, which is one of the l+1 order-l
+    subgroups of the full l-torsion. Reaching all of them needs a torsion
+    BASIS and the combinations P + [k]Q, which this helper does not build.
+
+    Returns ``(kernel_point, a_codomain, b_codomain, j_key)`` four-tuples,
+    deduplicated by codomain j-invariant. Note that deduplicating on j is
+    not in general a one-to-one test of distinct kernels: two different
+    kernels can land on isomorphic codomains, so this collapses rather
+    than counts them.
     """
     cofactor = gen_order // l
     pts = []
@@ -64,7 +73,7 @@ class TestIsogenyGraph:
         for _ in range(3):  # limited depth for speed
             next_queue = []
             for a_cur, b_cur, gen_cur, order_cur in queue:
-                for pt, a_new, b_new, j_new in _find_ltorsion_points(
+                for pt, a_new, b_new, j_new in _neighbours_via_one_generator(
                     a_cur, b_cur, P, 3, gen_cur, order_cur,
                 ):
                     if j_new not in visited:

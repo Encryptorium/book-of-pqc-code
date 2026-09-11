@@ -1,9 +1,17 @@
 """Tests for the centered binomial distribution sampler (FIPS 203 Alg 8).
 
 Covers cbd_eta's structural asserts, known-input output on all-zero
-bytes, symmetric structure of the distribution, zero-mean and variance
-eta/2 properties on a large sample, and nonce-based determinism of
+bytes, the exact symmetry of the map, zero-mean and variance eta/2
+properties on a large sample, and nonce-based determinism of
 sample_poly_cbd.
+
+The symmetry test is exact rather than sampled, and it has to be:
+support, mean and variance do not imply a symmetric distribution.
+P(-1) = 1/3, P(0) = 1/2, P(2) = 1/6 has mean zero, variance one and
+support inside {-2, ..., 2}, and is not symmetric. What is tested
+instead is the structural identity that produces the symmetry, that
+swapping the two eta-bit halves of every coefficient's input negates
+every output.
 """
 
 import numpy as np
@@ -90,3 +98,40 @@ class TestSamplePolyCbd:
     def test_output_length_is_256(self) -> None:
         f = sample_poly_cbd(3, b"\x03" * 32, 0)
         assert f.shape == (N,)
+
+
+def test_swapping_the_two_eta_bit_halves_negates_every_coefficient() -> None:
+    """The exact identity behind CBD's symmetry, at both eta values.
+
+    ``cbd_eta`` sets f_i to popcount(first eta bits) - popcount(next eta
+    bits).  Exchanging those two groups therefore negates f_i, for every
+    i and every input, with no sampling involved.  A distribution whose
+    generating map has this property is symmetric; the moment tests
+    elsewhere in this file do not establish that on their own.
+    """
+    for eta in (2, 3):
+        rng = np.random.default_rng(seed=11)
+        raw = bytes(rng.integers(0, 256, size=64 * eta, dtype=np.uint8))
+        bits = np.unpackbits(
+            np.frombuffer(raw, dtype=np.uint8), bitorder="little"
+        )
+        swapped = bits.copy()
+        for i in range(256):
+            lo = slice(2 * i * eta, 2 * i * eta + eta)
+            hi = slice(2 * i * eta + eta, 2 * i * eta + 2 * eta)
+            swapped[lo], swapped[hi] = bits[hi].copy(), bits[lo].copy()
+        raw_swapped = np.packbits(swapped, bitorder="little").tobytes()
+
+        original = _centered(cbd_eta(raw, eta))
+        negated = _centered(cbd_eta(raw_swapped, eta))
+        assert np.array_equal(original, -negated), (
+            f"eta={eta}: swapping the halves must negate every coefficient"
+        )
+        # Not vacuous: the input really does change, and so does the output.
+        assert raw_swapped != raw
+        assert original.any()
+
+
+def _centered(arr: np.ndarray) -> np.ndarray:
+    """Map the canonical [0, q) representation back to {-eta, ..., eta}."""
+    return np.where(arr > Q // 2, arr - Q, arr)

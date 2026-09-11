@@ -61,6 +61,7 @@ the public domain under 17 USC §105.
 from __future__ import annotations
 
 import json
+import re
 from pathlib import Path
 
 import pytest
@@ -74,6 +75,10 @@ from slh_dsa import (
     SLH_DSA_SHAKE_256s, SLH_DSA_SHAKE_256f,
 )
 from slh_dsa.slh import slh_keygen_internal, slh_sign_internal, slh_verify
+
+#: The usnistgov/ACVP-Server commit both fixtures were downloaded from.
+#: Bump this deliberately, alongside re-downloading the vectors.
+ACVP_PIN = "a7f283cdc87d2d6dd93c1bac59e5622c5f9f8324"
 
 
 VECTORS_DIR = Path(__file__).parent / "vectors"
@@ -319,8 +324,21 @@ class TestKATFilesPresent:
             )
 
     def test_fixtures_are_commit_pinned(self) -> None:
-        """A ``master`` URL does not identify the bytes that were tested."""
+        """A branch URL does not identify the bytes that were tested.
+
+        Refusing ``/master/`` and looking for the words "pinned to the
+        commit" is not enough: ``/main/`` carrying the same sentence would
+        satisfy both. The pin has to be a 40-hex commit, parsed out of the
+        URL and compared against the one these vectors were taken from.
+        """
         for name in ("slh_dsa_keygen_acvp.json", "slh_dsa_sigver_acvp.json"):
             source = _load(name)["source"]
-            assert "/master/" not in source, f"{name}: source pins master"
-            assert "ACVP-Server/" in source and "pinned to the commit" in source
+            assert "ACVP-Server/" in source, f"{name}: not an ACVP-Server URL"
+            after = source.split("ACVP-Server/", 1)[1]
+            ref = after.split("/", 1)[0]
+            assert re.fullmatch(r"[0-9a-f]{40}", ref), (
+                f"{name}: {ref!r} is a branch or tag, not a commit"
+            )
+            assert ref == ACVP_PIN, (
+                f"{name}: pinned to {ref}, expected {ACVP_PIN}"
+            )

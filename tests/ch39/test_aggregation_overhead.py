@@ -21,13 +21,13 @@ def test_bls_canonical_sizes_match_ietf_draft():
     assert ao.CANDIDATES["BLS-BLS12-381"]["pk_bytes"] == 48
 
 
-def test_ml_dsa_65_sizes_match_fips_204_table_1():
+def test_ml_dsa_65_sizes_match_fips_204_table_2():
     """ML-DSA-65: 3309-byte signature, 1952-byte public key."""
     assert ao.CANDIDATES["ML-DSA-65"]["sig_bytes"] == 3309
     assert ao.CANDIDATES["ML-DSA-65"]["pk_bytes"] == 1952
 
 
-def test_slh_dsa_128s_sizes_match_fips_205_table_1():
+def test_slh_dsa_128s_sizes_match_fips_205_table_2():
     """SLH-DSA-128s: 7856-byte signature, 32-byte public key."""
     assert ao.CANDIDATES["SLH-DSA-128s"]["sig_bytes"] == 7856
     assert ao.CANDIDATES["SLH-DSA-128s"]["pk_bytes"] == 32

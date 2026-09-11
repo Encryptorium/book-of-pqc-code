@@ -22,10 +22,15 @@ What this module does capture is the load-bearing design pattern:
 - Openings reveal the committed vector; the verifier recomputes the
   commitment equation and compares.
 
-Randomising the error alone would not make the toy hiding: a receiver
-holding two candidate messages subtracts ``A m`` for each from ``C``
-and keeps the one whose residual is short, which on these parameters
-identifies the message every time. The real constructions commit as
+Randomising the error alone would not make the toy hiding: wherever the
+two candidates have separated images, a receiver subtracts ``A m`` for
+each from ``C`` and keeps the one whose residual is short, and on these
+parameters that tells the two apart. It is a distinguisher and not a
+recovery procedure for every pair: two candidates whose images under
+``A`` coincide, which the equal-column example below exhibits, leave
+identical residuals and cannot be told apart at all. A scheme is hiding
+when NO efficient distinguisher works, so one that works on separated
+candidates is enough to settle this toy. The real constructions commit as
 ``A_0 m + A_1 r + e`` with ``(r, e)`` drawn independently of ``m``, so
 that ``A_1 r + e`` is a Module-LWE sample masking the message. The
 fixed-error commit here demonstrates the binding equation only.
@@ -174,11 +179,15 @@ def sample_error(params: LatticeParams) -> list[int]:
     # e is added after A*m. The result is in centered representation and the
     # caller reduces modulo q. The error supplies the small additive term of
     # the binding equation, and its smallness is what keeps the norm bound
-    # in the SIS argument tight. It is not a hiding mechanism: a receiver
-    # holding two candidate messages subtracts A*m for each from C and keeps
-    # the one whose residual is short, which identifies the message every
-    # time at these parameters. Hiding in the real schemes comes from an
-    # independent Module-LWE term the toy has no analogue of.
+    # in the SIS argument tight. It is not a hiding mechanism: wherever two
+    # candidate messages have separated images under A, a receiver subtracts
+    # A*m for each from C and keeps the one whose residual is short, which
+    # tells the two apart at these parameters. That is a distinguisher
+    # rather than recovery for every pair, since two candidates whose images
+    # coincide leave identical residuals, and a distinguisher is all it
+    # takes, because hiding asks that no efficient one exists. Hiding in the
+    # real schemes comes from an independent Module-LWE term the toy has no
+    # analogue of.
     #
     # Reference: Chapter 32, 'Lattice PCS: SIS binding, recent literature'
     #

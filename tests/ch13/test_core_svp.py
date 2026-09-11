@@ -78,29 +78,45 @@ def test_delta_beta_regression_anchors() -> None:
 
 
 def test_delta_beta_strictly_decreasing() -> None:
-    """delta(beta) is strictly decreasing in beta: more block size, shorter output."""
+    """delta(beta) decreases across beta in [50, 1000]: more block size,
+    shorter output.
+
+    The range is part of the claim. The asymptotic formula is not
+    decreasing over its whole accepted domain, and Chapter 13 says it is
+    unsuitable at small beta: delta_beta(2) returns 0.54, and the values
+    rise rather than fall until beta is around 12.
+    """
     betas = list(range(50, 1001, 25))
     values = [delta_beta(b) for b in betas]
     assert all(values[i] > values[i + 1] for i in range(len(values) - 1))
 
 
 def test_delta_beta_asymptotes_above_one() -> None:
-    """delta(beta) is always strictly greater than 1, because the output
-    of BKZ on a non-trivial lattice cannot be shorter than the lattice
-    determinant to the 1/d power."""
+    """delta(beta) exceeds 1 across the sampled beta range.
+
+    Not because of any geometric lower bound: a reduced vector CAN be
+    shorter than det(L)^(1/d). The basis diag(1, 100) has lambda_1 = 1
+    against a determinant scale of 10. The root-Hermite factor is a model
+    of reduction quality normalized by that determinant scale, and what
+    is checked here is that the model stays above 1 where it is used.
+    Below beta about 12 it does not, which is why the samples start at 50.
+    """
     for beta in (50, 100, 250, 500, 1000):
         assert delta_beta(beta) > 1.0
 
 
 def test_classical_cost_at_ml_kem_768_matches_published() -> None:
-    """At beta = 626 (Kyber Round 3 Table 4 for Kyber768), the floored
-    classical cost must match the published value of 183 bits within
-    two bits. The floor of 0.292 * 626 = 182.8 rounds to 182, and the
-    Kyber team's fractional-beta computation rounds up to 183; this
-    is the well-known 1-bit ambiguity between the rounded and the
-    un-rounded exponent and is not a bug."""
+    """At beta = 626 (Kyber Round 3 Table 4 for Kyber768), the toy's
+    floored classical cost is 182 against the published 183.
+
+    The comparison is stated and the gap is not explained away. This
+    estimator floors 0.292 * 626 = 182.8 to 182; the submission's Table 4
+    reports 183. Kyber Round 3 Section 5.1.1 gives the sqrt(3/2)
+    asymptotic base and the rounded 0.292 model, and it does not publish
+    the arithmetic that produced the table entry, so no account of how
+    the authors got there is asserted here. For reference the unrounded
+    exponent is log2(sqrt(3/2)) = 0.292481, and one bit is the tolerance
+    this comparison is read at.
+    """
     assert math.floor(classical_bits(626)) == 182
-    # The published table reports 183. The gap is 1 bit, which is
-    # exactly the difference between floor(0.292 * 626) = 182 and
-    # the Kyber team's floor(0.2926 * 626) = 183.
-    assert math.floor(0.2926 * 626) == 183
+    assert abs(math.floor(classical_bits(626)) - 183) <= 1

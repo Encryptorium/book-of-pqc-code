@@ -177,7 +177,8 @@ def test_fri_rejects_wrong_grinding_nonce():
 def test_fri_rejects_adversarial_random_codeword():
     # A random codeword is extremely unlikely to be close to any
     # degree-8 polynomial; FRI should reject with near certainty on the
-    # toy parameters. We allow a few trials; all should reject.
+    # toy parameters. Five trials, and the threshold below is four of
+    # five; five trials support no stronger statistical claim than that.
     prime = DEFAULT_PRIME
     dom = lde_domain()
     random.seed(0)
@@ -211,7 +212,15 @@ def test_fri_rejects_adversarial_random_codeword():
     assert rejected >= trials - 1
 
 
-def test_fri_grinding_zero_bits_accepts_any_nonce():
+def test_zero_bit_grinding_prover_chooses_zero_nonce():
+    """At zero difficulty the prover stops at the first nonce it tries.
+
+    This is about the prover, not the verifier, which is never called
+    here. The work predicate does accept any nonce at zero difficulty,
+    but the nonce also enters the transcript and determines the query
+    positions, so swapping it after the fact is not something a proof
+    survives in general.
+    """
     codeword, dom = _honest_codeword()
     prime = DEFAULT_PRIME
     prover_transcript = Transcript(b"fri-test")
@@ -339,15 +348,23 @@ def _fri_accepts(codeword, dom, **kwargs) -> bool:
 
 
 def test_fri_round_count_enforces_the_trace_length_degree_bound():
-    # Track 2 round 10, R10-P1-03. Each fold halves the degree bound, so
-    # r folds followed by a constancy check accept exactly degree < 2^r.
+    # Track 2 round 10, R10-P1-03. Each fold halves the degree bound. The
+    # pair below pins the monomial boundary: x^7 must pass three folds and
+    # x^8 must not. "r folds then a constancy check accept exactly
+    # degree < 2^r" is the intent, not a theorem: a bad fold challenge can
+    # flatten a higher-degree polynomial anyway. Over F_97 with beta = 3,
+    # x^9 - 3x^8 folds to zero. Soundness is what bounds how often that
+    # happens, and these two fixtures are witnesses for the round-count
+    # regression rather than a deterministic equivalence.
     # The STARK claims degree < TRACE_LENGTH = 8 on the 32-point LDE, so
     # the round count must be log_2(8) = 3: x^7 is the highest honest
     # degree and must pass, x^8 is the first dishonest one and must fail.
     # A fourth fold also flattens x^8 (degree < 16 becomes constant), so
     # the old default of log_2(N) - 1 = 4 accepted a rate-1/2 code where
-    # the chapter claims rate 1/4. All 32 positions are queried, so this
-    # is a statement about the fold, not about query luck.
+    # the chapter claims rate 1/4. 32 query draws are made, with
+    # replacement, so this is not a statement about query luck at these
+    # fixtures; it is not exhaustive coverage either, since x^7 yields
+    # only 23 distinct initial positions among the 32 draws.
     x7, dom = _monomial_codeword(7)
     x8, _ = _monomial_codeword(8)
 
@@ -421,7 +438,7 @@ def test_fri_rejects_unbound_sibling_forgery_of_degree_claim():
     # and every leaf path is genuine; every later codeword is the zero
     # vector, honestly committed; and each round's sibling value is
     # CHOSEN so that the fold lands on zero. Before the fix the
-    # verifier accepted this with all 32 positions queried. The forged
+    # verifier accepted this over 32 query draws. The forged
     # openings carry the genuine path of the position the fake value
     # claims to sit at, which is the strongest form the forgery can
     # take: the value is wrong and everything around it is right.

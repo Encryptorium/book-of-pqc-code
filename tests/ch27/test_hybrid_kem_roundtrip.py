@@ -1,8 +1,15 @@
 """Round-trip tests for the X25519MLKEM768 hybrid KEM.
 
-Exercises: keygen produces wire-format byte sizes; encaps+decaps
-agree on the shared secret; tampering the ciphertext breaks the
-round-trip.
+Exercises: keygen produces wire-format byte sizes; encaps+decaps agree
+on the shared secret; and selected ciphertext corruptions change or
+reject the derived secret.
+
+"Tampering breaks the round-trip" would be too strong, and this file
+contains the counterexample. Flipping the ignored high bit of the
+X25519 u-coordinate gives a DIFFERENT ciphertext that still derives the
+same shared secret, because that bit is not part of the encoded value.
+A hybrid KEM does not bind its own ciphertext on its own; in TLS the
+transcript hash is what closes that gap, and it is outside this module.
 """
 
 import os

@@ -62,8 +62,15 @@ def test_rfc7748_iterated_one_million_rounds():
     assert k == expected
 
 
-def test_rfc7748_section_6_1_aborts_on_zero_output():
-    """RFC 7748 Section 6.1 requires aborting on zero-output u-coordinate."""
+def test_wrapper_aborts_on_zero_output_as_tls_requires():
+    """The wrapper rejects an all-zero output u-coordinate.
+
+    The normative source is TLS, not RFC 7748. RFC 7748 Section 6.1 says
+    an implementation MAY check for the all-zero value; it is optional
+    there. RFC 8446 Section 7.4.2 makes it a MUST for TLS 1.3, and since
+    the hybrid KEM here is aimed at a TLS key share, the wrapper takes
+    the stricter rule.
+    """
     zero_u = b"\x00" * 32
     scalar = bytes.fromhex(
         "a546e36bf0527c9d3b16154b82465edd62144c0ac1fc5a18506a2244ba449ac4"

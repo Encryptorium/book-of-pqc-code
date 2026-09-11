@@ -26,11 +26,14 @@ class TestCompressScalar:
 
     def test_compress_q_minus_one_on_cycle(self) -> None:
         # q - 1 sits between the last bucket (index 2^d - 1) and the
-        # first bucket (index 0 ≡ q). Whether it rounds to 0 or
-        # 2^d - 1 depends on whether 2^d / q < 1 or >= 1.
-        # For d in {1, ..., 10} we have 2^d < q so the rounding goes
-        # to 0; for d = 11 we have 2^11 > q so the result is 2^d - 1
-        # under round-half-up.
+        # first bucket (index 0 = 2^d mod 2^d). The exact value is
+        # 2^d (q - 1) / q = 2^d - 2^d / q, so round-half-up carries it
+        # to 2^d, and thence to 0, exactly when 2^d / q <= 1/2. Note
+        # this is a threshold at a HALF, not at 1: 2^11 = 2048 is still
+        # well below q = 3329.
+        # d = 10 gives 2^d / q = 0.308, so the value 1023.69 rounds to
+        # 1024 = 0 mod 1024. d = 11 gives 0.615, so 2047.38 rounds down
+        # to 2047 and stays in the last bucket.
         for d in range(1, 11):
             out = int(compress(np.array([Q - 1]), d)[0])
             assert out == 0, f"compress(q-1, d={d}) expected 0, got {out}"

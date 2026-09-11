@@ -104,7 +104,7 @@ def test_strand_fixture_pins_each_surface_to_its_primitive(
     }
 
 
-def test_discrete_log_primitives_are_shor_vulnerable() -> None:
+def test_shor_vulnerable_public_key_primitives_are_classified_so() -> None:
     for primitive in (
         "ECDSA-secp256k1",
         "Schnorr-secp256k1",

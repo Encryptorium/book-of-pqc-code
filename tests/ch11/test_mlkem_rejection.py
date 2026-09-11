@@ -3,7 +3,11 @@
 When a ciphertext has been tampered with after encapsulation, the
 re-encryption inside ML-KEM.Decaps will not match and the routine
 must return the pseudorandom rejection value J(z || c) rather than
-the would-be decryption. These tests verify both branches.
+the would-be decryption.
+
+Every test in this file uses a modified ciphertext, so this module
+covers the rejection branch alone. Honest decapsulation is exercised in
+``test_mlkem_roundtrip.py``; it does not need repeating here.
 """
 
 import numpy as np

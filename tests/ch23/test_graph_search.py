@@ -53,18 +53,27 @@ def test_path_from_E0_to_self_is_empty():
 
 
 def test_path_to_neighbor():
-    """A degree-2 neighbor of E_0 is reachable in one step."""
-    edges = neighbors(A0, B0, P)
-    deg2_edges = [e for e in edges if e[0] == 2]
-    # Pick the first degree-2 neighbor.
-    _, _, na, nb = deg2_edges[0]
-    j_target = j_invariant(na, nb, P)
-    if fp2_eq(j_target, j_invariant(A0, B0, P), P):
-        # If the neighbor has the same j as E_0, skip (j=1728 self-loops).
-        return
+    """A degree-2 neighbor of E_0 with a different j is reached in one step.
+
+    The neighbor has to be chosen rather than taken first. E_0 has three
+    degree-2 edges at p = 431 and the first is a self-loop back to
+    j = 1728, so an earlier version of this test returned before calling
+    find_path at all and recorded a pass having asserted nothing. The two
+    remaining edges both land on j = 19.
+
+    The length is asserted exactly. ``len(path) >= 1`` would be satisfied
+    by a two-step walk and says nothing about one-step reachability.
+    """
+    j0 = j_invariant(A0, B0, P)
+    deg2 = [e for e in neighbors(A0, B0, P) if e[0] == 2]
+    distinct = [
+        e for e in deg2 if not fp2_eq(j_invariant(e[2], e[3], P), j0, P)
+    ]
+    assert distinct, "E_0 must have a degree-2 neighbor with a different j"
+    _, _, na, nb = distinct[0]
     path = find_path(A0, B0, na, nb, P, max_depth=2)
     assert path is not None
-    assert len(path) >= 1
+    assert len(path) == 1
 
 
 def test_walk_path_round_trip():

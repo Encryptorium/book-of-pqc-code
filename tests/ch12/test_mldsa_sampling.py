@@ -1,9 +1,12 @@
 """Rejection samplers and the challenge sampler (FIPS 204 §7.3, Algorithms 29-34).
 
-ML-DSA derives all of its structured randomness by rejection sampling a SHAKE
-stream: A from SHAKE128 (ExpandA), the secret s1/s2 from SHAKE256 (ExpandS), the
-per-attempt mask y from SHAKE256 (ExpandMask), and the sparse challenge c from
-SHAKE256 (SampleInBall). These tests pin the shapes, coefficient bounds, and
+ML-DSA derives all of its structured randomness from a SHAKE stream, though
+not all of it by rejection: A comes from SHAKE128 by rejection sampling
+(ExpandA), the secret s1/s2 from SHAKE256 by rejection sampling (ExpandS), and
+the sparse challenge c from SHAKE256 by a rejection-driven Fisher-Yates
+(SampleInBall). The per-attempt mask y is the exception: FIPS 204 Algorithm 34
+takes a FIXED-length SHAKE256 output and BitUnpacks it, with no candidate
+rejected. These tests pin the shapes, coefficient bounds, and
 determinism; the byte-exact stream consumption is pinned downstream by the ACVP
 keyGen vector (A, s1, s2) and sigGen vector (y, c).
 """
@@ -62,7 +65,9 @@ def test_sample_in_ball(params) -> None:
     nonzero = c[c != 0]
     assert len(nonzero) == params.tau           # exactly tau nonzero coefficients
     assert set(int(x) for x in nonzero) <= {1, -1}  # all +-1
-    assert int(np.sum(np.abs(c))) == params.tau  # infinity/one-norm is tau
+    # The one-norm, equivalently the Hamming weight, is tau. The infinity
+    # norm of a nonempty sparse +-1 challenge is 1, not tau.
+    assert int(np.sum(np.abs(c))) == params.tau
     assert np.array_equal(sample_in_ball(params, rho), c)  # deterministic
     assert not np.array_equal(sample_in_ball(params, bytes([1]) + rho[1:]), c)
 

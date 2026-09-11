@@ -11,7 +11,7 @@ def test_breach_returns_positive_window() -> None:
 
 
 def test_no_breach_returns_zero() -> None:
-    # x + y = 3, z = 14; migration completes nine years before CRQC.
+    # X + Y = 3, Z = 14: eleven years of planning slack, so the clipped breach is zero.
     assert evaluate(2, 1, 14) == 0
 
 

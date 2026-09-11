@@ -84,10 +84,21 @@ def prange_isd(
 
 
 def isd_cost_estimate(n: int, k: int, w: int) -> float:
-    """Expected number of Prange iterations for an [n,k] code with error weight w.
+    """The support-avoidance estimate of Prange iterations for an [n,k] code.
 
-    The success probability per iteration is C(n-w, k) / C(n, k),
-    so the expected number of iterations is C(n, k) / C(n-w, k).
+    Counts only whether the chosen information set avoids the error
+    support: that happens with probability C(n-w, k) / C(n, k), so the
+    estimate is its reciprocal, C(n, k) / C(n-w, k).
+
+    It is an estimate and not the exact expectation of the implemented
+    experiment, because it prices every draw as usable. ``prange_isd``
+    also spends an iteration on a singular column choice, and singular
+    choices are not rare at small n: of the 35 three-column selections
+    for the [7,4,3] Hamming code, seven are singular, so a planted
+    weight-one error is recovered by 12 of the 35 rather than by the 15
+    this formula counts. The exact mean there is 35/12 = 2.92 against
+    this estimate's 35/15 = 2.33. At cryptographic parameters the gap is
+    negligible, which is why the asymptotic exponent is quoted from it.
     """
     # EXERCISE: implement this function.
     #

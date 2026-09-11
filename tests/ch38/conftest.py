@@ -68,10 +68,13 @@ def mosca_z_values() -> dict[str, int]:
     """Three Z scenarios spanning aggressive, working assumption, and mid-2040.
 
     ``aggressive`` puts a CRQC closer than the wallet's full migration
-    window. ``ncsc_2035`` mirrors the tests/ch36/conftest.py NCSC
-    working assumption (Z = 9 years from chain-tip 2026 to 2035).
-    ``mid_2040`` puts the arrival horizon past the wallet's seed
-    lifetime plus migration time (Z = 14, the boundary case).
+    window. ``ncsc_2035`` is the book's own hypothetical arrival
+    scenario, Z = 9 years from chain-tip 2026, aligned for planning with
+    NCSC's 2035 migration milestone. NCSC's March 2025 guidance sets
+    migration deadlines; it forecasts no CRQC arrival date, and this
+    number does not borrow its authority for one. ``mid_2040`` puts the
+    arrival horizon exactly AT the wallet's seed lifetime plus migration
+    time (Z = 14 = 10 + 4, the boundary case).
     """
     return {
         "aggressive": 4,

@@ -197,8 +197,17 @@ def test_initialize_holds_the_reservation_lock(tmp_path) -> None:
 
 @pytest.mark.skipif(sys.platform == "emscripten", reason="Pyodide cannot start a thread")
 def test_late_initializer_cannot_rewind_a_reserved_counter(tmp_path) -> None:
-    """Round-10 P1-02: init A passes its check, init B creates, a signer reserves 0,
-    A resumes. Exactly one initializer writes; the other refuses; no leaf is reused."""
+    """Two racing initializers serialize, and signing afterwards is clean.
+
+    Round-10 P1-02 is the motivation, but this is not that interleaving.
+    The body starts both initializers, releases them and joins them, and
+    only THEN reserves a signing leaf. What it establishes is that
+    exactly one initializer writes, the other refuses with "already
+    exists", and the first two signatures afterwards take leaves 0 and 1.
+    Realizing the original trace, where a signer reserves a leaf while
+    one initializer is still paused, would need a barrier between the
+    signer and the paused thread.
+    """
     counter = tmp_path / "counter.json"
     at_write = threading.Event()
     resume = threading.Event()

@@ -1,8 +1,13 @@
 """HKDF-consistency tests for the X25519MLKEM768 combiner.
 
 Verifies that the combiner output is a deterministic function of the
-two component shared secrets and that the transcript hash produced
-by the combiner is stable across re-runs.
+two component shared secrets, and that a fixed fingerprint over
+(ciphertext, shared secret) is stable across re-runs.
+
+That fingerprint is computed HERE, by the test, as a SHA-256 over the
+two byte strings. The combiner does not produce it. It is also not a
+TLS handshake transcript hash, which takes different inputs and does a
+different job.
 """
 
 import hashlib

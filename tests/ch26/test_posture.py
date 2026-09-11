@@ -89,6 +89,12 @@ def test_the_property_uses_the_encryptorium_namespace():
 
 
 def test_the_property_carries_only_the_two_cyclonedx_keys():
-    """A CycloneDX 1.6 `property` object is exactly `name` and `value`."""
+    """This helper emits exactly `name` and `value`, which is a local contract.
+
+    CycloneDX 1.6's schema requires `name` and makes `value` optional, so
+    an exact two-key set is this helper's own choice rather than the
+    schema's shape. The assertion is still worth keeping, as the
+    helper's contract.
+    """
 
     assert set(agility_property({"algorithm": "HS256"})) == {"name", "value"}

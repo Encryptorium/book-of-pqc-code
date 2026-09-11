@@ -33,7 +33,15 @@ def test_signature_bytes_match_standards(candidate_set):
 
 
 def test_public_key_bytes_match_standards(candidate_set):
-    """Public-key sizes match the same standards."""
+    """Public-key sizes match their standards, with one shared row to read
+    carefully.
+
+    The 33-byte classical-secp256k1 entry is a generic compressed SEC
+    point, which is the Ethereum contract-wallet reading. It is NOT the
+    Bitcoin baseline's key: a BIP-340 x-only public key is 32 bytes. The
+    difference never reaches the Bitcoin count, because that row sets
+    reveal_pk False and the key is not in the witness at all.
+    """
     expected = {
         "classical-secp256k1": 33,
         "ML-DSA-65": 1952,
@@ -58,11 +66,12 @@ def test_eth_gas_limit_anchor(budget_anchors):
 
 
 def test_witness_reveals_pk_only_for_pq_candidates():
-    """The classical row (P2TR-style) hides the pk in scriptPubKey; PQ candidates reveal it.
+    """The classical row keeps the pk out of the witness; PQ candidates reveal it.
 
     The Bitcoin throughput model uses two output patterns. The classical row at the
     Taproot baseline keeps the tweaked public key in the output script,
-    so the witness on spend is the signature alone. Any future PQ
+    where it is publicly visible rather than hidden; what it is absent
+    from is the spending witness, which carries the signature alone. Any future PQ
     signature soft fork is assumed to follow a P2WPKH-style commit-
     then-reveal pattern, so the witness reveals both the public key
     and the signature.
@@ -84,7 +93,7 @@ def test_btc_tx_per_block_classical_baseline():
     """The classical row at 64-byte signatures yields ~9k transactions per Bitcoin block.
 
     With 380-weight overhead and a 64-byte witness (P2TR key-path),
-    each transaction costs 444 weight units. The 4 MB weight budget
+    each transaction costs 444 weight units. The 4,000,000 weight-unit budget
     yields floor(4_000_000 / 444) = 9009 transactions. The figure
     exists as the upper anchor for the migration tax on every PQ
     candidate.
@@ -99,7 +108,7 @@ def test_btc_tx_per_block_ml_dsa_includes_public_key():
 
     With a P2WPKH-style commit-then-reveal output pattern, the spend
     witness carries 1952 + 3309 = 5261 bytes. With 380 overhead the
-    per-tx weight is 5641. The 4 MB budget yields floor(4_000_000 /
+    per-tx weight is 5641. The 4,000,000 weight-unit budget yields floor(4_000_000 /
     5641) = 709 transactions per block, a 12.7-fold drop against the
     classical baseline.
     """

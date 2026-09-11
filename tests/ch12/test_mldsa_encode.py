@@ -1,7 +1,11 @@
 """Serialization: bit-packing and the pk/sk/sig encoders (FIPS 204 §7.1-7.2).
 
-Every ML-DSA object on the wire is a little-endian bit-packing of length-256
-polynomials at a field-specific width. The round-trip tests here pin the packers
+The polynomial fields of every ML-DSA object are little-endian bit-packings at
+a field-specific width, but an object on the wire is more than its polynomials:
+the encoders concatenate those packings with raw seed and hash bytes (rho, K,
+tr, c_tilde) and, for a signature, with the sparse hint's own positional
+encoding. FIPS 204 Algorithms 22 to 27 use several field encodings rather than
+one polynomial-only format, and the round trips below carry all of them. The round-trip tests here pin the packers
 without an external vector; the malformed-hint tests pin the HintBitUnpack
 rejection logic that the sigVer(invalid) "modified hint" vector exercises. Byte
 lengths are checked against the derived params so a wrong width fails loudly.

@@ -18,11 +18,15 @@ under the names in ``PARAMS``, this suite parses each file and checks:
 - the file contains exactly 100 NIST-KAT vectors,
 - every vector has the ``count``, ``seed``, ``pk``, ``sk``, ``ct``, ``ss``
   fields,
-- the byte lengths of ``pk``, ``sk``, ``ct`` match the specification for
-  that parameter set.
+- every vector's ``pk``, ``sk`` and ``ct`` decode as hex and carry the
+  byte lengths the specification gives for that parameter set.
 
-When the ``.rsp`` files are absent, every test is skipped with a clear
-reason. Running ``pytest`` on a clean clone therefore stays green, and
+None of this establishes reference-KEM conformance; it is structural
+integrity of the vendored files.
+
+When the ``.rsp`` files are absent, the nine KAT-dependent cases skip
+with a clear reason, while ``test_toy_divergence_is_documented`` still
+runs. Running ``pytest`` on a clean clone therefore stays green, and
 the suite activates as soon as someone supplies the vendored KAT.
 """
 
@@ -117,15 +121,22 @@ def test_kat_byte_lengths_match_specification(param_set: str) -> None:
         )
     spec = PARAMS[param_set]
     vectors = _parse_kat(path)
-    first = vectors[0]
-    for field in ("pk", "sk", "ct"):
-        raw_hex = first[field]
-        # KAT hex strings are uppercase, whitespace-free.
-        byte_len = len(raw_hex) // 2
-        assert byte_len == spec[field], (
-            f"{path.name} {field}: expected {spec[field]} bytes, "
-            f"got {byte_len}"
-        )
+    for index, vector in enumerate(vectors):
+        for field in ("pk", "sk", "ct"):
+            raw_hex = vector[field]
+            # Decode rather than counting characters: an odd length or a
+            # non-hex digit is a corrupt file, and halving the character
+            # count would hide both.
+            try:
+                raw = bytes.fromhex(raw_hex)
+            except ValueError as exc:
+                raise AssertionError(
+                    f"{path.name} vector {index} {field}: not hex ({exc})"
+                ) from exc
+            assert len(raw) == spec[field], (
+                f"{path.name} vector {index} {field}: expected "
+                f"{spec[field]} bytes, got {len(raw)}"
+            )
 
 
 def test_toy_divergence_is_documented() -> None:

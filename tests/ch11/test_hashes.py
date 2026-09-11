@@ -1,8 +1,9 @@
 """Tests for the SHA-3 auxiliary functions (FIPS 203 §4.1).
 
 Covers output lengths and determinism for H, G, PRF, and XOF, plus a
-cross-check against the known SHA-3 empty-input digests from the FIPS
-202 standard.
+cross-check of the empty-input digests against Python's own hashlib.
+FIPS 202 defines SHA3-256 and SHA3-512; it carries no test vectors, so
+the literals below are cited to where they can actually be reproduced.
 """
 
 import pytest
@@ -10,7 +11,10 @@ import pytest
 from mlkem import H, G, PRF, XOF
 
 
-# FIPS 202 Appendix A test vectors for the empty-string input.
+# Empty-string digests, reproducible with hashlib.sha3_256(b"").hexdigest()
+# and hashlib.sha3_512(b"").hexdigest(). FIPS 202 specifies the two
+# algorithms; its Appendix A is titled "Security" and holds no vectors,
+# so it is the wrong locator for these bytes.
 # SHA3-256('') and SHA3-512(''):
 SHA3_256_EMPTY = bytes.fromhex(
     "a7ffc6f8bf1ed76651c14756a061d662f580ff4de43b49fa82d80a4b80f8434a"
@@ -48,8 +52,18 @@ class TestG:
         k, r = G(b"")
         assert k + r == SHA3_512_EMPTY
 
-    def test_distinct_inputs_produce_distinct_halves(self) -> None:
-        assert G(b"a") != G(b"b")
+    def test_distinct_inputs_change_each_half_separately(self) -> None:
+        """Both halves move, asserted one at a time.
+
+        Comparing the pairs would pass against an implementation whose
+        second half is a constant, because a tuple differs as soon as
+        either element does. Neither form says anything about statistical
+        independence of the two halves.
+        """
+        k1, r1 = G(b"a")
+        k2, r2 = G(b"b")
+        assert k1 != k2
+        assert r1 != r2
 
 
 class TestPRF:

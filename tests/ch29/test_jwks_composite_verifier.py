@@ -10,7 +10,9 @@ import pytest
 from hybrid.ed25519 import ed25519_keygen
 from hybrid.sig_combiner import (
     COMPOSITE_PK_BYTES,
+    COMPOSITE_SIG_BYTES,
     MLDSA65_PK_BYTES,
+    MLDSA65_SIG_BYTES,
     composite_sig_keygen,
     composite_sig_sign,
 )
@@ -55,12 +57,16 @@ def test_composite_jwk_fields() -> None:
 
 
 def test_jwk_members_hold_what_their_names_say() -> None:
-    """Each member is checked against an independently derived key.
+    """The Ed25519 member is derived independently; the ML-DSA member is
+    checked for length only.
 
     A round-trip cannot catch a mislabelling, because build and verify
     would slice at the same wrong offset and the concatenation would
-    reassemble the original bytes. Only comparing ``ed_pk`` against
-    ``ed25519_keygen``'s own output tests the published names.
+    reassemble the original bytes. Comparing ``ed_pk`` against
+    ``ed25519_keygen``'s own output is what tests the published names,
+    and it pins the slice boundary from one side, which is enough to
+    catch a swapped pair. ``mldsa_pk`` gets no independent comparison
+    here.
     """
     _pk, _sk, jwks = _gen_jwks(kid="k-named")
     jwk = jwks["keys"][0]
@@ -102,14 +108,31 @@ def test_tampered_payload_fails_verify() -> None:
 
 
 def test_tampered_ed25519_half_fails_and_mode() -> None:
-    """Swap the Ed25519 component with zero bytes: AND-mode rejects."""
+    """Zero the Ed25519 component only: AND-mode rejects.
+
+    ``composite_sig_sign`` returns ``mldsa_sig || ed_sig``, so the Ed25519
+    component is the 64-byte SUFFIX and not the prefix.  The slice
+    assertions below are what keep this test about the component it names:
+    without them a mutation of the ML-DSA half would produce the same
+    rejection and the test would pass while proving something else.
+    """
     _pk, sk, jwks = _gen_jwks(kid="composite-2026-04")
     jwt = _sign_jwt(sk, kid="composite-2026-04", payload={"sub": "alice"})
     from pki_migration.jwks_verifier import _b64url_decode, _b64url_encode
 
     header_b64, payload_b64, sig_b64 = jwt.split(".")
     sig = _b64url_decode(sig_b64)
-    forged = b"\x00" * 64 + sig[64:]
+    assert len(sig) == COMPOSITE_SIG_BYTES
+    ed_bytes = COMPOSITE_SIG_BYTES - MLDSA65_SIG_BYTES
+    forged = sig[:MLDSA65_SIG_BYTES] + bytes(ed_bytes)
+
+    assert forged[:MLDSA65_SIG_BYTES] == sig[:MLDSA65_SIG_BYTES], (
+        "the ML-DSA component must be untouched"
+    )
+    assert forged[MLDSA65_SIG_BYTES:] != sig[MLDSA65_SIG_BYTES:], (
+        "the Ed25519 component must actually change"
+    )
+
     tampered = header_b64 + "." + payload_b64 + "." + _b64url_encode(forged)
     assert verify_composite_jwt(tampered, jwks) is False
 

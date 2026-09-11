@@ -44,10 +44,10 @@ def test_exercise_four_matrix_has_rank_two_over_f7() -> None:
 
 
 def test_exercise_four_rows_differ_by_the_all_ones_vector() -> None:
-    # Appendix D's structural argument: successive rows differ by (1,1,1,1)
-    # over F_7. The last entry only works modulo 7, since 7 - 6 == 1 there
-    # while the integer difference in that column is 7 - 6 == 1 as well for
-    # rows 1 to 3 and 0 - 6 == 1 mod 7 for the last.
+    # Appendix D's structural argument: successive rows differ by (1,1,1,1).
+    # All four differences are already 1 over the integers, in every column
+    # including the last, where the entries run 4, 5, 6, 7. Reducing mod 7
+    # preserves them; no wraparound is doing any work here.
     for i in range(1, 4):
         diff = [(EXERCISE_MATRIX[i][j] - EXERCISE_MATRIX[i - 1][j]) % 7 for j in range(4)]
         assert diff == [1, 1, 1, 1]

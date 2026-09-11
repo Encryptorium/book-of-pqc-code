@@ -41,12 +41,20 @@ def test_verify_after_sign_is_constant_at_the_chapter_parameters():
     [
         [0] * ELL_128,
         [W - 1] * ELL_128,
-        list(range(ELL_128)),
         [i % W for i in range(ELL_128)],
+        [(W - 1) - (i % W) for i in range(ELL_128)],
     ],
 )
 def test_verify_after_sign_ignores_the_digits(digits):
-    """The extremes included: an all-zero and an all-maximum digit vector."""
+    """Constant total cost across legal digit vectors, extremes included.
+
+    Every fixture here is a legal WOTS+ digit vector, in [0, W). An
+    earlier fixture used ``range(ELL_128)``, which at ELL_128 = 35 and
+    W = 16 contains digits 16 to 34: the two routines then return 595
+    signing calls and -70 verification calls, which sum to 525 and
+    satisfy the assertion by an algebraic cancellation that no WOTS+
+    computation could produce.
+    """
     assert verify_after_sign_hash_calls(digits, W) == constant_time_chain_cost(
         len(digits), W
     )

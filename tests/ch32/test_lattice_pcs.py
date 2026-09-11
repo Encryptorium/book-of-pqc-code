@@ -72,14 +72,14 @@ def test_commit_rejects_wrong_dimension_error() -> None:
         lattice_pcs.commit(matrix, message, short_error)
 
 
-def test_sis_binding_witness_recovers_difference() -> None:
-    """Two openings to the same commitment yield a Module-SIS witness.
+def test_sis_binding_witness_computes_the_coordinatewise_difference() -> None:
+    """The routine subtracts two openings, whatever they open.
 
-    In Module-SIS terms: if A*m_a + e_a = A*m_b + e_b mod q, then
-    A*(m_a - m_b) + (e_a - e_b) = 0 mod q, which is a short solution
-    to the homogeneous SIS instance. Ch 32 cites this as the binding
-    reduction. The routine here extracts the solution vector; the
-    solution's shortness is the part that makes SIS hard.
+    This pins the arithmetic alone. The two openings here are arbitrary,
+    so the returned pair is a difference vector and NOT an exhibited SIS
+    solution: nothing in this fixture supplies the premise the reduction
+    needs, which is that both openings reach the same commitment. The
+    test below supplies it.
     """
     params = lattice_pcs.default_params()
     message_a = [1, 2, 3, 4, 5, 6, 7, 8]
@@ -92,6 +92,51 @@ def test_sis_binding_witness_recovers_difference() -> None:
     )
     assert diff_m == [-1, 0, 0, 0, 0, 0, 0, 0]
     assert diff_e == [-1, 0, 0, 0]
+
+
+def test_two_openings_to_one_commitment_give_a_short_sis_solution() -> None:
+    """The real reduction, with the same-commitment premise supplied.
+
+    A matrix with two equal columns admits two distinct short messages
+    with the same image, so both open the same commitment under the same
+    error. The difference is then a nonzero short solution of the
+    homogeneous instance A*x + y = 0 mod q, which is what Module-SIS is
+    assumed to make hard to find. Here it is easy, because the matrix was
+    chosen to make it easy; that is the point of exhibiting it rather
+    than asserting it.
+    """
+    params = lattice_pcs.default_params()
+    base = lattice_pcs.sample_public_matrix(params, seed=b"sis-witness")
+    rows = [list(row) for row in base.rows]
+    for row in rows:
+        row[1] = row[0]  # columns 0 and 1 now coincide
+    matrix = lattice_pcs.PublicMatrix(
+        params=params, rows=[tuple(row) for row in rows]
+    )
+
+    error = [0] * params.commit_size
+    message_a = [1] + [0] * (params.dimension - 1)
+    message_b = [0, 1] + [0] * (params.dimension - 2)
+
+    commitment = lattice_pcs.commit(matrix, message_a, error)
+    assert lattice_pcs.verify(matrix, commitment, message_a, error)
+    assert lattice_pcs.verify(matrix, commitment, message_b, error)
+    assert message_a != message_b
+
+    diff_m, diff_e = lattice_pcs.sis_binding_witness(
+        message_a, error, message_b, error, params.modulus
+    )
+    assert any(diff_m), "the witness must be nonzero to be a solution"
+
+    # A*diff_m + diff_e == 0 mod q, coordinate by coordinate.
+    for row, y in zip(matrix.rows, diff_e):
+        acc = sum(a * x for a, x in zip(row, diff_m)) + y
+        assert acc % params.modulus == 0
+
+    # And it is short, which is the half that makes SIS hard.
+    bound = params.error_bound
+    assert max(abs(v) for v in diff_m) <= max(1, bound)
+    assert max(abs(v) for v in diff_e) <= max(1, bound)
 
 
 def test_default_params_pins_the_error_bound_the_chapter_prints() -> None:

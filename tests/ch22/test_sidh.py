@@ -50,8 +50,38 @@ class TestTorsionBases:
     def test_QB_order(self):
         assert point_order(QB, A0, P, L_B ** E_B + 1) == L_B ** E_B
 
-    def test_PA_QA_independent(self):
-        """Q_A is not in <P_A>."""
+    def _assert_basis(self, p_pt, q_pt, ell, e):
+        """{P, Q} is a basis of E[ell^e], not merely Q outside <P>.
+
+        Non-membership is weaker than independence when e > 1. Over
+        (Z/ell^e Z)^2 the pair P = (1, 0) and Q = (1, ell) both have full
+        order and Q lies outside <P>, yet they generate a subgroup of
+        index ell rather than the whole module.
+
+        The test that settles it projects both points into the ell-torsion
+        by multiplying by ell^(e-1). The projections must be nonzero, and
+        the projection of Q must lie outside the order-ell subgroup the
+        projection of P generates. That is exactly independence modulo
+        ell, which for an abelian ell^e-torsion module is equivalent to
+        being a basis.
+        """
+        cof = ell ** (e - 1)
+        p_tor = scalar_mul(cof, p_pt, A0, P)
+        q_tor = scalar_mul(cof, q_pt, A0, P)
+        assert p_tor is not None, "ell^(e-1) P must not be the identity"
+        assert q_tor is not None, "ell^(e-1) Q must not be the identity"
+        p_sub = set()
+        for k in range(ell):
+            pt = scalar_mul(k, p_tor, A0, P)
+            if pt is not None:
+                p_sub.add((pt[0], pt[1]))
+        assert (q_tor[0], q_tor[1]) not in p_sub, (
+            "the ell-torsion projections are dependent, so {P, Q} spans a "
+            "proper submodule and is not a basis"
+        )
+
+    def test_PA_QA_form_a_basis_of_the_alice_torsion(self):
+        """Q_A is outside <P_A>, and the pair is a basis of E[L_A^E_A]."""
         pa_set = set()
         for k in range(L_A ** E_A):
             pt = scalar_mul(k, PA, A0, P)
@@ -59,9 +89,10 @@ class TestTorsionBases:
                 pa_set.add((pt[0], pt[1]))
         assert QA is not None
         assert (QA[0], QA[1]) not in pa_set
+        self._assert_basis(PA, QA, L_A, E_A)
 
-    def test_PB_QB_independent(self):
-        """Q_B is not in <P_B>."""
+    def test_PB_QB_form_a_basis_of_the_bob_torsion(self):
+        """Q_B is outside <P_B>, and the pair is a basis of E[L_B^E_B]."""
         pb_set = set()
         for k in range(L_B ** E_B):
             pt = scalar_mul(k, PB, A0, P)
@@ -69,6 +100,7 @@ class TestTorsionBases:
                 pb_set.add((pt[0], pt[1]))
         assert QB is not None
         assert (QB[0], QB[1]) not in pb_set
+        self._assert_basis(PB, QB, L_B, E_B)
 
 
 class TestSIDHExchange:

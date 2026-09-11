@@ -14,7 +14,7 @@ Provides shared fixtures:
   row.
 - ``mosca_z_values``: four Z scenarios spanning aggressive (Z=0;
   CRQC arrives sooner than the migration window), narrow (Z=2;
-  hypothetical breach), NCSC working assumption (Z=9), and
+  hypothetical breach), the book's hypothetical arrival scenario aligned with NCSC's 2035 migration milestone (Z=9; NCSC forecasts no arrival date), and
   mid-2040 (Z=14).
 - ``validator_count_scenarios``: three illustrative N values for the
   per-block byte-budget arithmetic.

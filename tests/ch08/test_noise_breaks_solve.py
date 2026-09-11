@@ -2,10 +2,18 @@
 
 The whole point of Chapter 8's "noise makes it hard" section is that
 the same algorithm which trivially solves b = A @ s (noise-free) fails
-once we add a small error vector e. These tests run the elimination
-on ``sample_lwe`` output and confirm it either returns None or, in
-the rare coincidental case, returns a secret that differs from the
-true s on at least one coordinate.
+once we add a small error vector e.
+
+The two shapes fail differently, and the tests below keep them apart.
+An overdetermined system (m > n) is inconsistent once noise is added,
+so the elimination detects the contradiction and returns None. A square
+system (m == n) has no consistency rows left to check, so it returns
+``s + A^-1 e``, which is a plausible-looking wrong answer rather than a
+signalled failure.
+
+These are sampled thresholds, not universal claims: the assertions
+allow a small number of exact recoveries out of 100 and 50 runs, which
+is what an error vector that happens to be all zeros produces.
 """
 
 import numpy as np
@@ -83,10 +91,11 @@ def test_noisy_square_system_returns_wrong_secret(square):
     assert none_count <= 2, (
         f"expected almost no None returns for m == n, got {none_count}/{total}"
     )
-    # The recovered secret should almost never equal the true one,
-    # because the noise is projected through a nonzero elimination
-    # path in every coordinate. The rare exception is when every
-    # error entry happens to be zero, which has probability
+    # The recovered secret should almost never equal the true one. For a
+    # nonzero e and an invertible A, s + A^-1 e differs from s in at least
+    # one coordinate; individual coordinates of A^-1 e can still be zero,
+    # so "every coordinate" would be too strong. The rare exception is
+    # when every error entry happens to be zero, which has probability
     # (1/3)^n ~ 1.2% per seed.
     assert correct_count <= 3, (
         f"expected almost no accidental recoveries for m == n, "

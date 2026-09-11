@@ -56,5 +56,6 @@ def test_backup_hazard_same_leaf():
     # The WOTS+ key at leaf 1 has now been used twice, degrading its
     # one-time security.  The two WOTS+ signatures on different messages
     # leak intermediate chain values that an adversary can exploit.
-    # (The full forgery walk is in the chapter prose and in
-    # test_wots_checksum_forgery.py.)
+    # (The chapter prose carries the two-signature forgery walk.
+    # test_wots_checksum_forgery.py is a different attack: one signature,
+    # no checksum, at the digit level.)

@@ -62,8 +62,14 @@ def test_undefended_security_matches_the_chapter(short):
 
 
 @pytest.mark.parametrize("short", SHORT_NAMES)
-def test_every_set_falls_below_its_category_floor_without_adrs(short):
-    """The whole point of the table: no set meets its own floor undefended."""
+def test_every_set_falls_below_its_single_target_baseline_without_adrs(short):
+    """The whole point of the table: undefended, every set loses bits.
+
+    The comparison is against n_bits, the nominal single-target baseline
+    in this file's own multi-target model. It is not a NIST category
+    floor: FIPS 205 Section 11 sets the categories by resource comparison
+    in realistic models, not by an n-bit exponent.
+    """
     ps = by_name(short)
     assert effective_preimage_bits(ps) < ps.n_bits
 

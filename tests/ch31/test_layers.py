@@ -97,8 +97,11 @@ def test_only_groth16_lacks_a_fiat_shamir_surface():
 @pytest.mark.parametrize(
     "system", ["groth16", "plonk_kzg", "ipa_fs", "starks_fri"]
 )
-def test_l2_is_the_layer_to_audit_first_for_every_classical_group_system(system):
-    # Appendix D Exercise 4 gives L2 for all four of these.
+def test_l2_is_the_first_audit_target_for_each_of_these_four_systems(system):
+    # Appendix D Exercise 4 gives L2 for all four of these. They are not
+    # all classical-group systems: starks_fri's L2 is hash-based, and its
+    # L2 posture here is quantum weakening rather than a discrete-log
+    # assumption. The ordering holds across the four either way.
     assert thinnest_layer(system) == "L2"
 
 

@@ -115,12 +115,21 @@ def test_exact_form_never_exceeds_probability_one():
 
 
 def test_position_collisions_match_the_chapter_estimate_at_h63():
-    """The chapter quotes q**2 / 2**64 at h = 63, which is the pair count rounded up."""
+    """The chapter quotes q**2 / 2**64 at h = 63, dropping the q-1 factor.
+
+    The approximation's own error is 1/q, so the tolerance has to be
+    looser than that rather than tighter. It also has to be RELATIVE
+    only: these values are around 1e-14 at q = 1000, well inside
+    pytest.approx's default absolute tolerance of 1e-12, so without
+    ``abs=0`` this assertion would hold against zero.
+    """
     h = 63
     for q in (10**3, 10**6, 10**9):
         exact = expected_position_collisions(q, h)
         quoted = q**2 / 2**64
-        assert exact == pytest.approx(quoted, rel=1e-6)
+        assert exact == pytest.approx(quoted, rel=2.0 / q, abs=0)
+        # The dropped factor is exactly (q - 1) / q.
+        assert exact == pytest.approx(quoted * (q - 1) / q, rel=1e-12, abs=0)
 
 
 def test_position_collisions_are_below_one_until_roughly_two_to_the_h_over_two():
@@ -131,7 +140,14 @@ def test_position_collisions_are_below_one_until_roughly_two_to_the_h_over_two()
 
 
 def test_position_collisions_at_the_fips_lifetime_limit():
-    """2**64 signatures over 2**63 positions: about 2**64 repeated positions.
+    """2**64 signatures over 2**63 positions: about 2**64 equal PAIRS.
+
+    The counted quantity is q(q-1)/2 divided by the position count, which
+    is the expected number of equal unordered pairs of draws. It is not a
+    count of repeated positions and could not be: there are only 2**63
+    positions in total, so 2**64 distinct repeats is impossible. Multiply
+    occupied positions are a third quantity again, the one the Chapter 16
+    occupancy counter measures.
 
     Reuse is designed in, not designed out, which is the whole reason FORS
     carries a few-time bound rather than a one-time one.

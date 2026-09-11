@@ -34,7 +34,7 @@ def test_sample_ring_error_is_short_in_symmetric_representatives() -> None:
         assert (np.abs(sym) <= 1).all()
 
 
-def test_sample_ring_uniform_covers_range() -> None:
+def test_sample_ring_uniform_lies_in_range() -> None:
     params = RingParams(n=4, q=17, m=4, noise_bound=1)
     rng = np.random.default_rng(seed=0)
     u = sample_ring_uniform(params, rng)

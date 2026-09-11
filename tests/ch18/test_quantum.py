@@ -79,8 +79,16 @@ def test_part_iii_comparison_row_derives_from_the_cost_model(scheme):
     assert derived == expected
 
 
-def test_category_floors_track_grover_not_bht():
-    """The category floors are 64, 96, 128: Grover preimage, not BHT collision."""
+def test_ideal_grover_baselines_track_preimage_not_bht():
+    """The ideal-Grover baselines are 64, 96, 128: preimage, not BHT collision.
+
+    These are this file's model outputs, n/2 query exponents in the ideal
+    serial-query model, and not NIST category floors. FIPS 205 Section 11
+    defines the categories by comparing computational resources in
+    realistic models against reference primitives, which no single bit
+    exponent captures. What the test pins is that the model tracks the
+    preimage exponent rather than the BHT collision one.
+    """
     for n_bits, floor in ((128, 64), (192, 96), (256, 128)):
         assert grover_preimage_bits(n_bits) == floor
         assert bht_collision_bits(n_bits) < floor

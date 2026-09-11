@@ -68,13 +68,26 @@ def test_lookup_kzg_is_shor_broken():
 
 
 def test_lookup_fri_is_grover_weakened():
-    """FRI inherits Grover-weakening through the Merkle hash."""
+    """FRI inherits the hash label through its Merkle commitment.
+
+    The route that matters for Merkle BINDING is collision search, which
+    is BHT/CNPS rather than Grover preimage search. The model carries one
+    label for both, and the distinction is Chapter 18's.
+    """
     out = vl.lookup("L2-commitment", "FRI")
     assert out["pq_status"] == "grover-weakened"
 
 
 def test_lookup_lattice_pcs_is_pq_secure():
-    """Lattice PCS is the only L2 commitment candidate without a quantum speedup."""
+    """Lattice PCS is the only L2 commitment candidate the model marks pq-secure.
+
+    ``pq-secure`` is this model's category for a candidate whose
+    assumption survives a quantum adversary at adequate parameters. It is
+    not immunity from quantum speedups: the book's own lattice
+    cryptanalysis uses different classical and quantum sieving exponents,
+    and the Kyber submission discusses those speedups directly. The
+    deployment status is a separate axis, and this row is research.
+    """
     out = vl.lookup("L2-commitment", "lattice-PCS")
     assert out["pq_status"] == "pq-secure"
     assert out["deployment_status"] == "pq-research"
@@ -87,7 +100,13 @@ def test_lookup_l1_candidates_are_off_chain():
 
 
 def test_lookup_l4_candidates_are_grover_weakened():
-    """Every L4 hash candidate is grover-weakened (no PQ-secure hash on-chain)."""
+    """Every L4 hash candidate carries the model's grover-weakened label.
+
+    That label is a legacy umbrella for "a quantum adversary gains on
+    this, so size the output width accordingly". It does not mean no hash
+    is post-quantum usable on chain; a wide enough output is exactly the
+    mitigation the chapter recommends.
+    """
     for candidate in vl.CANDIDATES_BY_LAYER["L4-fiat-shamir"]:
         assert vl.lookup("L4-fiat-shamir", candidate)["pq_status"] == "grover-weakened"
 
@@ -204,15 +223,24 @@ def test_starknet_profile_carries_fri_l2():
     assert profile["layers"]["L2-commitment"]["candidate"] == "FRI"
 
 
-def test_both_anchors_carry_sha256_at_l4():
-    """Both production anchors deploy SHA-256 at L4 at chain-tip 2026."""
+def test_both_anchors_carry_the_pedagogical_sha256_entry_at_l4():
+    """Both anchor rows carry SHA-256 at L4, which is the book's transcript.
+
+    This pins two literals in the book's model and says nothing about any
+    deployed channel. Neither anchor runs SHA-256 on chain: StarkWare's
+    published Solidity verifier draws its channel randomness with
+    Keccak-256, and ZKsync's outer wrapper uses a Keccak transcript with
+    Poseidon2 at the wrapped stage. Chapter 40 states both, and calls the
+    SHA-256 transcript the book's own pedagogical choice. Deployed channel
+    identity belongs in separately sourced metadata, not in this row.
+    """
     for system in ("ZKsync-Era-Boojum", "Starknet-ethSTARK"):
         profile = vl.system_profile(system)
         assert profile["layers"]["L4-fiat-shamir"]["candidate"] == "SHA-256"
 
 
 def test_system_profile_includes_citation_key():
-    """Each production anchor carries a citable cite key for book.bib."""
+    """Each anchor row carries a citable cite key for book.bib."""
     for system in ("ZKsync-Era-Boojum", "Starknet-ethSTARK"):
         profile = vl.system_profile(system)
         assert isinstance(profile["citation_key"], str)

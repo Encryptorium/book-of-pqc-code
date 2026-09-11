@@ -52,8 +52,17 @@ class TestRoundTripCompressed:
         assert np.array_equal(decoded, f)
 
     @pytest.mark.parametrize("d", [1, 4, 10, 11])
-    def test_compress_encode_decode_decompress(self, d: int) -> None:
-        """The full pipeline: Z_q → Z_{2^d} → bytes → Z_{2^d} → Z_q."""
+    def test_compress_encode_decode_round_trips_the_compressed_form(
+        self, d: int
+    ) -> None:
+        """Z_q -> Z_{2^d} -> bytes -> Z_{2^d}, and no further.
+
+        The serialization round trip is what is under test, so this ends
+        at the compressed coefficients and compares them. It does not
+        decompress and does not return to Z_q: compression is lossy, so
+        that final leg needs a noise bound rather than an equality, and
+        it has its own tests.
+        """
         rng = np.random.default_rng(seed=42)
         f = rng.integers(0, Q, size=N, dtype=np.int64)
         compressed = compress(f, d)

@@ -8,7 +8,7 @@ Provides shared fixtures:
 - ``candidate_set``: the four-element list of candidate primitive
   names locked in the chapter's planning notes.
 - ``budget_anchors``: a dict carrying the Bitcoin weight limit and
-  the Ethereum post-Pectra gas limit so a test can assert against
+  the Ethereum Fusaka-era client-default gas-limit scenario so a test can assert against
   the exact constants the chapter pins.
 """
 
@@ -45,9 +45,11 @@ def candidate_set() -> list[str]:
 def budget_anchors() -> dict[str, int]:
     """The two block-budget anchors locked in the chapter's planning notes.
 
-    Bitcoin uses the 4 MB weight limit; Ethereum uses the chain-tip
-    2026 60-million gas limit set by EIP-7935 in the Fusaka upgrade
-    (mainnet activation December 2025). Tests assert against these
+    Bitcoin uses the 4,000,000 weight-unit limit, which is weight units
+    and not four million raw serialized bytes. Ethereum uses the
+    chain-tip 2026 60-million gas scenario, which is the execution-client
+    default EIP-7935 recommends in the Fusaka cycle rather than a
+    consensus constant. Tests assert against these
     directly so a revision must edit one place rather than every
     figure.
     """

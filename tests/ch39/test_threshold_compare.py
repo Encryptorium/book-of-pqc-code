@@ -203,13 +203,13 @@ def test_deployment_summary_iterates_in_primitives_then_roles_order(primitives, 
 
 
 def test_production_ready_at_no_threshold_returns_only_bls():
-    """At chain-tip 2026 only BLS no-threshold is production-deployed."""
+    """In this chapter's support matrix, BLS no-threshold is the only row marked production-ready at chain-tip 2026."""
     out = tc.production_ready_at("no-threshold")
     assert out == ["BLS-BLS12-381"]
 
 
 def test_production_ready_at_threshold_pq_is_empty():
-    """At chain-tip 2026 no production threshold-PQ deployment exists."""
+    """This chapter's support matrix marks no threshold-PQ row production-ready at chain-tip 2026; that is a claim about the matrix, not a global survey."""
     out = tc.production_ready_at("threshold-PQ")
     assert out == []
 

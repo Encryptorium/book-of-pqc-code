@@ -73,11 +73,14 @@ def test_pi_fixes_F_p_points():
 def test_pi_squared_is_identity_on_F_p2_points():
     """pi^2 acts as identity on F_{p^2}-rational points (since x^{p^2} = x).
 
-    This is NOT the same as pi^2 = [-p] in End(E_0).  The relation
-    pi^2 = [-p] is the characteristic polynomial of Frobenius for a
-    supersingular curve with trace 0 (Silverman 2009, V.2.3.1) and
-    holds over the algebraic closure.  On F_{p^2}-rational points,
-    [-p] does not in general equal [1].
+    The relation pi^2 = [-p] is the characteristic polynomial of Frobenius
+    for a supersingular curve with trace 0 (Silverman 2009, V.2.3.1) and
+    holds over the algebraic closure.  On E_0(F_{p^2}) the two endomorphisms
+    AGREE: pi^2 fixes every F_{p^2}-rational point, and so does [-p] there,
+    which is why ``scalar_mul(-431, G, A0, 431) == G`` on both fixed points.
+    What is not the same is the global endomorphism: [-p] and [1] are
+    different maps on E_0 over the closure, and it is only their restriction
+    to the rational points that coincides.
     """
     pi_squared = endo_pi(endo_pi(G_FP2, P), P)
     assert pi_squared is not None

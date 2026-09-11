@@ -125,8 +125,11 @@ def test_divergent_adversary_raises() -> None:
     """An adversary whose queries branch on oracle responses diverges.
 
     The scaffolding requires that the second run hit the measured
-    input. An adversary that re-queries a different input on the
-    second run fails this invariant, and the scaffolding raises.
+    input. This adversary diverges on a mutable call counter it carries
+    itself, not on any oracle response, so what is established is
+    rejection when the replay misses the measured input. An adversary
+    whose branch genuinely depended on an answer would be a different
+    fixture; the invariant and the error are the same either way.
     """
     call_counter = {"n": 0}
 
@@ -227,11 +230,18 @@ def test_random_measurement_is_within_range() -> None:
 def test_random_measured_index_can_reach_every_query() -> None:
     """``i*`` is drawn over the whole query log, final slot included.
 
-    The chapter's statement of the lemma draws ``i*`` uniformly from
-    ``{1, ..., q + 1}``, and the ``(2q + 1)`` factor is a count of
-    those positions. A sampler that silently cannot reach the last
-    index still satisfies every consistency assertion in this file,
-    because whichever index it does pick reprograms correctly.
+    Every position in this classical query log is reachable, including
+    the last. That is worth pinning on its own, because a sampler that
+    silently could not reach the last index would satisfy every other
+    consistency assertion in this file: whichever index it did pick would
+    reprogram correctly.
+
+    It is a property of this scaffold and not of DFMS20's sampler. There
+    the q actual query positions and the final output position are not
+    interchangeable: each actual query carries a before/after
+    reprogramming branch and the output position does not, which is where
+    2q + 1 comes from rather than from counting q + 1 equally weighted
+    slots.
     """
     adversary = make_echo_adversary([b"q0", b"q1", b"q2"])
     seen = set()

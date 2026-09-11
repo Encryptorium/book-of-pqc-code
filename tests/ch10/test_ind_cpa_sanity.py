@@ -1,9 +1,17 @@
 """IND-CPA sanity check.
 
-Regev encryption is randomized: two encryptions of the same bit under
-the same public key produce different ciphertexts. This is a necessary
-(not sufficient) condition for IND-CPA security. A deterministic
-encryption of the same plaintext would leak the plaintext trivially.
+Regev encryption is randomized, and these tests confirm that at fixed
+seeds: two encryptions of the same bit under the same public key come
+out different, and both still decrypt to the bit they encrypted.
+
+That is a sanity check and not a security property. Randomized
+encryption is allowed to repeat its coins, and here it will: the
+selection vector carries eight bits, so two independent draws collide
+with probability 1/256 before any other route to an equal ciphertext.
+What IND-CPA needs is that the randomness is adequate, not that no two
+ciphertexts ever coincide. A deterministic scheme would leak the
+plaintext trivially, which is what these fixed seeds are set up to rule
+out.
 """
 
 import numpy as np

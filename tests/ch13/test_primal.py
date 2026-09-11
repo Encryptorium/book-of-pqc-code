@@ -48,8 +48,12 @@ def test_primal_success_flips_once_over_a_stated_beta_interval() -> None:
     with a fixed base: delta is delta(beta), the root-Hermite factor, which the
     estimator recomputes at every block size, so the exponent 2*beta - d - 1
     and the base both move. What the sweep establishes is that on these
-    ML-KEM-768-like parameters the condition has a single threshold, which is
-    what primal_beta's search assumes when it reports the smallest beta.
+    ML-KEM-768-like parameters the condition has a single threshold, and it
+    is a regression property of that parameter slice rather than a fact
+    primal_beta depends on: that solver scans beta upward and returns at the
+    first success, so it finds the smallest successful block size whether or
+    not the predicate stays true above it. Bisection would need the
+    monotonicity; this implementation does not.
     """
     k, n, q, zeta = 3, 256, 3329, 1.0
     m = 650

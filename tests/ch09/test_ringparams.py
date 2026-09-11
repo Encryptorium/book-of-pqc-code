@@ -36,7 +36,7 @@ def test_ring_params_ntt_available_for_toy_primary() -> None:
     assert params.ntt_available() is True
 
 
-def test_ring_params_rejects_q_without_2n_divides_q_minus_1() -> None:
+def test_ring_params_accepts_q_without_2n_divides_q_minus_1_as_ntt_unavailable() -> None:
     # 4 is a power of 2 and 11 is prime, but 2n = 8 does not divide
     # q - 1 = 10, so the full negacyclic NTT is unavailable. The
     # RingParams constructs (the ring exists), but ntt_available is

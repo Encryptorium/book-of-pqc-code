@@ -1,10 +1,17 @@
 """Tests for the noise budget 2 * m * B < q // 2.
 
-Two parameter sets: one where the budget holds comfortably and every
-honest seed decodes correctly, one where the budget is violated and a
-measurable fraction of honest seeds decodes incorrectly. The second
-case demonstrates that the budget is tight: when it is violated,
-decryption actually fails, not just in theory.
+Three fixtures, doing two different jobs. Two broad parameter sets
+check the bound behaves: one where the budget holds comfortably and
+every honest seed decodes correctly, one where it is violated by a wide
+margin and a measurable fraction of honest seeds decodes incorrectly.
+Failing far outside a sufficient bound shows the bound is not vacuous;
+it does not show the bound is tight.
+
+Tightness is what the third fixture is for. At q = 97 and m B = 24 the
+asymptotic form is satisfied (24 < 24.25) while the integer form is
+not, and the deliberately constructed worst-case pair decodes the bit
+1 as 0. That boundary case is the evidence, and the two broad cases are
+not.
 """
 
 import numpy as np

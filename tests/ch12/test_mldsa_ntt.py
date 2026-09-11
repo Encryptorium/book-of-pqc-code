@@ -3,9 +3,17 @@
 Unlike ML-KEM's partial NTT (which stops at degree-2 factors), ML-DSA's ring
 splits completely because q ≡ 1 (mod 2n): the NTT maps a polynomial to 256
 independent scalars and multiplication in the NTT domain is plain pointwise.
-These tests are self-validating: the round-trip and the multiply-agrees-with-
-schoolbook identity pin the transform (including the zeta ordering) without any
-external vector.
+These tests check the transform against itself: that the inverse undoes it,
+that pointwise multiplication in the NTT domain agrees with schoolbook
+multiplication, and that the ZETAS landmarks hold. They do NOT pin the output
+ordering, and cannot. Compose the transform with any permutation P of its
+output coordinates and the inverse with P^-1: the round trip still closes,
+pointwise multiplication still agrees, and every assertion in this file still
+passes while the raw transform output has changed. Swapping coordinates 0 and 1
+is enough to show it.
+
+What pins the ordering is ``test_vectors.py``, which matches the NIST ACVP
+vectors byte for byte through the encoders that serialize NTT-domain values.
 """
 
 from __future__ import annotations

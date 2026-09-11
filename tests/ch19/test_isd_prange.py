@@ -1,5 +1,6 @@
 """Tests for Prange ISD and cost estimation."""
 
+import pytest
 import random
 
 from coding_theory.hamming import parity_check_matrix, encode, syndrome
@@ -21,9 +22,17 @@ def test_prange_finds_weight1_error_in_hamming():
 
 
 def test_prange_isd_cost_hamming():
-    """For [7,4,3] with w=1 (a perfect code), expected iterations ~ C(7,4)/C(6,4) = 35/15 ~ 2.33."""
+    """The support-avoidance estimate at [7,4,3], w=1: C(7,4)/C(6,4) = 35/15.
+
+    This pins the estimator's own arithmetic, not the implemented
+    experiment's mean. The two differ here: seven of the 35 three-column
+    selections are singular, so only 12 of them recover a planted
+    weight-one error and the experiment's mean is 35/12 = 2.92. The
+    formula prices every draw as usable and returns 2.33. A window of
+    2 < cost < 3 would admit either, so the value is pinned directly.
+    """
     cost = isd_cost_estimate(7, 4, 1)
-    assert 2.0 < cost < 3.0
+    assert cost == pytest.approx(35 / 15, rel=1e-9)
 
 
 def test_isd_exponent_mceliece348864():

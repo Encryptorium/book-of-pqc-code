@@ -30,13 +30,28 @@ def test_rep_decode_clean():
 
 
 def test_rep_decode_with_errors():
-    """Introduce floor((r-1)/2) = 8 errors per block; should still decode."""
+    """floor((R-1)/2) = 8 errors in EVERY block; should still decode.
+
+    The per-block claim is the one worth making, and it needs every block
+    corrupted. Damaging only the first block leaves the rest of the word
+    pristine, which is a weaker fixture than the name promises.
+    """
     msg = [1, 0, 1, 0]
     codeword = rep_encode(msg, R, N)
     corrupted = list(codeword)
-    # Flip 8 bits in the first block of 17 ones
-    for i in range(8):
-        corrupted[i] = 1 - corrupted[i]
+    for block in range(len(msg)):
+        base = block * R
+        for i in range(8):
+            corrupted[base + i] = 1 - corrupted[base + i]
+    # Every block really is damaged, and by the full budget.
+    for block in range(len(msg)):
+        base = block * R
+        flipped = sum(
+            1
+            for i in range(R)
+            if corrupted[base + i] != codeword[base + i]
+        )
+        assert flipped == 8
     recovered = rep_decode(corrupted, R, N)
     assert recovered == msg
 

@@ -47,8 +47,15 @@ def test_quadratic_eval_matches_the_explicit_sum():
     assert quadratic_eval(Mat, x, Q) == expected
 
 
-def test_quadratic_eval_is_not_symmetrized():
-    """An asymmetric matrix keeps both off-diagonal contributions."""
+def test_quadratic_eval_counts_the_off_diagonal_once():
+    """x^T A x sums A[i][j] x_i x_j over ordered pairs, not symmetrized pairs.
+
+    This checks the off-diagonal accounting and cannot check more. In odd
+    characteristic x^T A x equals x^T ((A + A^T)/2) x, so over GF(7) the
+    entry A01 = 1 could be replaced by the symmetric pair A01 = A10 = 4
+    without changing the value at any x. A returned scalar cannot expose
+    which representation produced it.
+    """
     Mat = [[0, 1], [0, 0]]
     assert quadratic_eval(Mat, [1, 1], Q) == 1
 

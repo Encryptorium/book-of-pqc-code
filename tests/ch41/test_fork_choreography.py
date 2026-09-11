@@ -44,13 +44,25 @@ def test_activation_window_ethereum_sums_three_components():
     assert fc.activation_window_weeks("ethereum-acd-cycle") == expected
 
 
-def test_activation_window_does_not_stack_infrastructure_lead():
-    # Infrastructure-lead weeks run in parallel with the client-team
-    # release lead time and are not added to the critical path.
-    btc = fc.activation_window_weeks("bitcoin-bip-cycle")
-    eth = fc.activation_window_weeks("ethereum-acd-cycle")
-    assert btc != fc.INFRASTRUCTURE_LEAD_WEEKS + btc
-    assert eth != fc.INFRASTRUCTURE_LEAD_WEEKS + eth
+def test_activation_window_does_not_stack_infrastructure_lead(monkeypatch):
+    """Changing the infrastructure lead must not move the activation window.
+
+    Infrastructure-lead weeks run in parallel with the client-team release
+    lead time and are not on the critical path. The test that says so has
+    to VARY the input: comparing ``btc`` against ``INFRASTRUCTURE_LEAD_WEEKS
+    + btc`` holds for any positive constant whether or not the window
+    already included it, which is x != x + c and not an independence test.
+    """
+    before = {
+        cycle: fc.activation_window_weeks(cycle)
+        for cycle in ("bitcoin-bip-cycle", "ethereum-acd-cycle")
+    }
+    monkeypatch.setattr(fc, "INFRASTRUCTURE_LEAD_WEEKS", 999)
+    for cycle, weeks in before.items():
+        assert fc.activation_window_weeks(cycle) == weeks, (
+            f"{cycle}: the activation window moved when the infrastructure "
+            "lead changed, so it is on the critical path after all"
+        )
 
 
 def test_activation_window_rejects_unknown_cycle():

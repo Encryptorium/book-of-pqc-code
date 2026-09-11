@@ -117,16 +117,28 @@ def test_figure_3_1_shows_nineteen_points_out_to_norm_thirteen(chapter_basis):
     assert max(x * x + y * y for x, y in points) == 149
 
 
-def test_no_lattice_point_sits_between_norm_thirteen_and_the_next_shell(chapter_basis):
+def test_norm_thirteen_is_an_honest_cutoff_on_both_sides(chapter_basis):
     """Why "norm at most 13" is an honest cutoff rather than a convenient one.
 
-    The largest point inside the cutoff has squared norm 149, and there is
-    nothing between 149 and 169, so the figure is not hiding a point just past
-    the line it drew.
+    Two things have to hold, and the first alone would not settle it. Inside
+    the cutoff, the largest point has squared norm 149 and the interval
+    (149, 169] is empty, so drawing the line at 13 rather than at sqrt(149)
+    adds nothing. Outside it, the next occupied shell is at squared norm 173,
+    so the figure is not hiding a point just past the line either. A check of
+    the inner interval alone would say nothing about that, which is the half
+    the figure's honesty actually rests on.
     """
     assert lattice_points_up_to(chapter_basis, 169) == lattice_points_up_to(
         chapter_basis, 149
     )
+    # The next shell sits at 173, outside the cutoff at 169.
+    beyond = lattice_points_up_to(chapter_basis, 173)
+    assert len(beyond) > len(lattice_points_up_to(chapter_basis, 169))
+    assert min(
+        x * x + y * y
+        for x, y in beyond
+        if x * x + y * y > 169
+    ) == 173
 
 
 def test_lattice_is_closed_under_negation(chapter_basis):

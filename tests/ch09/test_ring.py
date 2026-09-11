@@ -60,8 +60,10 @@ def test_ring_mul_worked_hand_example() -> None:
 
 def test_ring_mul_has_exactly_n_coefficients() -> None:
     for n in (2, 4, 8):
-        # Pick q admitting the ring. For n=2,4,8 with Z_17 we need
-        # 2n | 16, so n in {2, 4, 8}.
+        # Z_17 also admits the full NTT at these n, since 2n | 16 for
+        # n in {2, 4, 8}. Naive negacyclic multiplication needs none of
+        # that: the quotient ring exists for any q, and the shape below
+        # is a property of the reduction, not of a root of unity.
         f = np.ones(n, dtype=np.int64)
         g = np.ones(n, dtype=np.int64)
         h = ring_mul_naive(f, g, Q)

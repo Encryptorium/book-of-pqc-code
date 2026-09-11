@@ -70,9 +70,12 @@ def test_relative_throughput_pq_below_classical():
 def test_relative_throughput_ml_dsa_better_than_slh_dsa():
     """ML-DSA-65 retains more relative throughput than SLH-DSA-128s.
 
-    ML-DSA-65 at 3309-byte signatures is roughly half the size of
-    SLH-DSA-128s at 7856 bytes, so it sustains roughly twice the
-    relative throughput on both budgets.
+    ML-DSA-65's signature is roughly half of SLH-DSA-128s's, but the
+    Bitcoin model reveals each PQ public key in the witness too, so the
+    per-transaction envelopes are 5261 and 7888 bytes and the throughput
+    counts are 709 and 483, a ratio of about 1.47 rather than 2. The
+    assertion below checks the ordering, which holds on both budgets;
+    the size of the gap is the byte-budget tests' business.
     """
     for budget in ("btc", "eth"):
         ml_ratio = throughput_compare.relative_throughput(
