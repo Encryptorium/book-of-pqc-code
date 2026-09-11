@@ -13,7 +13,13 @@ passes while the raw transform output has changed. Swapping coordinates 0 and 1
 is enough to show it.
 
 What pins the ordering is ``test_vectors.py``, which matches the NIST ACVP
-vectors byte for byte through the encoders that serialize NTT-domain values.
+vectors byte for byte. It does not do so by encoding NTT-domain values:
+ML-DSA's encoders serialize coefficient-domain polynomials, and keygen
+returns through the inverse NTT before Power2Round and pkEncode (FIPS 204
+Algorithm 6). The transform is constrained downstream instead. Its output
+is multiplied pointwise against A_hat, which ExpandA samples directly in a
+fixed coordinate order, so a permuted transform pairs the wrong
+coefficients and the vectors' encoded bytes no longer match.
 """
 
 from __future__ import annotations

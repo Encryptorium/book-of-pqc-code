@@ -5,8 +5,9 @@ bytes, the exact symmetry of the map, zero-mean and variance eta/2
 properties on a large sample, and nonce-based determinism of
 sample_poly_cbd.
 
-The symmetry test is exact rather than sampled, and it has to be:
-support, mean and variance do not imply a symmetric distribution.
+The symmetry test is an exact identity checked on seeded inputs
+rather than a statistical histogram test, and it has to be: support,
+mean and variance do not imply a symmetric distribution.
 P(-1) = 1/3, P(0) = 1/2, P(2) = 1/6 has mean zero, variance one and
 support inside {-2, ..., 2}, and is not symmetric. What is tested
 instead is the structural identity that produces the symmetry, that
@@ -104,10 +105,13 @@ def test_swapping_the_two_eta_bit_halves_negates_every_coefficient() -> None:
     """The exact identity behind CBD's symmetry, at both eta values.
 
     ``cbd_eta`` sets f_i to popcount(first eta bits) - popcount(next eta
-    bits).  Exchanging those two groups therefore negates f_i, for every
-    i and every input, with no sampling involved.  A distribution whose
-    generating map has this property is symmetric; the moment tests
-    elsewhere in this file do not establish that on their own.
+    bits).  Exchanging those two groups therefore negates f_i: that is a
+    property of the map, holding for every i and every input, and the
+    assertion below checks it coefficientwise on one seeded input per
+    eta rather than comparing histograms.  A map with this property
+    gives a symmetric output distribution because the input distribution
+    is uniform, and so invariant under the same exchange; the moment
+    tests elsewhere in this file do not establish that on their own.
     """
     for eta in (2, 3):
         rng = np.random.default_rng(seed=11)

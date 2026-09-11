@@ -97,8 +97,14 @@ def isd_cost_estimate(n: int, k: int, w: int) -> float:
     for the [7,4,3] Hamming code, seven are singular, so a planted
     weight-one error is recovered by 12 of the 35 rather than by the 15
     this formula counts. The exact mean there is 35/12 = 2.92 against
-    this estimate's 35/15 = 2.33. At cryptographic parameters the gap is
-    negligible, which is why the asymptotic exponent is quoted from it.
+    this estimate's 35/15 = 2.33. The gap does not close at cryptographic
+    parameters: for a uniform square binary matrix the probability of
+    invertibility tends to prod_{i>=1} (1 - 2^-i) = 0.288788..., so the
+    omitted factor tends to about 3.46, or about 1.79 bits. The Classic
+    McEliece security guide (section 3.2) states that 0.29 and applies
+    the corresponding correction. It is a constant factor, which is why
+    the asymptotic exponent can still be quoted from this estimate; it
+    is not a vanishing one.
     """
     # EXERCISE: implement this function.
     #

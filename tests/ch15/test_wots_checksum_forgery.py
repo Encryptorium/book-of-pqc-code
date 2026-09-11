@@ -37,12 +37,16 @@ N = 32
 
 
 def test_forward_hashing_reaches_the_next_digit_without_a_checksum():
-    """Without the checksum, an adversary can forge by hashing forward.
+    """Without the checksum, hashing forward reaches the next digit's value.
 
     The adversary sees a signature where digit d[i] < w-1 at some
     position i.  By hashing sig[i] forward one step, the adversary
-    obtains the chain value for digit d[i]+1.  This forged value
-    verifies against the no-checksum scheme.
+    obtains the chain value for digit d[i]+1, and that value hashes
+    forward the remaining w-1-(d[i]+1) steps to the public-key endpoint.
+    The test asserts those two chain equalities.  It does not build a
+    message with that digit or call ``wots_verify_no_checksum``, so it
+    demonstrates the step a forgery would use rather than a completed
+    message-level forgery.
     """
     sk, pk = wots_keygen(SK_SEED, PK_SEED, w=W, n=N)
     message = b"original message"
@@ -89,16 +93,20 @@ def test_forward_hashing_reaches_the_next_digit_without_a_checksum():
 def test_the_checksum_forces_a_digit_the_adversary_cannot_reach():
     """With the checksum, increasing a message digit forces a checksum
     digit to decrease.  The adversary cannot hash backward on the
-    checksum chains, so the forged signature fails verification against
-    a message whose digits actually require the increased value.
+    checksum chains, so the digit-level construction the previous test
+    used stops working.
 
     The adversary's strategy: take the original signature, hash forward
     on one message chain (increasing that digit), and keep the checksum
-    chains unchanged.  Then verify against a message whose digest has
-    the increased digit at that position.  The checksum for the new
-    message is lower than the original, so at least one checksum chain
-    position must decrease.  The adversary cannot produce that lower
-    chain value, and verification fails.
+    chains unchanged.  The checksum for the increased digit array is
+    lower than the original, so at least one checksum digit must
+    decrease, and the adversary holds a chain value one or more steps
+    too far along to produce it.  The test works on the digit arrays
+    directly: it never searches for a message whose digest has the
+    increased digit, and it never calls ``wots_verify``.  What it
+    asserts is that the message chain at the forged position still
+    reaches its public-key endpoint while at least one checksum chain
+    does not.
     """
     sk, pk = wots_keygen(SK_SEED, PK_SEED, w=W, n=N)
     message = b"original message"

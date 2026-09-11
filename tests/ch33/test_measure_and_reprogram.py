@@ -122,7 +122,7 @@ def test_reprogrammed_value_out_of_range_raises() -> None:
 
 
 def test_divergent_adversary_raises() -> None:
-    """An adversary whose queries branch on oracle responses diverges.
+    """An adversary whose queries branch on external mutable state diverges.
 
     The scaffolding requires that the second run hit the measured
     input. This adversary diverges on a mutable call counter it carries

@@ -39,9 +39,11 @@ def test_ltree_odd_count_3_promotes_rather_than_drops():
 
     A length check cannot see this. An implementation that DROPS the
     unpaired node at every level still returns 32 bytes and still passes
-    every other test in this file, so the expected root is constructed
-    here by hand: pair (0, 1) at level 0, promote leaf 2, then pair the
-    two survivors at level 1.
+    the length, determinism, seed-separation, single-value and two-value
+    checks in this file, so the expected root is constructed here by
+    hand: pair (0, 1) at level 0, promote leaf 2, then pair the two
+    survivors at level 1. That mutant fails this test and the five-leaf
+    one below; the other six pass.
     """
     v = _make_values(3)
     level0 = _node(0, 0, v[0], v[1])

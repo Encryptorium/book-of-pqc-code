@@ -146,8 +146,11 @@ def test_position_collisions_at_the_fips_lifetime_limit():
     is the expected number of equal unordered pairs of draws. It is not a
     count of repeated positions and could not be: there are only 2**63
     positions in total, so 2**64 distinct repeats is impossible. Multiply
-    occupied positions are a third quantity again, the one the Chapter 16
-    occupancy counter measures.
+    occupied positions are a third quantity again, and none of the three
+    is Chapter 16's: that counter increments once per draw whose position
+    has already been seen, which is repeated draws, q minus the number of
+    distinct positions. Three draws of one position give two repeated
+    draws, one multiply occupied position, and three equal pairs.
 
     Reuse is designed in, not designed out, which is the whole reason FORS
     carries a few-time bound rather than a one-time one.
