@@ -18,13 +18,14 @@ def lint_nginx(config_text):
             continue
         m = re.match(r"ssl_ecdh_curve\s+(.+)$", line)
         if m:
-            groups = [g.strip() for g in m.group(1).rstrip(";").split(":")]
+            value = m.group(1).rstrip(";")
+            groups = [g.strip() for g in re.split(r"[/:]", value)]
             if HYBRID not in groups:
                 return [("blocker", "hybrid-missing", i)]
             return []
     raise ValueError("no ssl_ecdh_curve directive")
 
-good = "server {\n    ssl_ecdh_curve X25519MLKEM768:X25519:secp256r1;\n}"
+good = "server {\n    ssl_ecdh_curve X25519MLKEM768/X25519:secp256r1;\n}"
 bad = "server {\n    ssl_ecdh_curve X25519:secp256r1;\n}"
 
 print("good:", lint_nginx(good))

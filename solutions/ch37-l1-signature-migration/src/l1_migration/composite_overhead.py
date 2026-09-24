@@ -2,9 +2,10 @@
 
 A composite signature carries one classical signature alongside one
 post-quantum signature in a single transaction (Ch 27). The composite
-is EUF-CMA secure if either component is, which buys defense in depth
-during the cutover window at the cost of additional signature bytes
-and verification work.
+is EUF-CMA secure if either component is and the prehash is collision
+resistant (Ch 27), which buys defense in depth during the cutover
+window at the cost of additional signature bytes and verification
+work.
 
 This module reports per-composite signature and public-key sizes and
 the overhead vs each component primitive in isolation. The chapter

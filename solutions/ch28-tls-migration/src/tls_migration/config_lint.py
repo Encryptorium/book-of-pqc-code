@@ -7,15 +7,26 @@ Two entry points:
 - ``lint_nginx_groups`` parses the ``ssl_ecdh_curve`` directive from an
   nginx server-block snippet.
 
-Both apply the same three rules against the resulting group list:
+Both read the value as an OpenSSL 3.5 group list of explicit names:
+tuples separated by ``/``, each a colon-separated list of group names,
+with the ``?`` and ``*`` prefixes stripped and names compared without
+regard to case. A ``-name`` entry removes that group from the list, as
+it does in OpenSSL. nginx hands an explicit list to OpenSSL unchanged,
+so the syntax is the same. Neither entry point expands OpenSSL's
+``DEFAULT`` keyword or nginx's ``auto``: a directive that relies on
+them reads as ``hybrid-missing`` and has to be checked by hand. Both
+apply the same three rules:
 
-- ``hybrid-missing`` (blocker): X25519MLKEM768 is not present.
+- ``hybrid-missing`` (blocker): X25519MLKEM768 is in no tuple.
 - ``hybrid-not-first-preference`` (major): a classical group (X25519,
-  secp256r1, secp384r1, secp521r1) appears before X25519MLKEM768, so
-  clients that also offer X25519MLKEM768 will still negotiate the
-  classical group per TLS 1.3 server-preference semantics.
-- ``duplicate-codepoint`` (nit): a group name appears more than once in
-  the list.
+  X448, a NIST or Brainpool curve under any of its names, or an FFDHE
+  group) shares X25519MLKEM768's tuple or sits in an earlier one. An
+  OpenSSL 3.5 server works through the tuples in order and, within a
+  tuple, takes a key share the client already sent before it asks for
+  another, so a client that supports both groups can still negotiate
+  the classical one.
+- ``duplicate-codepoint`` (nit): a group appears more than once in the
+  list, under the same name or two names for one NIST curve.
 
 Malformed input (no directive at all) raises ``ValueError`` directly;
 this is pedagogical tooling, not production code.
@@ -28,7 +39,16 @@ from dataclasses import dataclass
 
 
 HYBRID = "X25519MLKEM768"
-CLASSICAL = ("X25519", "secp256r1", "secp384r1", "secp521r1", "P-256", "P-384", "P-521")
+CLASSICAL = (
+    "X25519", "X448",
+    "secp256r1", "secp384r1", "secp521r1", "prime256v1", "P-256", "P-384", "P-521",
+    "brainpoolP256r1tls13", "brainpoolP384r1tls13", "brainpoolP512r1tls13",
+    "ffdhe2048", "ffdhe3072", "ffdhe4096", "ffdhe6144", "ffdhe8192",
+)
+_CLASSICAL = {name.lower() for name in CLASSICAL}
+# Alternative OpenSSL names for one NIST curve, so a duplicate is a codepoint.
+_ALIASES = {"prime256v1": "secp256r1", "p-256": "secp256r1",
+            "p-384": "secp384r1", "p-521": "secp521r1"}
 
 
 @dataclass(frozen=True)
@@ -52,14 +72,32 @@ def _find_directive(config_text: str, pattern: str) -> tuple[int, str] | None:
     return None
 
 
-def _split_groups(value: str) -> list[str]:
+def _split_groups(value: str) -> list[list[str]]:
     cleaned = value.rstrip(";").strip()
-    return [g.strip() for g in cleaned.split(":") if g.strip()]
+    tuples = []
+    removed = set()
+    for part in cleaned.split("/"):
+        names = []
+        for raw in part.split(":"):
+            entry = raw.strip()
+            name = entry.lstrip("?*-")
+            if "-" in entry[:len(entry) - len(name)]:
+                removed.add(name.lower())
+            elif name:
+                names.append(name)
+        tuples.append(names)
+    # A "-name" entry removes that group from the whole list, as OpenSSL does.
+    tuples = [[n for n in names if n.lower() not in removed] for names in tuples]
+    return [names for names in tuples if names]
 
 
-def _lint_groups(groups: list[str], line_number: int) -> list[Finding]:
+def _lint_groups(tuples: list[list[str]], line_number: int) -> list[Finding]:
     findings: list[Finding] = []
-    if HYBRID not in groups:
+    hybrid = HYBRID.lower()
+    hybrid_tuple = next(
+        (i for i, names in enumerate(tuples) if hybrid in (n.lower() for n in names)), None
+    )
+    if hybrid_tuple is None:
         findings.append(Finding(
             severity="blocker",
             rule="hybrid-missing",
@@ -68,30 +106,31 @@ def _lint_groups(groups: list[str], line_number: int) -> list[Finding]:
         ))
         return findings
 
-    hybrid_index = groups.index(HYBRID)
-    for i in range(hybrid_index):
-        if groups[i] in CLASSICAL:
+    for names in tuples[:hybrid_tuple + 1]:
+        classical = next((n for n in names if n.lower() in _CLASSICAL), None)
+        if classical is not None:
             findings.append(Finding(
                 severity="major",
                 rule="hybrid-not-first-preference",
                 message=(
-                    f"{HYBRID} appears after classical {groups[i]}; "
-                    "clients that also offer the hybrid will still negotiate the classical group"
+                    f"classical {classical} is in {HYBRID}'s tuple or an earlier one, "
+                    f"so a client that supports both can negotiate {classical}"
                 ),
                 line_number=line_number,
             ))
             break
 
     seen: set[str] = set()
-    for name in groups:
-        if name in seen:
+    for name in (n for names in tuples for n in names):
+        group = _ALIASES.get(name.lower(), name.lower())
+        if group in seen:
             findings.append(Finding(
                 severity="nit",
                 rule="duplicate-codepoint",
                 message=f"{name} appears more than once in the group list",
                 line_number=line_number,
             ))
-        seen.add(name)
+        seen.add(group)
     return findings
 
 
