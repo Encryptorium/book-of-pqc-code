@@ -25,12 +25,18 @@ Rearranging gives
 The NTT turns multiplication in R_q into pointwise multiplication
 in Z_q^n: fhat * ghat pointwise equals the NTT of f * g in R_q.
 The asymptotic cost of the direct-definition implementation below
-is O(n^2), the same as the schoolbook convolution. Production
-implementations (Longa-Naehrig 2016, Seiler 2018) use an iterative
-Cooley-Tukey decimation layered with the negacyclic pre-twist to
-reach O(n log n) and fit the resulting butterflies into constant
-time. The chapter slice stays with the direct definition for
-clarity; the iterative form can be dropped in later.
+is O(n^2), the same as the schoolbook convolution. Fast
+implementations for moduli with 2n | q - 1, such as NewHope's
+q = 12289 and Kyber's earlier q = 7681 (Seiler 2018; Longa-Naehrig
+2016 for NewHope's), reach O(n log n) in constant time with
+butterflies, Cooley-Tukey forward and Gentleman-Sande inverse, that
+split x^n + 1 directly and fold the powers of psi into the twiddle
+factors rather than applying a separate pre-twist (Seiler 2018,
+Sections 2 and 2.1). ML-KEM's q = 3329 has no primitive 512-th root of
+unity, so its transform stops at 128 quadratic factors (FIPS 203,
+Section 4.3), which is the transform Chapter 11 builds. The chapter
+slice stays with the direct definition for clarity; the iterative
+form can be dropped in later.
 """
 
 from __future__ import annotations

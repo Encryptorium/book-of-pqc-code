@@ -4,11 +4,11 @@ The package exposes a small core-SVP cost estimator for Module-LWE
 parameter sets. The public entry points are:
 
 - :func:`classical_bits`: the log-cost of classical sieving at block
-  size ``beta`` from the Becker-Ducas-Gama-Laarhoven 2016 sieving
-  exponent ``0.292 * beta``.
+  size ``beta``, ``0.292 * beta``, from the heuristic
+  Becker-Ducas-Gama-Laarhoven 2016 sieving exponent.
 - :func:`quantum_bits`: the log-cost of quantum sieving at block size
-  ``beta`` from the Laarhoven quantum speedup giving exponent
-  ``0.265 * beta``.
+  ``beta``, ``0.265 * beta``, from the heuristic quantum exponent of
+  Laarhoven's 2015 thesis.
 - :func:`delta_beta`: the Chen 2013 root-Hermite-factor approximation
   for BKZ output quality, used inside the primal-attack success
   condition.
