@@ -3,8 +3,9 @@
 The supersingular isogeny graph at prime p has one vertex per
 supersingular j-invariant in F_{p^2} and edges for degree-l isogenies.
 At p = 431 there are 37 supersingular j-invariants.  Degree-2 and
-degree-3 isogenies suffice to connect the whole graph (Pizer 1990,
-Ramanujan graphs are connected).
+degree-3 isogenies suffice to connect the whole graph: each l-isogeny
+graph is connected on its own (strong approximation; Voight 2021,
+Main Theorem 28.5.3).
 
 This module provides:
   - enumeration of degree-2 and degree-3 isogeny neighbors of a curve,

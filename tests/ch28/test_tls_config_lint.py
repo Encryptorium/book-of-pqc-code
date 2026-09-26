@@ -103,13 +103,68 @@ def test_one_ordering_finding_is_enough():
 
 
 def test_removed_hybrid_is_blocker():
-    # OpenSSL applies "-name" to the whole list, so this list has no hybrid.
+    # "-name" removes the group from the list built so far, here the hybrid.
     findings = lint_openssl_groups("Groups = X25519MLKEM768/X25519:-X25519MLKEM768")
     assert [(f.severity, f.rule) for f in findings] == [("blocker", "hybrid-missing")]
 
 
 def test_removed_classical_group_is_not_counted():
     assert lint_openssl_groups("Groups = X25519:X25519MLKEM768:-X25519") == []
+
+
+def test_removal_before_a_group_is_listed_does_nothing():
+    # OpenSSL removes only from the list so far, so the later X25519 is added
+    # to the hybrid's tuple.
+    findings = lint_openssl_groups("Groups = X25519MLKEM768:-X25519:X25519")
+    assert [f.rule for f in findings] == ["hybrid-not-first-preference"]
+
+
+def test_removal_applies_to_every_name_for_the_group():
+    # prime256v1 and P-256 name one group, so this removes P-256.
+    assert lint_openssl_groups("Groups = X25519MLKEM768:P-256:-prime256v1") == []
+
+
+def test_removal_takes_every_listed_copy():
+    # OpenSSL ignores the repeated x25519, so removing X25519 leaves the hybrid.
+    assert lint_openssl_groups("Groups = X25519MLKEM768:X25519:x25519:-X25519") == []
+
+
+def test_removal_by_another_name_for_p384():
+    assert lint_openssl_groups("Groups = X25519MLKEM768:P-384:-secp384r1") == []
+
+
+# Every alias set in OpenSSL 3.5.0's group table (providers/common/capabilities.c).
+OPENSSL_ALIAS_SETS = [
+    ("secp256r1", "prime256v1", "P-256"), ("secp384r1", "P-384"),
+    ("secp521r1", "P-521"), ("secp192r1", "prime192v1", "P-192"),
+    ("secp224r1", "P-224"), ("sect163k1", "K-163"), ("sect163r2", "B-163"),
+    ("sect233k1", "K-233"), ("sect233r1", "B-233"), ("sect283k1", "K-283"),
+    ("sect283r1", "B-283"), ("sect409k1", "K-409"), ("sect409r1", "B-409"),
+    ("sect571k1", "K-571"), ("sect571r1", "B-571"),
+]
+
+
+@pytest.mark.parametrize(
+    "first,second",
+    [(a, b) for names in OPENSSL_ALIAS_SETS for a in names for b in names if a != b],
+)
+def test_duplicates_follow_the_whole_alias_table(first, second):
+    findings = lint_openssl_groups(f"Groups = X25519MLKEM768/{first}:{second}")
+    assert [f.rule for f in findings] == ["duplicate-codepoint"]
+
+
+def test_brainpool_tls12_and_tls13_groups_are_not_aliases():
+    # Different codepoints in OpenSSL's table, although one names the other.
+    config = "Groups = X25519MLKEM768/brainpoolP256r1:brainpoolP256r1tls13"
+    assert lint_openssl_groups(config) == []
+
+
+def test_removed_group_can_be_listed_again():
+    # secp256r1 is removed under its P-256 name and listed again as prime256v1:
+    # one group, back in the hybrid's tuple, and no duplicate.
+    findings = lint_openssl_groups("Groups = X25519MLKEM768:secp256r1:-P-256:prime256v1")
+    assert [f.rule for f in findings] == ["hybrid-not-first-preference"]
+    assert findings[0].message.endswith("negotiate prime256v1")
 
 
 def test_duplicates_compare_without_case_and_across_aliases():

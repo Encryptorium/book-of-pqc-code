@@ -5,9 +5,9 @@ substitutes BFS over the supersingular isogeny graph for the scheme's
 quaternion-side search.  Real SQIsign finds the connecting isogeny by
 sampling a bounded-norm quaternion from an ideal intersection and
 translating it back to an isogeny; BFS would be infeasible at
-cryptographic primes.  Round-1 SQIsign used the KLPT algorithm here
-(Kohel et al. 2014), and round 2 removed that material outright:
-see specification v2.0.1 section 1.3.
+cryptographic primes.  Round-1 SQIsign used a KLPT variant here,
+SigningKLPT (after Kohel et al. 2014), and round 2 removed that
+material outright: see specification v2.0.1 section 1.3.
 
 Toy structure:
 

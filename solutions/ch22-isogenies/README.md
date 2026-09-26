@@ -81,8 +81,10 @@ count on its own says nothing:
 **One deliberate gap, stated so nobody reads more into the suite than is there.**
 `test_3isogeny_graph_bfs` walks only three levels and asserts that at least three
 j-invariants are reached. It does **not** establish that the graph at `p = 431`
-has 37 vertices, or that it is connected. Those are the chapter's claims, sourced
-to the supersingular-count formula and to Pizer, not results this suite computes.
+has 37 vertices, or that it is connected. Those are claims of the chapter and its
+Appendix D page, sourced to the supersingular-count formula and to strong
+approximation (Voight, *Quaternion Algebras*, Main Theorem 28.5.3), not results
+this suite computes.
 The search was kept shallow because a full traversal in pure Python at these
 parameters is slow enough to distort the suite's runtime.
 

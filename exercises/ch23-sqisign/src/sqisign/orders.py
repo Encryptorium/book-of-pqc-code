@@ -138,10 +138,10 @@ def ideal_norm_principal(generator: Quat, p: int) -> Fraction:
     #
     # For a principal left ideal the reduced norm of the ideal is the
     # reduced norm of any generator, so return quat_norm of the generator.
-    # This is the quantity round-1 SQIsign asked KLPT to hit: an equivalent
-    # ideal whose norm is a prescribed smooth number, which corresponds to
-    # an isogeny of that degree. Round 2 bounds the norm instead of
-    # prescribing it.
+    # This is the quantity round-1 SQIsign asked its KLPT variant,
+    # SigningKLPT, to hit: an equivalent ideal whose norm is a prescribed
+    # power of 2, which corresponds to an isogeny of that degree. Round 2
+    # bounds the norm instead of prescribing it.
     #
     # Reference: Chapter 23, 'Maximal orders'
     #
