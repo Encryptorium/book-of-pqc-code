@@ -38,21 +38,21 @@ SYSTEMS = {
         "l2": "fri",
         "l4": "fs_tier3_classical_rom",
         "detail": "Merkle plus FRI over the Goldilocks field",
-        "transition": "parameter bumps",
+        "transition": "candidate parameter changes",
     },
     "ethstark": {
         "label": "Starknet ethSTARK / Stone (legacy)",
         "l2": "fri",
         "l4": "fs_tier3_classical_rom",
         "detail": "Merkle plus FRI over a 61-bit prime base field",
-        "transition": "parameter bumps",
+        "transition": "candidate parameter changes",
     },
     "stwo": {
         "label": "Starknet Stwo (current)",
         "l2": "fri",
         "l4": "fs_tier3_classical_rom",
         "detail": "Circle STARK over Mersenne-31",
-        "transition": "parameter bumps",
+        "transition": "candidate parameter changes",
     },
 }
 
@@ -77,8 +77,8 @@ def posture(name: str) -> dict:
     # rather than a new shape, so a caller reads cell, posture, cnfl_route,
     # label and transition from one object. The correspondence a test holds
     # is that every red-posture system carries a replacement transition and
-    # every amber one carries parameter bumps, which is the operator-facing
-    # claim of Table 35.3.
+    # every amber one carries candidate parameter changes, which is the
+    # operator-facing claim of Table 35.3.
     #
     # Reference: Chapter 35, 'Zcash Sapling at quantum landfall, revisited' (the five-step procedure) and 'Three case studies'
     #

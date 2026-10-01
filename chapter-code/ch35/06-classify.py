@@ -1,6 +1,6 @@
 # The Encryptorium Book of Post-Quantum Cryptography
 # Chapter 35: Case studies: Zcash, ZKsync, Starknet
-# Section: "Migration cost, parameter bump, and pending-literature risk"
+# Section: "Migration cost, candidate parameters, and pending-literature risk"
 # https://book.encryptorium.com/part-6-post-quantum-zero-knowledge/ch35-case-studies/
 #
 # Generated from the chapter text. Edits here do not reach the book.

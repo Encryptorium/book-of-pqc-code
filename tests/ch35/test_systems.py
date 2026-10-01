@@ -74,14 +74,16 @@ def test_the_printed_listing_order_reproduces_the_chapters_output():
 
 
 def test_transition_scope_follows_the_posture():
-    # Red cells need replacement; amber cells are reparameterizable. That
-    # correspondence is the operator-facing claim of Table 35.3.
+    # Red cells need replacement; amber cells have parameter changes as
+    # candidates, whose sufficiency waits on a QROM analysis of the
+    # composed deployment. That correspondence is the operator-facing claim
+    # of Table 35.3.
     for key in names():
         result = posture(key)
         if result["posture"] == "red":
             assert result["transition"] == "replacement"
         else:
-            assert result["transition"] == "parameter bumps"
+            assert result["transition"] == "candidate parameter changes"
 
 
 def test_posture_rejects_an_unknown_system():

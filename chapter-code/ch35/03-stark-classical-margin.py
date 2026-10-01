@@ -16,10 +16,9 @@
 # proven floor; Ch 34 Section 5.1 sets out the three radii. A
 # pipeline that sets delta_0 above it is in the conjectured regime,
 # which is the discount Ch 34's closing aside records as having
-# fallen in late 2025. The DFMS20 parameter-bump check from Ch 33's
-# multi-round subsection then asks whether the deployed
-# challenge-space width meets the model's per-round requirement
-# at a target PQ margin. Exact Boojum
+# fallen in late 2025. The DFMS20-shaped challenge-width rule from
+# Ch 33's multi-round subsection then gives the model's per-round
+# requirement at a target PQ margin. Exact Boojum
 # parameters are not published at the granularity below; values are
 # illustrative of a Goldilocks extension-field configuration.
 # Source: Ch 34 Sections 5.1 and 5.5; Ch 33 'Multi-round

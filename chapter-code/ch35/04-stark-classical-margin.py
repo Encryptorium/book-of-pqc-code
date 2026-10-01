@@ -11,7 +11,7 @@
 # parameter table), via the Ch 34 Section 5.5 composed-soundness
 # formula at the Johnson-bound proximity radius (same regime note as
 # Block 3: the model's output at that radius, not a proven floor).
-# The DFMS20 parameter-bump check compares
+# The DFMS20-shaped challenge-width check compares
 # the F_{p^4} challenge-field width (~244 bits, recommended in
 # ethSTARK Documentation v1.2 Section 5.10.2 for provable 128-bit
 # IOP knowledge soundness) against the required challenge width at
@@ -63,8 +63,8 @@ def dfms20_exact_cbits(k_target: int, q_bits: int, r_FS: int) -> int:
 # and prints none of them). The challenge-field
 # width 244 corresponds to F_{p^4} per ethSTARK Documentation v1.2
 # Section 5.10.2 for provable 128-bit IOP knowledge soundness; the
-# conjectured-soundness path uses F_{p^3} at 183 bits. The DFMS20
-# bump target is k = 128 to match Ch 34 Section 5.7's headline
+# conjectured-soundness path uses F_{p^3} at 183 bits. The model's
+# target is k = 128 to match Ch 34 Section 5.7's headline
 # production example.
 k_classical_ethstark = stark_classical_margin(field_bits=244, L=2 ** 20,
                                               N=2 ** 24, mu=48, r_FRI=20,

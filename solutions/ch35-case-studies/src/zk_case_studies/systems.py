@@ -38,21 +38,21 @@ SYSTEMS = {
         "l2": "fri",
         "l4": "fs_tier3_classical_rom",
         "detail": "Merkle plus FRI over the Goldilocks field",
-        "transition": "parameter bumps",
+        "transition": "candidate parameter changes",
     },
     "ethstark": {
         "label": "Starknet ethSTARK / Stone (legacy)",
         "l2": "fri",
         "l4": "fs_tier3_classical_rom",
         "detail": "Merkle plus FRI over a 61-bit prime base field",
-        "transition": "parameter bumps",
+        "transition": "candidate parameter changes",
     },
     "stwo": {
         "label": "Starknet Stwo (current)",
         "l2": "fri",
         "l4": "fs_tier3_classical_rom",
         "detail": "Circle STARK over Mersenne-31",
-        "transition": "parameter bumps",
+        "transition": "candidate parameter changes",
     },
 }
 
