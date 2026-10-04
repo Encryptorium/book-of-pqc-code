@@ -22,7 +22,7 @@ def test_the_chapter_walks_exactly_six_configurations():
     ("orchard", "ipa_dlp", "fs_over_dlp", "Pallas and Vesta"),
     ("boojum_outer", "pairing", "crs", "wrapper"),
     ("boojum_inner", "fri", "fs_tier3_classical_rom", "Goldilocks"),
-    ("ethstark", "fri", "fs_tier3_classical_rom", "61-bit prime"),
+    ("ethstark", "fri", "fs_tier3_classical_rom", "252-bit Cairo"),
     ("stwo", "fri", "fs_tier3_classical_rom", "Mersenne-31"),
 ])
 def test_each_system_carries_its_own_layers_and_its_own_primitive(
@@ -109,6 +109,6 @@ def test_every_system_carries_a_label_naming_its_project_and_component():
     assert labels["orchard"] == "Zcash Orchard"
     assert labels["boojum_outer"] == "ZKsync Era outer wrapper"
     assert labels["boojum_inner"] == "ZKsync Era inner"
-    assert labels["ethstark"] == "Starknet ethSTARK / Stone (legacy)"
-    assert labels["stwo"] == "Starknet Stwo (current)"
+    assert labels["ethstark"] == "Starknet Stone (root)"
+    assert labels["stwo"] == "Starknet Stwo (leaves)"
     assert len(set(labels.values())) == len(labels)

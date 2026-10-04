@@ -7,7 +7,7 @@
 # Run: python3 chapter-code/ch31/01-dot.py
 
 # Block 1: pedagogical slice of the R1CS format used at L1 (stdlib only).
-# A pairing-based SNARK like Groth16 uses a ~256-bit prime field. Other
+# A pairing-based SNARK like Groth16 uses a ~256-bit prime field. Some
 # systems in this Part do not: Boojum runs over Goldilocks and Stwo over
 # Mersenne-31 (Ch 35), and Binius commits over binary-field towers (Ch 32).
 P = 97  # toy prime, small enough to check by hand

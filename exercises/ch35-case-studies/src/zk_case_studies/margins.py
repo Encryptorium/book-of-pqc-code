@@ -37,7 +37,9 @@ class MarginTerms:
 
     ``bad_beta``, ``per_round`` and ``consistency`` are base-2 logarithms of
     probabilities, so all three are negative and the least negative one is
-    the term that dominates the sum.
+    the term that dominates the sum. ``per_round`` is the FRI query-miss
+    term, which every round shares; the name is kept because the tests and
+    the printed listings use it.
     """
 
     bad_beta: float
@@ -130,24 +132,24 @@ def composed_margin(field_bits: int, L: int, N: int, mu: int, r_FRI: int,
     #
     # Compose the three-term FRI soundness budget of Ch 34 Section 5.5 and
     # return the terms rather than only their sum. The bad-beta union bound
-    # over fold rounds is log2(r_FRI * (N + 1)) - field_bits. The per-round
-    # proximity term is mu * log2(1 - delta_0), with delta_0 from
-    # decoding_radius at the chosen regime. The query-consistency term is mu
-    # * log2((L - 1) / N), because two distinct polynomials of degree below
-    # L agree at no more than L - 1 of the N LDE points. All three are
-    # base-2 logarithms of probabilities, so raise 2 to each, but attenuate
-    # only the two query terms by the grinding factor: the composed
-    # probability is 2^bad_beta + 2^-grinding * (2^per_round +
-    # 2^consistency). Ch 34 Section 5.5 puts the 2^-g factor on eps_query
-    # alone, and a forger who wins on a bad fold challenge never re-grinds,
-    # so grinding does not touch bad_beta. Take the negative log2 of that
-    # sum and round to one decimal. This is the chapter's three-term model,
-    # not BCIKS Theorem 1.2's error term, which is undefined at zero slack
-    # from the Johnson radius. Validate before computing: every count
-    # positive, grinding non-negative, and L strictly less than N. The
-    # consistency term is numerically inert at every parameter point the
-    # chapter prints, so a test reads it directly rather than through the
-    # total.
+    # over fold rounds is log2(r_FRI * (N + 1)) - field_bits. The query-miss
+    # term (per_round in MarginTerms) is mu * log2(1 - delta_0), with
+    # delta_0 from decoding_radius at the chosen regime. The
+    # query-consistency term is mu * log2((L - 1) / N), because two distinct
+    # polynomials of degree below L agree at no more than L - 1 of the N LDE
+    # points. All three are base-2 logarithms of probabilities, so raise 2
+    # to each, but attenuate only the two query terms by the grinding
+    # factor: the composed probability is 2^bad_beta + 2^-grinding *
+    # (2^per_round + 2^consistency). Ch 34 Section 5.5 puts the 2^-g factor
+    # on eps_query alone, and a forger who wins on a bad fold challenge
+    # never re-grinds, so grinding does not touch bad_beta. Take the
+    # negative log2 of that sum and round to one decimal. This is the
+    # chapter's three-term model, not BCIKS Theorem 1.2's error term, which
+    # is undefined at zero slack from the Johnson radius. Validate before
+    # computing: every count positive, grinding non-negative, and L strictly
+    # less than N. The consistency term is numerically inert at every
+    # parameter point the chapter prints, so a test reads it directly rather
+    # than through the total.
     #
     # Reference: Chapter 35, 'The (L2 x L4) grid and bit-margin arithmetic' (Blocks 3 and 4)
     #

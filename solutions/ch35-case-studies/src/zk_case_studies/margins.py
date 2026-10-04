@@ -37,7 +37,9 @@ class MarginTerms:
 
     ``bad_beta``, ``per_round`` and ``consistency`` are base-2 logarithms of
     probabilities, so all three are negative and the least negative one is
-    the term that dominates the sum.
+    the term that dominates the sum. ``per_round`` is the FRI query-miss
+    term, which every round shares; the name is kept because the tests and
+    the printed listings use it.
     """
 
     bad_beta: float

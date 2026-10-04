@@ -27,7 +27,7 @@ Symbols (reserved per Chapter 34's symbol table):
   codeword claimed to have degree below the trace length ``L`` (3 for
   the toy: 32 points fold to 4, on which the honest codeword is
   constant). One fold more would accept degree below ``2L``.
-- ``mu`` is the number of queries per round (``num_queries``).
+- ``mu`` is the number of independent query paths (``num_queries``).
 - ``g`` is the grinding-bit count.
 
 The module does not import from Chapter 32's package. It re-implements

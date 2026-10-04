@@ -23,7 +23,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
-P = 97  # small prime; a real SNARK uses a ~256-bit prime field.
+P = 97  # small prime; a pairing-based SNARK like Groth16 uses a ~256-bit prime field.
 
 
 def dot(row, z):

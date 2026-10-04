@@ -3,7 +3,7 @@
 Each record carries the layer assignment that decides its grid cell and the
 one primitive fact that distinguishes it from the configurations sharing that
 cell. Sapling and the ZKsync outer wrapper occupy the same cell, as do the
-ZKsync inner, ethSTARK / Stone, and Stwo; the ``detail`` field is what keeps
+ZKsync inner, the Stone root, and Stwo; the ``detail`` field is what keeps
 them from being interchangeable.
 """
 
@@ -40,15 +40,18 @@ SYSTEMS = {
         "detail": "Merkle plus FRI over the Goldilocks field",
         "transition": "candidate parameter changes",
     },
+    # The key predates this label: the record once described ethSTARK's
+    # reference configuration. The tests and Chapter 35's printed
+    # classification listing name it ethstark, so the key stays.
     "ethstark": {
-        "label": "Starknet ethSTARK / Stone (legacy)",
+        "label": "Starknet Stone (root)",
         "l2": "fri",
         "l4": "fs_tier3_classical_rom",
-        "detail": "Merkle plus FRI over a 61-bit prime base field",
+        "detail": "Merkle plus FRI over the 252-bit Cairo field",
         "transition": "candidate parameter changes",
     },
     "stwo": {
-        "label": "Starknet Stwo (current)",
+        "label": "Starknet Stwo (leaves)",
         "l2": "fri",
         "l4": "fs_tier3_classical_rom",
         "detail": "Circle STARK over Mersenne-31",

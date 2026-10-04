@@ -85,7 +85,7 @@ def test_composed_margin_total_matches_the_listing_wrapper():
 def test_which_term_dominates_at_the_chapter_configurations():
     # The three terms are log-probabilities, so the least negative dominates,
     # and the query terms are compared after grinding attenuates them.
-    # At both printed parameter points that is the FRI per-round term.
+    # At both printed parameter points that is the FRI query-miss term (per_round).
     for args in (dict(field_bits=128, L=2 ** 16, N=2 ** 20, mu=40, r_FRI=16,
                       grinding=20),
                  dict(field_bits=244, L=2 ** 20, N=2 ** 24, mu=48, r_FRI=20,
@@ -251,7 +251,7 @@ def test_the_consistency_term_takes_its_stated_form():
 
 
 def test_the_consistency_term_is_never_the_dominant_one():
-    # At the Johnson radius the per-round term is mu * log2(sqrt(rho)) and
+    # At the Johnson radius the query-miss term (per_round) is mu * log2(sqrt(rho)) and
     # the consistency term is about mu * log2(rho). Since log2(rho) is
     # negative, log2(rho) < 0.5 * log2(rho) at every rate, so the query
     # consistency term is structurally subdominant rather than incidentally
