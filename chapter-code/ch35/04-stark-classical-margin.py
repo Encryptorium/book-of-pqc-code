@@ -16,7 +16,7 @@
 # ethSTARK Documentation v1.2 Section 5.10.2 for provable 128-bit
 # IOP knowledge soundness) against the required challenge width at
 # the 128-bit PQ target Ch 34 Section 5.7 uses as the headline
-# production example. Source: Ch 34 Sections 5.1, 5.5 and 5.7;
+# worked example. Source: Ch 34 Sections 5.1, 5.5 and 5.7;
 # Ch 33 'Multi-round Fiat-Shamir' and 'Cost of the quantum oracle';
 # Ben-Sasson, Bentov, Horesh, Riabzev (2018); Ben-Sasson (2021,
 # ethSTARK documentation, §5.10.2); Block et al. (2023,
@@ -65,7 +65,7 @@ def dfms20_exact_cbits(k_target: int, q_bits: int, r_FS: int) -> int:
 # Section 5.10.2 for provable 128-bit IOP knowledge soundness; the
 # conjectured-soundness path uses F_{p^3} at 183 bits. The model's
 # target is k = 128 to match Ch 34 Section 5.7's headline
-# production example.
+# worked example.
 k_classical_ethstark = stark_classical_margin(field_bits=244, L=2 ** 20,
                                               N=2 ** 24, mu=48, r_FRI=20,
                                               grinding=20)

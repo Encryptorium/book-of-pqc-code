@@ -15,12 +15,12 @@
 # figure printed is the model's output at that radius and not a
 # proven floor; Ch 34 Section 5.1 sets out the three radii. A
 # pipeline that sets delta_0 above it is in the conjectured regime,
-# which is the discount Ch 34's closing aside records as having
+# which is the discount Ch 34 Section 5.1's note records as having
 # fallen in late 2025. The DFMS20-shaped challenge-width rule from
 # Ch 33's multi-round subsection then gives the model's per-round
-# requirement at a target PQ margin. Exact Boojum
-# parameters are not published at the granularity below; values are
-# illustrative of a Goldilocks extension-field configuration.
+# requirement at a target PQ margin. The values below are
+# illustrative of a Goldilocks extension-field configuration. No
+# claim is made that any Boojum layer uses them.
 # Source: Ch 34 Sections 5.1 and 5.5; Ch 33 'Multi-round
 # Fiat-Shamir'; Ben-Sasson, Carmon, Ishai, Kopparty, Saraf (2020,
 # proximity gap below the Johnson bound); ZKsync (2023); Block et al.

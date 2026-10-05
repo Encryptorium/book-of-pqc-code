@@ -1,6 +1,6 @@
 """Tests for wallet_rotation.mosca_wallet.
 
-Covers the breach window calculation, the per-cadence feasibility
+Covers the signed-margin calculation, the per-cadence feasibility
 report, and the recommendation function under three Z scenarios for
 the Strand wallet surface (X = 10, Y = 4 from tests/ch36/conftest.py).
 """

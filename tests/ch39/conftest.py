@@ -70,11 +70,12 @@ def strand_consensus_xy() -> tuple[int, int]:
 def mosca_z_values() -> dict[str, int]:
     """Four Z scenarios spanning the three rotation-cadence regimes.
 
-    The Strand consensus surface (X=2, Y=1) clears the Mosca window
+    The Strand consensus surface (X=2, Y=1) has a zero Mosca window
     under both ``ncsc_2035`` (Z=9) and ``mid_2040`` (Z=14); the
-    chapter introduces a hypothetical ``narrow`` (Z=2) to
-    illustrate the every-N-epochs cadence regime, since the
-    canonical Ch 36 Z values do not breach the consensus surface.
+    chapter introduces two hypotheticals, ``narrow`` (Z=2) and
+    ``aggressive`` (Z=0), to illustrate the every-N-epochs and
+    hard-fork-trigger regimes, since the canonical Ch 36 Z values
+    do not breach the consensus surface.
 
     - ``aggressive`` (Z=0): forces hard-fork-trigger (no positive
       safe window).

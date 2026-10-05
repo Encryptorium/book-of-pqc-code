@@ -7,7 +7,7 @@ strict breach condition is X + Y > Z.
 
 This module specializes the calculation to the Strand consensus
 surface (X = 2 years, Y = 1 year per the Ch 36 fixture) and recommends
-one of four rotation cadences based on the breach window.
+one of four rotation cadences based on the signed margin X + Y - Z.
 
 The four cadence options:
 
@@ -58,13 +58,13 @@ STRAND_CONSENSUS_Y = 1
 
 
 def breach_years(X: int, Y: int, Z: int) -> int:
-    """Return X + Y - Z, the consensus-surface Mosca breach window in years.
+    """Return X + Y - Z, the consensus surface's signed margin in years.
 
-    A positive value indicates the consensus surface breaches the Mosca
-    window: the validator-key reuse window plus the migration time
-    runs past the CRQC arrival horizon. A non-positive value indicates
-    the surface clears the window (boundary X + Y == Z is treated as
-    cleared per Ch 36's strict inequality framing).
+    Its positive part is the Mosca window (Ch 36's exposure window). A
+    positive value means the validator-key reuse window plus the migration time runs
+    past the CRQC arrival horizon. A non-positive value is years of
+    clearance (the boundary X + Y == Z counts as cleared per Ch 36's
+    strict inequality framing).
     """
     assert X >= 0 and Y >= 0 and Z >= 0, "X, Y, Z must be non-negative"
     return X + Y - Z
@@ -99,7 +99,7 @@ def cadence_options(X: int, Y: int, Z: int) -> Dict[str, CadenceOption]:
         "operational_cost": "medium",
         "rationale": (
             "rotate every N epochs with N at most Z - Y in years so "
-            "effective key reuse plus migration clears the Mosca window"
+            "effective key reuse plus migration stays within Z"
         ),
     }
 

@@ -41,8 +41,8 @@ SYSTEMS = {
         "transition": "candidate parameter changes",
     },
     # The key predates this label: the record once described ethSTARK's
-    # reference configuration. The tests and Chapter 35's printed
-    # classification listing name it ethstark, so the key stays.
+    # reference configuration. The tests name it ethstark, so the key
+    # stays; Chapter 35's printed classification listing calls it stone_root.
     "ethstark": {
         "label": "Starknet Stone (root)",
         "l2": "fri",

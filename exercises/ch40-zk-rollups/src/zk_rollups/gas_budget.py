@@ -45,9 +45,8 @@ Ch 39 R1 review caught at the consensus surface):
   proof count. The figure that compares apples-to-apples against the
   legacy and wider-hash configurations.
 - ``per_rollup_cycle_proof_count``: the number of state-transition
-  proofs the rollup commits to L1 in one rollup cycle. ZKsync Era
-  commits roughly hourly; Starknet commits roughly every two hours
-  at chain-tip 2026. The chapter uses one configurable named
+  proofs the rollup commits to L1 in one rollup cycle, which the
+  Strand fixture takes to be an hour. The chapter uses one configurable named
   constant so the calculation is unambiguous about whether a figure
   is per-cycle or per-block.
 """

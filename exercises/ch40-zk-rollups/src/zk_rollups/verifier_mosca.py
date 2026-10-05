@@ -8,13 +8,13 @@ strict breach condition is X + Y > Z.
 This module specializes the calculation to the Strand on-chain-
 verifier surface (X = 3 years, Y = 2 years per the Ch 36 fixture)
 and recommends one of four verifier-upgrade cadences based on the
-breach window. The four cadence options are tuned to the upgradeable-
+signed margin X + Y - Z. The four cadence options are tuned to the upgradeable-
 verifier-contract governance cycle on Ethereum.
 
 The four cadence options:
 
 - ``per-rollup-cycle``: rotate the verifier-contract bytecode every
-  rollup cycle (one to two hours at chain-tip 2026). Operationally
+  rollup cycle (one hour in the Strand fixture). Operationally
   prohibitive because every cycle would require a multisig propose-
   audit-approve-activate-transition choreography. Recorded as the
   zero-interval lower bound, the shortest schedule the model can
@@ -25,7 +25,7 @@ The four cadence options:
   (multiday cadence) to many thousands (annual cadence).
 - ``governance-trigger``: rotate at a named on-chain governance
   event (a Boojum-style upgrade proposal, a Starknet decentralization-
-  council vote). The default when the breach window is comfortable;
+  council vote). The default when no breach exists;
   the rotation interval is set by the governance cadence rather than
   by Mosca arithmetic.
 - ``hard-fork-trigger``: rotate at a named L1 hard-fork event (CRQC
@@ -76,13 +76,13 @@ SCENARIO_Z_VALUES: Dict[str, int] = {
 
 
 def breach_years(X: int, Y: int, Z: int) -> int:
-    """Return X + Y - Z, the on-chain-verifier-surface Mosca breach window.
+    """Return X + Y - Z, the on-chain-verifier surface's signed margin in years.
 
-    A positive value indicates the on-chain-verifier surface breaches
-    the Mosca window: the verifier-bytecode reuse window plus the
-    migration time runs past the CRQC arrival horizon. A non-positive
-    value indicates the surface clears the window (boundary X + Y == Z
-    is treated as cleared per Ch 36's strict inequality framing).
+    Its positive part is the Mosca window (Ch 36's exposure window). A
+    positive value means the verifier-bytecode reuse window plus the migration time runs
+    past the CRQC arrival horizon. A non-positive value is years of
+    clearance (the boundary X + Y == Z counts as cleared per Ch 36's
+    strict inequality framing).
     """
     # EXERCISE: implement this function.
     #

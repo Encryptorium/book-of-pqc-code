@@ -30,12 +30,12 @@ def test_cadence_names_carry_four_options():
 
 
 def test_breach_years_clears_under_mid_2040():
-    """Under X=2, Y=1, Z=14 the breach window is -11 (cleared)."""
+    """Under X=2, Y=1, Z=14 the signed margin is -11 (cleared)."""
     assert cm.breach_years(2, 1, 14) == -11
 
 
 def test_breach_years_breaches_under_aggressive():
-    """Under X=2, Y=1, Z=0 the breach window is +3 years."""
+    """Under X=2, Y=1, Z=0 the signed margin is +3 years."""
     assert cm.breach_years(2, 1, 0) == 3
 
 
@@ -180,7 +180,7 @@ def test_recommend_under_narrow_z_is_every_n_epochs(
 def test_recommend_under_ncsc_z_clears_to_per_epoch(
     strand_consensus_xy, mosca_z_values
 ):
-    """Under Z = 9 the consensus surface clears the Mosca window; per-epoch."""
+    """Under Z = 9 the consensus surface has a zero Mosca window; per-epoch."""
     X, Y = strand_consensus_xy
     Z = mosca_z_values["ncsc_2035"]
     rec = cm.recommend_cadence(X, Y, Z)
@@ -191,7 +191,7 @@ def test_recommend_under_ncsc_z_clears_to_per_epoch(
 def test_recommend_under_mid_2040_z_is_per_epoch(
     strand_consensus_xy, mosca_z_values
 ):
-    """Under Z = 14 the surface clears the Mosca window; per-epoch."""
+    """Under Z = 14 the surface has a zero Mosca window; per-epoch."""
     X, Y = strand_consensus_xy
     Z = mosca_z_values["mid_2040"]
     rec = cm.recommend_cadence(X, Y, Z)

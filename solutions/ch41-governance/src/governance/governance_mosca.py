@@ -8,7 +8,7 @@ strict breach condition is X + Y > Z.
 This module specializes the calculation to the Strand governance
 surface (X = 4 years, Y = 3 years per the Ch 36 fixture) and
 recommends one of four governance-rotation cadences based on the
-breach window. The four cadence options are tuned to the multisig
+signed margin X + Y - Z. The four cadence options are tuned to the multisig
 governance committee's per-vote tempo.
 
 The four cadence options:
@@ -26,8 +26,8 @@ The four cadence options:
   votes (multi-year cadence).
 - ``governance-trigger``: rotate at a named governance event (a
   multisig committee membership change, a treasury proposal milestone,
-  a chain-tip protocol upgrade). The default when the breach window
-  is comfortable; the rotation interval is set by the governance
+  a chain-tip protocol upgrade). The default when no breach
+  exists; the rotation interval is set by the governance
   cadence rather than by Mosca arithmetic.
 - ``hard-fork-trigger``: rotate at a named L1 hard-fork event (CRQC
   arrival rumor, jurisdictional mandate, post-quantum activation
@@ -78,14 +78,13 @@ SCENARIO_Z_VALUES: Dict[str, int] = {
 
 
 def breach_years(X: int, Y: int, Z: int) -> int:
-    """Return X + Y - Z, the governance-surface Mosca breach window.
+    """Return X + Y - Z, the governance surface's signed margin in years.
 
-    A positive value indicates the governance surface breaches the
-    Mosca window: the governance-key reuse window plus the
-    migration time runs past the CRQC arrival horizon. A non-
-    positive value indicates the surface clears the window
-    (boundary X + Y == Z is treated as cleared per Ch 36's strict
-    inequality framing).
+    Its positive part is the Mosca window (Ch 36's exposure window). A
+    positive value means the governance-key reuse window plus the migration time runs
+    past the CRQC arrival horizon. A non-positive value is years of
+    clearance (the boundary X + Y == Z counts as cleared per Ch 36's
+    strict inequality framing).
     """
     assert X >= 0 and Y >= 0 and Z >= 0, "X, Y, Z must be non-negative"
     return X + Y - Z
@@ -121,8 +120,7 @@ def cadence_options(X: int, Y: int, Z: int) -> Dict[str, CadenceOption]:
         "operational_cost": "medium",
         "rationale": (
             "rotate every N governance votes with N tuned so effective "
-            "governance-key reuse plus migration clears the Mosca "
-            "window"
+            "governance-key reuse plus migration stays within Z"
         ),
     }
 

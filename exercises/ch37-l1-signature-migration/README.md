@@ -53,7 +53,7 @@ and 17.
 BIP-360 P2MR is a real draft proposal and it defines no post-quantum signature
 scheme. The commit-then-reveal witness these figures assume, where the output
 script hash-commits to the post-quantum public key and the spend reveals both
-key and signature, belongs to a separate soft fork nobody has drafted. The
+key and signature, belongs to a later soft fork BIP-360 does not specify. The
 `witness_reveals_pk` flag is where that assumption lives, and it is an
 assumption, not a specification.
 

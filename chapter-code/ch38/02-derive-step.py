@@ -11,8 +11,8 @@ import hmac
 from hashlib import sha512
 
 # ECDSA-secp256k1 admits a public-key-only derivation (scalar offset on the
-# curve), so non-hardened branches survive. Lattice and hash primitives have
-# no such map; only hardened branches survive.
+# curve), so non-hardened branches survive. The post-quantum candidates
+# below have no such map; only hardened branches survive.
 NON_HARDENED_OK = {
     "ECDSA-secp256k1":   True,
     "ML-DSA-65":         False,
