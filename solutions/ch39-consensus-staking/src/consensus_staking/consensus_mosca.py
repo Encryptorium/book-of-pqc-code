@@ -61,10 +61,10 @@ def breach_years(X: int, Y: int, Z: int) -> int:
     """Return X + Y - Z, the consensus surface's signed margin in years.
 
     Its positive part is the Mosca window (Ch 36's exposure window). A
-    positive value means the validator-key reuse window plus the migration time runs
-    past the CRQC arrival horizon. A non-positive value is years of
-    clearance (the boundary X + Y == Z counts as cleared per Ch 36's
-    strict inequality framing).
+    positive value means the validator-key reuse window plus the
+    migration time runs past the CRQC arrival horizon. A non-positive
+    value is years of clearance (the boundary X + Y == Z counts as
+    cleared per Ch 36's strict inequality framing).
     """
     assert X >= 0 and Y >= 0 and Z >= 0, "X, Y, Z must be non-negative"
     return X + Y - Z

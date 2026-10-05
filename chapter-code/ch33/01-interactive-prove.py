@@ -1,6 +1,6 @@
 # The Encryptorium Book of Post-Quantum Cryptography
 # Chapter 33: Fiat-Shamir in the QROM
-# Section: "A Schnorr proof compiled three ways"
+# Section: "A Schnorr proof, interactive and compiled"
 # https://book.encryptorium.com/part-6-post-quantum-zero-knowledge/ch33-fiat-shamir-qrom/
 #
 # Generated from the chapter text. Edits here do not reach the book.

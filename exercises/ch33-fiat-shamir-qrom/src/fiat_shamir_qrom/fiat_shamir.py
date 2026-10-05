@@ -101,7 +101,7 @@ def keygen(sk: int | None = None) -> SchnorrKeypair:
     # g^x mod p in the toy group carried over from Ch 32's toy_kzg: p = 2027
     # = 2 * 1013 + 1, subgroup order n = 1013, generator g = 4.
     #
-    # Reference: Chapter 33, 'A Schnorr proof compiled three ways'
+    # Reference: Chapter 33, 'A Schnorr proof, interactive and compiled'
     #
     # Proved by:
     #   tests/ch33/test_fiat_shamir_schnorr.py
@@ -131,7 +131,7 @@ def interactive_prove(
     # get this wrong. Reject a challenge outside [0, q - 1] and a nonce
     # outside [1, q - 1].
     #
-    # Reference: Chapter 33, 'A Schnorr proof compiled three ways' (Block 1)
+    # Reference: Chapter 33, 'A Schnorr proof, interactive and compiled' (Block 1)
     #
     # Proved by:
     #   tests/ch33/test_fiat_shamir_schnorr.py
@@ -254,7 +254,7 @@ def rewind_extract(
     # requires a measurement, the measurement collapses the superposition,
     # and there is no state left to rewind to.
     #
-    # Reference: Chapter 33, 'A Schnorr proof compiled three ways' and Exercise E3
+    # Reference: Chapter 33, 'A Schnorr proof, interactive and compiled' and Exercise E3
     #
     # Proved by:
     #   tests/ch33/test_fiat_shamir_schnorr.py

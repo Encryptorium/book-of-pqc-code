@@ -76,13 +76,13 @@ SCENARIO_Z_VALUES: Dict[str, int] = {
 
 
 def breach_years(X: int, Y: int, Z: int) -> int:
-    """Return X + Y - Z, the on-chain-verifier surface's signed margin in years.
+    """Return the on-chain-verifier surface's signed margin X + Y - Z in years.
 
     Its positive part is the Mosca window (Ch 36's exposure window). A
-    positive value means the verifier-bytecode reuse window plus the migration time runs
-    past the CRQC arrival horizon. A non-positive value is years of
-    clearance (the boundary X + Y == Z counts as cleared per Ch 36's
-    strict inequality framing).
+    positive value means the verifier-bytecode reuse window plus the
+    migration time runs past the CRQC arrival horizon. A non-positive
+    value is years of clearance (the boundary X + Y == Z counts as
+    cleared per Ch 36's strict inequality framing).
     """
     assert X >= 0 and Y >= 0 and Z >= 0, "X, Y, Z must be non-negative"
     return X + Y - Z
@@ -195,9 +195,9 @@ def recommend_cadence(X: int, Y: int, Z: int) -> Dict[str, object]:
 def evaluate(
     Z: int, X: int = STRAND_VERIFIER_X, Y: int = STRAND_VERIFIER_Y
 ) -> Dict[str, object]:
-    """Run the recommendation under the Strand on-chain-verifier anchor (X=3, Y=2).
+    """Run the recommendation under the Strand on-chain-verifier anchor.
 
-    The default X and Y come from tests/ch36/conftest.py for the
+    The default X=3 and Y=2 come from tests/ch36/conftest.py for the
     on-chain-verifier row. Pass an alternate X or Y to model a
     different rollup's verifier surface.
     """
@@ -210,10 +210,10 @@ def evaluate_named_scenario(scenario: str) -> Dict[str, object]:
     The scenario names (narrow, central, wide) and Z values are locked
     at planning time. ``narrow`` is Z=4 (CRQC arrival sooner than the
     verifier-bytecode reuse window plus migration time, forcing a
-    one-year breach with a two-year safe rotation window), ``central`` is Z=9 (the
-    chapter's central NCSC-style estimate, which clears the on-chain-
-    verifier surface), ``wide`` is Z=13 (a comfortable horizon for
-    governance-paced rotation).
+    one-year breach with a two-year safe rotation window), ``central``
+    is Z=9 (the chapter's central NCSC-style estimate, which clears the
+    on-chain-verifier surface), ``wide`` is Z=13 (a comfortable horizon
+    for governance-paced rotation).
     """
     assert scenario in SCENARIO_Z_VALUES, f"unknown scenario: {scenario!r}"
     Z = SCENARIO_Z_VALUES[scenario]
