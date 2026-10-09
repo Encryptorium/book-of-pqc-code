@@ -40,15 +40,15 @@ for q_max in [5, 10, 15, 20]:
 # ==> q=15: 32 redundant leaf exposures
 # ==> q=20: 52 redundant leaf exposures
 
-# Distinct leaves per tree is what a reuse forgery needs, not the raw count.
+# Distinct revealed indices per tree is what a reuse forgery needs, not the raw count.
 k, t, q = 6, 16, 20
 used = [set() for _ in range(k)]
 for s in range(1, q + 1):
     for j, ix in enumerate(message_indices(f"msg-{s}".encode(), k, t)):
         used[j].add(ix)
 distinct = [len(u) for u in used]
-print(f"distinct leaves/tree at q={q}: {distinct}")
-# ==> distinct leaves/tree at q=20: [12, 11, 10, 12, 12, 11]
+print(f"distinct indices/tree at q={q}: {distinct}")
+# ==> distinct indices/tree at q=20: [12, 11, 10, 12, 12, 11]
 coverage = 1.0
 for u in distinct:
     coverage *= u / t
