@@ -8,7 +8,7 @@
 
 # Block 5: Stwo's published defaults, read at all three decoding
 # radii. A blowup of 2^log_blowup gives rate rho; each of the
-# n_queries FRI query paths misses a delta_0-far codeword with
+# n_queries FRI query paths misses a delta_0-far word with
 # probability at most (1 - delta_0), and grinding adds pow_bits on
 # top. Source: starkware-libs/stwo-cairo README (the defaults);
 # Ch 34 Section 5.1 (the three radii); Ben-Sasson, Carmon, Ishai,

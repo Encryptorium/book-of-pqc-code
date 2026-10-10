@@ -20,7 +20,7 @@ def test_the_chapter_walks_exactly_six_configurations():
 @pytest.mark.parametrize("key,l2,l4,detail_fragment", [
     ("sapling", "pairing", "crs", "BLS12-381"),
     ("orchard", "ipa_dlp", "fs_over_dlp", "Pallas and Vesta"),
-    ("boojum_outer", "pairing", "crs", "wrapper"),
+    ("boojum_outer", "pairing", "fs_over_dlp", "wrapper"),
     ("boojum_inner", "fri", "fs_tier3_classical_rom", "Goldilocks"),
     ("ethstark", "fri", "fs_tier3_classical_rom", "252-bit Cairo"),
     ("stwo", "fri", "fs_tier3_classical_rom", "Mersenne-31"),

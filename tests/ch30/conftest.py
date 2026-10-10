@@ -39,8 +39,8 @@ def four_touchpoint_cbom() -> list[dict]:
     entry, so that this fixture exercises the already-migrated and
     grover-only paths on their own.
 
-    tls_endpoint_api was migrated in Ch 28 so it is quantum-safe.
-    jwt_signing was migrated in Ch 29 so it is quantum-safe.
+    tls_endpoint_api: quantum-safe for key establishment (Ch 28), chain classical.
+    jwt_signing: quantum-safe for its composite token signing (Ch 29).
     password_hashing and webhook_hmac remain grover-only.
 
     In the rollup the two migrated touchpoints score zero; the two

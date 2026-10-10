@@ -48,7 +48,7 @@ def classify(system: dict) -> dict:
 
 sapling = classify({"l2": "pairing", "l4": "crs"})
 orchard = classify({"l2": "ipa_dlp", "l4": "fs_over_dlp"})
-boojum_outer = classify({"l2": "pairing", "l4": "crs"})
+boojum_outer = classify({"l2": "pairing", "l4": "fs_over_dlp"})
 boojum_inner = classify({"l2": "fri", "l4": "fs_tier3_classical_rom"})
 stone_root = classify({"l2": "fri", "l4": "fs_tier3_classical_rom"})
 print(sapling["posture"], orchard["posture"], boojum_outer["posture"],

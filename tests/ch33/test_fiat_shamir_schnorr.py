@@ -73,12 +73,43 @@ def test_interactive_verify_rejects_wrong_commitment() -> None:
 
 
 def test_interactive_verify_rejects_bad_pk() -> None:
+    """A key with no witness is refused before the equation is checked.
+
+    The chapter excludes ``h = 1`` and states the relation over the
+    subgroup ``g`` generates. On either kind of key the verification
+    equation alone accepts a prover who knows no witness: ``a = g^r`` and
+    ``z = r`` answer every challenge when ``h = 1``, and ``z = r + e x``
+    answers every even challenge when ``h = -g^x``, which lies outside the
+    subgroup because ``p = 3 mod 4``. Each transcript below satisfies the
+    equation, so only the two key checks stand between it and acceptance.
+    """
     kp = fiat_shamir.keygen(sk=123)
     good = fiat_shamir.interactive_prove(kp, challenge=456, nonce=789)
     with pytest.raises(ValueError):
         fiat_shamir.interactive_verify(0, good)
     with pytest.raises(ValueError):
         fiat_shamir.interactive_verify(fiat_shamir.DEFAULT_PRIME, good)
+
+    p, g = fiat_shamir.DEFAULT_PRIME, fiat_shamir.DEFAULT_GENERATOR
+    cheat_one = fiat_shamir.InteractiveTranscript(
+        commitment=pow(g, 789, p), challenge=456, response=789
+    )
+    assert pow(g, cheat_one.response, p) == cheat_one.commitment
+    with pytest.raises(ValueError):
+        fiat_shamir.interactive_verify(1, cheat_one)
+
+    outside = p - kp.pk
+    assert pow(outside, fiat_shamir.DEFAULT_ORDER, p) == p - 1
+    cheat_outside = fiat_shamir.interactive_prove(
+        fiat_shamir.SchnorrKeypair(sk=kp.sk, pk=outside),
+        challenge=456,
+        nonce=789,
+    )
+    assert pow(g, cheat_outside.response, p) == (
+        cheat_outside.commitment * pow(outside, cheat_outside.challenge, p)
+    ) % p
+    with pytest.raises(ValueError):
+        fiat_shamir.interactive_verify(outside, cheat_outside)
 
 
 def test_interactive_verify_rejects_wrong_witness_public_key() -> None:
@@ -150,6 +181,37 @@ def test_fs_verify_rejects_bad_pk() -> None:
         fiat_shamir.fs_verify(0, proof, oracle)
     with pytest.raises(ValueError):
         fiat_shamir.fs_verify(fiat_shamir.DEFAULT_PRIME, proof, oracle)
+
+    # The two keys with no witness, as in the interactive test above. The
+    # compiled cheat on h = -g^x needs an even challenge, so it retries the
+    # nonce until the oracle gives one.
+    p, g = fiat_shamir.DEFAULT_PRIME, fiat_shamir.DEFAULT_GENERATOR
+    cheat_one = fiat_shamir.FiatShamirProof(
+        commitment=pow(g, 200, p), response=200
+    )
+    assert pow(g, cheat_one.response, p) == cheat_one.commitment
+    with pytest.raises(ValueError):
+        fiat_shamir.fs_verify(1, cheat_one, oracle)
+
+    outside = p - kp.pk
+    nonce = next(
+        r
+        for r in range(1, fiat_shamir.DEFAULT_ORDER)
+        if oracle.query(fiat_shamir._transcript_bytes(outside, pow(g, r, p)))
+        % 2
+        == 0
+    )
+    cheat_outside = fiat_shamir.fs_prove(
+        fiat_shamir.SchnorrKeypair(sk=kp.sk, pk=outside), oracle, nonce=nonce
+    )
+    challenge = oracle.query(
+        fiat_shamir._transcript_bytes(outside, cheat_outside.commitment)
+    )
+    assert pow(g, cheat_outside.response, p) == (
+        cheat_outside.commitment * pow(outside, challenge, p)
+    ) % p
+    with pytest.raises(ValueError):
+        fiat_shamir.fs_verify(outside, cheat_outside, oracle)
 
 
 def test_rewind_extract_recovers_witness() -> None:

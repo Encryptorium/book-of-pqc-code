@@ -29,7 +29,7 @@ SYSTEMS = {
     "boojum_outer": {
         "label": "ZKsync Era outer wrapper",
         "l2": "pairing",
-        "l4": "crs",
+        "l4": "fs_over_dlp",
         "detail": "pairing-based SNARK wrapper read first by the L1 verifier",
         "transition": "replacement",
     },
