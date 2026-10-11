@@ -20,9 +20,10 @@ The four cadence options:
   Z > Y. N is the safe window Z - Y in whole years, so the narrow
   scenario's Z = 2 gives a one-year interval.
 - ``every-N-validator-rotations``: rotate alongside the validator-set
-  exit-and-entry cadence (Ethereum's churn limit caps the number of
-  validators that can exit per epoch). Useful when the validator
-  set itself rotates faster than a stated calendar interval.
+  exit-and-entry cadence (Ethereum meters activation and exit churn in
+  ETH, with a per-epoch churn budget capped at 256 ETH under Electra).
+  Useful when the validator set itself rotates faster than a stated
+  calendar interval.
 - ``hard-fork-trigger``: rotate at a named hard-fork event (CRQC
   arrival rumor, jurisdictional mandate, post-quantum activation
   fork). The default when Z <= Y, where the rotation interval drops
@@ -102,8 +103,11 @@ def cadence_options(X: int, Y: int, Z: int) -> Dict[str, CadenceOption]:
     # because aligning rotation to validator-set attrition is more
     # coordination than aligning it to a calendar. hard-fork-trigger is
     # always feasible with interval 0 and cost 'high'. Key the returned dict
-    # by the four CADENCE_NAMES. The rationale strings are prose for the
-    # operator and nothing asserts on them.
+    # by the four CADENCE_NAMES. The suite pins a phrase in each rationale
+    # string and allows no phrase in a second record. In CADENCE_NAMES
+    # order, the phrases are 'no emergency rotation of the validator signing
+    # key', 'rotate every N years', 'rotate alongside validator-set
+    # exit-and-entry' and 'rotate at a named hard-fork event'.
     #
     # Reference: Chapter 39, 'Plan the validator-key rotation cadence'
     #

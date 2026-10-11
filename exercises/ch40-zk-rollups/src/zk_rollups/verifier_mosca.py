@@ -124,8 +124,10 @@ def cadence_options(X: int, Y: int, Z: int) -> Dict[str, CadenceOption]:
     # the breach is non-positive, carries interval 0, and costs 'low',
     # because the council sets the tempo rather than the arithmetic.
     # hard-fork-trigger is always feasible with interval 0 and cost 'high'.
-    # Key the returned dict by the four CADENCE_NAMES. The rationale strings
-    # are prose for the operator and nothing asserts on them.
+    # Key the returned dict by the four CADENCE_NAMES. The suite pins a
+    # phrase in each rationale string and allows no phrase in a second
+    # record. In CADENCE_NAMES order, the phrases are 'every rollup cycle',
+    # 'N tuned', 'named governance event' and 'hard-fork event'.
     #
     # Reference: Chapter 40, 'Plan the verifier-upgrade cadence'
     #

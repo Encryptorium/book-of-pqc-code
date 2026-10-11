@@ -20,9 +20,10 @@ The four cadence options:
   Z > Y. N is the safe window Z - Y in whole years, so the narrow
   scenario's Z = 2 gives a one-year interval.
 - ``every-N-validator-rotations``: rotate alongside the validator-set
-  exit-and-entry cadence (Ethereum's churn limit caps the number of
-  validators that can exit per epoch). Useful when the validator
-  set itself rotates faster than a stated calendar interval.
+  exit-and-entry cadence (Ethereum meters activation and exit churn in
+  ETH, with a per-epoch churn budget capped at 256 ETH under Electra).
+  Useful when the validator set itself rotates faster than a stated
+  calendar interval.
 - ``hard-fork-trigger``: rotate at a named hard-fork event (CRQC
   arrival rumor, jurisdictional mandate, post-quantum activation
   fork). The default when Z <= Y, where the rotation interval drops
