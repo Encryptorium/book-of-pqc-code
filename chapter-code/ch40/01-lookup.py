@@ -33,7 +33,7 @@ MATRIX = {
     },
     "L3-protocol-logic": {
         "FRI-IOP": "off-chain",
-        "IPA-IOP": "shor-broken",
+        "IPA-IOP": "off-chain",
     },
     "L4-fiat-shamir": {
         "SHA-256":    "grover-weakened",

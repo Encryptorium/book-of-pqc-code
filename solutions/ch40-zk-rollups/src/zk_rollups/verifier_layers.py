@@ -54,8 +54,10 @@ L3 protocol-logic candidates (the IOP layer):
   vulnerability beyond what L2 and L4 inherit.
 - ``FRI-IOP``: the FRI-based IOP layered over a Merkle commitment.
   Inherits L2's grover-weakening through the underlying hash.
-- ``IPA-IOP``: inner-product-argument IOP (Bulletproofs, Halo 2).
-  Soundness reduces to discrete log; Shor-broken.
+- ``IPA-IOP``: the polynomial IOP of an inner-product-argument
+  system (Bulletproofs, Halo 2). Off-chain like the other two: its
+  Shor exposure sits in its L2 commitment, since the IPA's binding
+  reduces to discrete log.
 
 L4 Fiat-Shamir hash candidates (on-chain; the second load-bearing
 security axis, governing transcript binding under non-interactivity
@@ -199,9 +201,9 @@ MATRIX: Dict[str, Dict[str, LayerCell]] = {
             "FRI proximity layered over Merkle; off-chain logic, on-chain hash check at L2",
         ),
         "IPA-IOP": _cell(
-            "shor-broken",
+            "off-chain",
             "production",
-            "inner-product argument; soundness reduces to discrete log",
+            "inner-product argument; discrete-log exposure sits in its L2 commitment",
         ),
     },
     "L4-fiat-shamir": {

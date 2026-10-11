@@ -87,6 +87,6 @@ collapsing every safe case to zero, and `X + Y == Z` returns 0 and counts as
 cleared. That follows the strict inequality in Chapter 36.
 
 **`every-N-validator-rotations` is never recommended.** It matches
-`every-N-epochs` on feasibility and on interval and loses on operational cost, so
+`every-N-years` on feasibility and on interval and loses on operational cost, so
 `recommend_cadence` returns it only inside the `options` dict. It is in the model
 because the chapter ranks four cadences, not three.

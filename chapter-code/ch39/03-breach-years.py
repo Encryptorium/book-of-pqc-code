@@ -16,9 +16,9 @@ def recommend(X, Y, Z):
     breach = breach_years(X, Y, Z)
     safe_window = max(0, Z - Y)
     if breach <= 0:
-        return ("per-epoch", 0)
+        return ("no-rotation", 0)
     if safe_window >= 1:
-        return ("every-N-epochs", safe_window)
+        return ("every-N-years", safe_window)
     return ("hard-fork-trigger", 0)
 
 
@@ -35,6 +35,6 @@ for label, Z in SCENARIOS:
     breach = breach_years(X, Y, Z)
     print(f"{label}: breach={breach:>4}y -> {cadence}, N={N}y")
 # ==> aggressive   Z=0: breach=   3y -> hard-fork-trigger, N=0y
-# ==> narrow       Z=2: breach=   1y -> every-N-epochs, N=1y
-# ==> ncsc-2035    Z=9: breach=  -6y -> per-epoch, N=0y
-# ==> mid-2040     Z=14: breach= -11y -> per-epoch, N=0y
+# ==> narrow       Z=2: breach=   1y -> every-N-years, N=1y
+# ==> ncsc-2035    Z=9: breach=  -6y -> no-rotation, N=0y
+# ==> mid-2040     Z=14: breach= -11y -> no-rotation, N=0y

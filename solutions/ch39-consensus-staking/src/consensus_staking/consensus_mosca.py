@@ -7,18 +7,18 @@ strict breach condition is X + Y > Z.
 
 This module specializes the calculation to the Strand consensus
 surface (X = 2 years, Y = 1 year per the Ch 36 fixture) and recommends
-one of four rotation cadences based on the signed margin X + Y - Z.
+one of four cadences based on the signed margin X + Y - Z.
 
 The four cadence options:
 
-- ``per-epoch``: rotate the validator-set signing key every epoch.
-  Operationally cheap because the validator-set turnover already
-  follows the epoch cadence on Ethereum mainnet (one epoch is 32
-  slots at 12 seconds, 6.4 minutes). The default for X + Y <= Z.
-- ``every-N-epochs``: rotate every N epochs where N implies an
+- ``no-rotation``: no emergency rotation of the validator signing
+  key. The operator continues normal validator lifecycle management
+  (activations and exits through the chain's churn-limited queues).
+  The default for X + Y <= Z, where the margin already clears Z.
+- ``every-N-years``: rotate every N years where N implies an
   effective X_eff <= Z - Y. The default for a modest breach with
-  Z > Y. Practical N values run from one (per-epoch) to several
-  thousand (multi-month rotation).
+  Z > Y. N is the safe window Z - Y in whole years, so the narrow
+  scenario's Z = 2 gives a one-year interval.
 - ``every-N-validator-rotations``: rotate alongside the validator-set
   exit-and-entry cadence (Ethereum's churn limit caps the number of
   validators that can exit per epoch). Useful when the validator
@@ -46,8 +46,8 @@ class CadenceOption(TypedDict):
 
 
 CADENCE_NAMES: Tuple[str, ...] = (
-    "per-epoch",
-    "every-N-epochs",
+    "no-rotation",
+    "every-N-years",
     "every-N-validator-rotations",
     "hard-fork-trigger",
 )
@@ -81,24 +81,24 @@ def cadence_options(X: int, Y: int, Z: int) -> Dict[str, CadenceOption]:
     breach = breach_years(X, Y, Z)
     safe_window = max(0, Z - Y)
 
-    per_epoch: CadenceOption = {
-        "name": "per-epoch",
+    no_rotation: CadenceOption = {
+        "name": "no-rotation",
         "feasible": breach <= 0,
         "rotation_interval_years": 0,
         "operational_cost": "low",
         "rationale": (
-            "rotate every epoch alongside the validator-set turnover; "
+            "no emergency rotation of the validator signing key; "
             "feasible only when X + Y already clears Z"
         ),
     }
 
-    every_n_epochs: CadenceOption = {
-        "name": "every-N-epochs",
+    every_n_years: CadenceOption = {
+        "name": "every-N-years",
         "feasible": safe_window >= 1 and breach > 0,
         "rotation_interval_years": safe_window,
         "operational_cost": "medium",
         "rationale": (
-            "rotate every N epochs with N at most Z - Y in years so "
+            "rotate every N years with N at most Z - Y so "
             "effective key reuse plus migration stays within Z"
         ),
     }
@@ -127,8 +127,8 @@ def cadence_options(X: int, Y: int, Z: int) -> Dict[str, CadenceOption]:
     }
 
     return {
-        "per-epoch": per_epoch,
-        "every-N-epochs": every_n_epochs,
+        "no-rotation": no_rotation,
+        "every-N-years": every_n_years,
         "every-N-validator-rotations": every_n_validator_rotations,
         "hard-fork-trigger": hard_fork_trigger,
     }
@@ -139,12 +139,12 @@ def recommend_cadence(X: int, Y: int, Z: int) -> Dict[str, object]:
 
     Order of preference (lowest operational cost first):
 
-    1. ``per-epoch`` if no breach.
-    2. ``every-N-epochs`` if a positive safe window exists.
+    1. ``no-rotation`` if no breach.
+    2. ``every-N-years`` if a positive safe window exists.
     3. ``hard-fork-trigger`` otherwise.
 
     The ``every-N-validator-rotations`` cadence has the same
-    feasibility as ``every-N-epochs`` but a higher operational cost;
+    feasibility as ``every-N-years`` but a higher operational cost;
     the function returns it as a runner-up rather than as the
     recommendation.
     """
@@ -153,10 +153,10 @@ def recommend_cadence(X: int, Y: int, Z: int) -> Dict[str, object]:
     safe_window = max(0, Z - Y)
 
     if breach <= 0:
-        recommendation = "per-epoch"
+        recommendation = "no-rotation"
         recommended_interval = 0
     elif safe_window >= 1:
-        recommendation = "every-N-epochs"
+        recommendation = "every-N-years"
         recommended_interval = safe_window
     else:
         recommendation = "hard-fork-trigger"

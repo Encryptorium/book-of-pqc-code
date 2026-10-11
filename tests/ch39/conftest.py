@@ -73,16 +73,16 @@ def mosca_z_values() -> dict[str, int]:
     The Strand consensus surface (X=2, Y=1) has a zero Mosca window
     under both ``ncsc_2035`` (Z=9) and ``mid_2040`` (Z=14); the
     chapter introduces two hypotheticals, ``narrow`` (Z=2) and
-    ``aggressive`` (Z=0), to illustrate the every-N-epochs and
+    ``aggressive`` (Z=0), to illustrate the every-N-years and
     hard-fork-trigger regimes, since the canonical Ch 36 Z values
     do not breach the consensus surface.
 
     - ``aggressive`` (Z=0): forces hard-fork-trigger (no positive
       safe window).
-    - ``narrow`` (Z=2): forces every-N-epochs at N=1 (breach by
+    - ``narrow`` (Z=2): forces every-N-years at N=1 (breach by
       one year; safe window one year).
-    - ``ncsc_2035`` (Z=9): clears; recommendation is per-epoch.
-    - ``mid_2040`` (Z=14): clears; recommendation is per-epoch.
+    - ``ncsc_2035`` (Z=9): clears; recommendation is no-rotation.
+    - ``mid_2040`` (Z=14): clears; recommendation is no-rotation.
     """
     return {
         "aggressive": 0,

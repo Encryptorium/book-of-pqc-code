@@ -7,18 +7,18 @@ strict breach condition is X + Y > Z.
 
 This module specializes the calculation to the Strand consensus
 surface (X = 2 years, Y = 1 year per the Ch 36 fixture) and recommends
-one of four rotation cadences based on the signed margin X + Y - Z.
+one of four cadences based on the signed margin X + Y - Z.
 
 The four cadence options:
 
-- ``per-epoch``: rotate the validator-set signing key every epoch.
-  Operationally cheap because the validator-set turnover already
-  follows the epoch cadence on Ethereum mainnet (one epoch is 32
-  slots at 12 seconds, 6.4 minutes). The default for X + Y <= Z.
-- ``every-N-epochs``: rotate every N epochs where N implies an
+- ``no-rotation``: no emergency rotation of the validator signing
+  key. The operator continues normal validator lifecycle management
+  (activations and exits through the chain's churn-limited queues).
+  The default for X + Y <= Z, where the margin already clears Z.
+- ``every-N-years``: rotate every N years where N implies an
   effective X_eff <= Z - Y. The default for a modest breach with
-  Z > Y. Practical N values run from one (per-epoch) to several
-  thousand (multi-month rotation).
+  Z > Y. N is the safe window Z - Y in whole years, so the narrow
+  scenario's Z = 2 gives a one-year interval.
 - ``every-N-validator-rotations``: rotate alongside the validator-set
   exit-and-entry cadence (Ethereum's churn limit caps the number of
   validators that can exit per epoch). Useful when the validator
@@ -46,8 +46,8 @@ class CadenceOption(TypedDict):
 
 
 CADENCE_NAMES: Tuple[str, ...] = (
-    "per-epoch",
-    "every-N-epochs",
+    "no-rotation",
+    "every-N-years",
     "every-N-validator-rotations",
     "hard-fork-trigger",
 )
@@ -93,9 +93,9 @@ def cadence_options(X: int, Y: int, Z: int) -> Dict[str, CadenceOption]:
     # EXERCISE: implement this function.
     #
     # Compute the breach and the safe window (max of 0 and Z - Y) once, then
-    # build all four CadenceOption records. per-epoch is feasible only when
-    # the breach is non-positive, carries interval 0 because the epoch is
-    # already the chain's heartbeat, and costs 'low'. every-N-epochs and
+    # build all four CadenceOption records. no-rotation is feasible only
+    # when the breach is non-positive, carries interval 0 because it
+    # schedules no rotation, and costs 'low'. every-N-years and
     # every-N-validator-rotations share a feasibility test (a safe window of
     # at least one year and a positive breach) and an interval of the safe
     # window, differing only in cost, 'medium' against 'medium-high',
@@ -117,23 +117,23 @@ def recommend_cadence(X: int, Y: int, Z: int) -> Dict[str, object]:
 
     Order of preference (lowest operational cost first):
 
-    1. ``per-epoch`` if no breach.
-    2. ``every-N-epochs`` if a positive safe window exists.
+    1. ``no-rotation`` if no breach.
+    2. ``every-N-years`` if a positive safe window exists.
     3. ``hard-fork-trigger`` otherwise.
 
     The ``every-N-validator-rotations`` cadence has the same
-    feasibility as ``every-N-epochs`` but a higher operational cost;
+    feasibility as ``every-N-years`` but a higher operational cost;
     the function returns it as a runner-up rather than as the
     recommendation.
     """
     # EXERCISE: implement this function.
     #
     # Pick the cheapest feasible cadence in one three-branch cascade: no
-    # breach gives per-epoch at interval 0; otherwise a safe window of at
-    # least one year gives every-N-epochs at that window; otherwise
+    # breach gives no-rotation at interval 0; otherwise a safe window of at
+    # least one year gives every-N-years at that window; otherwise
     # hard-fork-trigger at interval 0. every-N-validator-rotations is never
-    # the recommendation because it matches every-N-epochs on feasibility
-    # and loses on cost, so it comes back only inside the options dict as a
+    # the recommendation because it matches every-N-years on feasibility and
+    # loses on cost, so it comes back only inside the options dict as a
     # runner-up. Return X, Y, Z, breach_years, safe_window_years,
     # recommendation, rotation_interval_years, and the full options dict, so
     # a caller can override the pick from the same call.

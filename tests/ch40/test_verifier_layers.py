@@ -111,10 +111,10 @@ def test_lookup_l4_candidates_are_grover_weakened():
         assert vl.lookup("L4-fiat-shamir", candidate)["pq_status"] == "grover-weakened"
 
 
-def test_lookup_ipa_iop_is_shor_broken():
-    """IPA-IOP soundness reduces to discrete log; Shor breaks it."""
+def test_lookup_ipa_iop_is_off_chain():
+    """IPA-IOP is off-chain: its Shor exposure sits in its L2 commitment."""
     out = vl.lookup("L3-protocol-logic", "IPA-IOP")
-    assert out["pq_status"] == "shor-broken"
+    assert out["pq_status"] == "off-chain"
 
 
 def test_lookup_rejects_unknown_layer():
@@ -131,11 +131,10 @@ def test_lookup_rejects_candidate_not_in_layer():
 # ---- candidates_with_status -------------------------------------------
 
 
-def test_shor_broken_set_includes_kzg_and_ipa():
-    """KZG (L2) and IPA-IOP (L3) are the two Shor-broken cells."""
+def test_shor_broken_set_is_kzg_alone():
+    """KZG (L2) is the one Shor-broken cell. IPA-IOP (L3) is off-chain."""
     cells = vl.candidates_with_status("shor-broken")
-    assert ("L2-commitment", "KZG") in cells
-    assert ("L3-protocol-logic", "IPA-IOP") in cells
+    assert cells == [("L2-commitment", "KZG")]
 
 
 def test_pq_secure_set_includes_lattice_pcs():

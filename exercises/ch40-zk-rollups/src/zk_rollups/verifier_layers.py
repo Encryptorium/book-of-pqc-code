@@ -54,8 +54,10 @@ L3 protocol-logic candidates (the IOP layer):
   vulnerability beyond what L2 and L4 inherit.
 - ``FRI-IOP``: the FRI-based IOP layered over a Merkle commitment.
   Inherits L2's grover-weakening through the underlying hash.
-- ``IPA-IOP``: inner-product-argument IOP (Bulletproofs, Halo 2).
-  Soundness reduces to discrete log; Shor-broken.
+- ``IPA-IOP``: the polynomial IOP of an inner-product-argument
+  system (Bulletproofs, Halo 2). Off-chain like the other two: its
+  Shor exposure sits in its L2 commitment, since the IPA's binding
+  reduces to discrete log.
 
 L4 Fiat-Shamir hash candidates (on-chain; the second load-bearing
 security axis, governing transcript binding under non-interactivity
@@ -199,9 +201,9 @@ MATRIX: Dict[str, Dict[str, LayerCell]] = {
             "FRI proximity layered over Merkle; off-chain logic, on-chain hash check at L2",
         ),
         "IPA-IOP": _cell(
-            "shor-broken",
+            "off-chain",
             "production",
-            "inner-product argument; soundness reduces to discrete log",
+            "inner-product argument; discrete-log exposure sits in its L2 commitment",
         ),
     },
     "L4-fiat-shamir": {
@@ -273,12 +275,14 @@ def lookup(layer: str, candidate: str) -> Dict[str, object]:
     # cell and must not resolve at L4. Index MATRIX by layer then candidate
     # and flatten the cell into a dict carrying layer, candidate, pq_status,
     # deployment_status, and rationale. Read the table before writing the
-    # return, because pq_status is the load-bearing column: KZG and IPA-IOP
-    # are shor-broken through pairing and inner-product discrete log, FRI,
-    # Merkle, and every L4 hash are grover-weakened, lattice-PCS is the only
-    # pq-secure cell and the only one whose deployment_status is
-    # pq-research, and every L1 arithmetization cell is off-chain because
-    # the verifier contract never re-runs L1.
+    # return, because pq_status is the load-bearing column: KZG is
+    # shor-broken through pairing discrete log, FRI, Merkle, and every L4
+    # hash are grover-weakened, lattice-PCS is the only pq-secure cell and
+    # the only one whose deployment_status is pq-research, every L1
+    # arithmetization cell is off-chain because the verifier contract never
+    # re-runs L1, and every L3 cell is off-chain too, IPA-IOP included,
+    # since an inner-product argument's Shor exposure sits in its L2
+    # commitment.
     #
     # Reference: Chapter 40, 'Decompose the verifier into layers and pick a per-layer candidate'
     #
@@ -315,9 +319,10 @@ def candidates_with_status(pq_status: str) -> List[Tuple[str, str]]:
     # collecting the (layer, candidate) pairs whose MATRIX cell carries that
     # status. Iterate the constants rather than the matrix dict so the
     # result keeps the chapter's table order. This is the query behind the
-    # chapter's cross-layer claims: shor-broken spans two layers (KZG at L2,
-    # IPA-IOP at L3), pq-secure has exactly one cell, and off-chain covers
-    # all three L1 candidates.
+    # chapter's cross-layer claims: grover-weakened spans L2 and L4,
+    # shor-broken and pq-secure have one cell each, both at L2 (KZG and
+    # lattice-PCS), and off-chain covers all three L1 and all three L3
+    # candidates.
     #
     # Reference: Chapter 40, 'The Ch 31 four-layer decomposition under post-quantum primitives'
     #
