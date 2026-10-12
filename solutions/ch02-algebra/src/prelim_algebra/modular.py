@@ -79,9 +79,10 @@ def order(g: int, p: int) -> int:
     ship, but for the small primes the chapter uses it is instant and it makes
     the group structure visible.
 
-    The order divides p - 1 by Lagrange's theorem, so g is a generator of
-    F_p^* exactly when the order equals p - 1. For p = 17, ``order(2, 17)`` is
-    8, which is why 2 fails as a generator: its orbit is half the group.
+    The k powers 1, g, ..., g**(k - 1) are distinct, and all later powers
+    repeat them, so g is a generator of F_p^* exactly when the order equals
+    p - 1. For p = 17, ``order(2, 17)`` is 8, which is why 2 fails as a
+    generator: its orbit is half the group.
     """
     x, k = g % p, 0
     while True:

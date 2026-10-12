@@ -79,18 +79,20 @@ def order(g: int, p: int) -> int:
     ship, but for the small primes the chapter uses it is instant and it makes
     the group structure visible.
 
-    The order divides p - 1 by Lagrange's theorem, so g is a generator of
-    F_p^* exactly when the order equals p - 1. For p = 17, ``order(2, 17)`` is
-    8, which is why 2 fails as a generator: its orbit is half the group.
+    The k powers 1, g, ..., g**(k - 1) are distinct, and all later powers
+    repeat them, so g is a generator of F_p^* exactly when the order equals
+    p - 1. For p = 17, ``order(2, 17)`` is 8, which is why 2 fails as a
+    generator: its orbit is half the group.
     """
     # EXERCISE: implement this function.
     #
     # Return the least k > 0 with g**k congruent to 1 modulo p. Multiply by
     # g one step at a time and count until the running value is 1. This is
     # the definition rather than an algorithm anyone would ship, and for the
-    # chapter's small primes it is instant. The order always divides p - 1
-    # by Lagrange's theorem, which is what makes the generator test below a
-    # single comparison.
+    # chapter's small primes it is instant. The k powers 1, g, ..., g**(k -
+    # 1) are distinct and all later powers repeat them. So g reaches all p -
+    # 1 nonzero elements exactly when its order is p - 1, which is what
+    # makes the generator test below a single comparison.
     #
     # Reference: Chapter 2, exercise 2
     #

@@ -91,8 +91,7 @@ def test_order_of_three_mod_17_is_sixteen() -> None:
 
 
 def test_order_divides_p_minus_one(small_primes: list[int]) -> None:
-    # Lagrange's theorem, which is why an order equal to p - 1 is the whole
-    # generator test.
+    # Lagrange's theorem: every order divides p - 1.
     for p in small_primes:
         for g in range(1, p):
             assert (p - 1) % order(g, p) == 0
