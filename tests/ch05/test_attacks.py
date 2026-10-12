@@ -1,4 +1,4 @@
-"""The mauling attack, and the non-coprime bound from Exercise 3."""
+"""The mauling attack, and the non-coprime bound from Exercise 8."""
 
 import math
 import random
@@ -10,7 +10,7 @@ from kem_primitives.rsa_kem import TOY_P, TOY_Q, decap, encap, keygen
 
 
 def test_mauling_recovers_the_encapsulated_key():
-    """Exercise 2: blind, query the oracle, divide by r, read back K."""
+    """Exercise 7: blind, query the oracle, divide by r, read back K."""
     pk, sk = keygen()
     n, _ = pk
     c, K = encap(pk, random.Random(7))
@@ -73,7 +73,7 @@ def test_recover_needs_an_invertible_blinding_factor():
 def test_an_invertible_r_can_still_produce_a_forbidden_query():
     """"Any invertible r != 1" does not guarantee an admissible CCA query.
 
-    The CCA oracle refuses the challenge ciphertext, so the attack needs
+    The CCA game excludes the challenge ciphertext, so the attack needs
     c' != c. Take K = p and choose r by CRT as 2 mod p and 1 mod q: that r
     is coprime to n and is not 1 mod n, yet mauling returns c unchanged,
     because c is 0 mod p and r^e is 1 mod q. The query is forbidden.

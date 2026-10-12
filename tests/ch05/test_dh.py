@@ -48,18 +48,18 @@ def test_five_is_a_primitive_root_mod_23():
 
 
 def test_five_is_a_primitive_root_mod_2063():
-    """Exercise 1 concludes ord(5) = 2062 mod 2063, so 5 generates the group."""
+    """Exercise 6 concludes ord(5) = 2062 mod 2063, so 5 generates the group."""
     assert multiplicative_order(5, 2063) == 2062
     assert is_primitive_root(5, 2063)
 
 
-def test_exercise_1_auxiliary_computation():
-    """Appendix D's Exercise 1 block prints 2062, which is -1 mod 2063."""
+def test_exercise_6_auxiliary_computation():
+    """Appendix D's Exercise 6 block prints 2062, which is -1 mod 2063."""
     assert pow(5, 1031, 2063) == 2062
     assert pow(5, 1031, 2063) == 2063 - 1
 
 
-def test_exercise_1_divisor_elimination():
+def test_exercise_6_divisor_elimination():
     """The order divides 2062 = 2 * 1031, and the three proper divisors fail."""
     assert 2062 == 2 * 1031
     for proper_divisor in (1, 2, 1031):

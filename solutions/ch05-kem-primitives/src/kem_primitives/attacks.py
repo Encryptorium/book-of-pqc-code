@@ -6,7 +6,7 @@ to the decapsulation oracle, and divide the oracle's answer by ``r``. The
 toy KEM has no re-encryption check, so nothing in ``decap`` rejects a
 mauled ciphertext.
 
-The *game* still rejects one thing, and the chapter's choice of ``r = 2``
+The *game* still excludes one query, and the chapter's choice of ``r = 2``
 is what avoids it. A CCA adversary may not query the challenge ciphertext
 itself, so the attack needs ``c' != c``, and an invertible ``r != 1`` does
 not guarantee that. With ``K = p`` and ``r`` chosen by CRT as ``2 mod p``
@@ -19,7 +19,7 @@ if ``2^e = 1 mod p`` then ``ord_p(2)`` divides both ``e`` and ``p-1``, hence
 divides 1, forcing ``2 = 1 mod p``, which no prime allows. See
 ``tests/ch05/test_attacks.py``, which pins both directions.
 
-``coprime_failure_bound`` is the second half of the chapter's Exercise 3:
+``coprime_failure_bound`` is the second half of the chapter's Exercise 8:
 how often a uniform ``K`` in ``[1, n-1]`` shares a factor with ``n``.
 
 That fraction governs neither of the two things it looks like it should.
@@ -28,7 +28,7 @@ so it is not a correctness bound. And it is not the mauling attack's
 failure rate: ``recover`` needs the blinding factor ``r`` to be
 invertible, not ``K``, and ``r`` is chosen rather than sampled. For an
 odd RSA modulus ``r = 2`` is invertible with no test at all. The count is
-here because Exercise 3 asks for it and because knowing which quantity a
+here because Exercise 8 asks for it and because knowing which quantity a
 bound applies to is part of reading one.
 """
 

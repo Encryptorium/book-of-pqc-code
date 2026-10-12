@@ -37,7 +37,7 @@ def keygen(p=TOY_P, q=TOY_Q, e=TOY_E):
     # return the public key (n, e) and the private key (n, d). No primality
     # testing and no retry loop: the toy primes are fixed and known good.
     #
-    # Reference: Chapter 5, 'The KEM API and a toy RSA-KEM'
+    # Reference: Chapter 5, 'Correct is not secure'
     #
     # Proved by:
     #   tests/ch05/test_rsa_kem.py

@@ -1,6 +1,6 @@
 # The Encryptorium Book of Post-Quantum Cryptography
 # Chapter 5: KEMs vs key agreement vs public-key encryption
-# Section: "The KEM API and a toy RSA-KEM"
+# Section: "Correct is not secure"
 # https://book.encryptorium.com/part-1-foundations/ch05-kem-vs-key-agreement-vs-pke/
 #
 # Generated from the chapter text. Edits here do not reach the book.
