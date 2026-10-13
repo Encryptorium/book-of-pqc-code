@@ -25,4 +25,6 @@ Nothing outside `tests/ch09/` imports `ring_lwe`. Chapters 10 and 11 rebuild
 these ideas rather than import them: Chapter 10 ships `regev_pke` and works over
 flat LWE, and Chapter 11 ships `mlkem` with its own partial NTT for
 $R_{3329} = \mathbb{Z}_{3329}[x]/(x^{256}+1)$ per FIPS 203. The inline numpy
-blocks in Chapter 9 are a simplified slice of the functions here.
+blocks in Chapter 9 are a simplified slice of the functions here, apart from
+the one that attacks the cyclic ring $\mathbb{Z}_q[x]/(x^n - 1)$, which lies
+outside this package's $R_q$.

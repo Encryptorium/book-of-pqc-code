@@ -6,9 +6,11 @@ power of two, schoolbook negacyclic multiplication, the negacyclic
 number theoretic transform at any prime q with 2n | q - 1, and
 sampling routines for Ring-LWE and Module-LWE instances. The
 inline numpy code blocks of Chapter 9 are a simplified slice of
-these functions. Chapters 10 and 11 rebuild these ideas rather
-than import them: each ships its own package (regev_pke, mlkem),
-and nothing outside tests/ch09/ imports ring_lwe.
+these functions, apart from the one that attacks the cyclic ring
+Z_q[x]/(x^n - 1), which lies outside this package's R_q. Chapters
+10 and 11 rebuild these ideas rather than import them: each ships
+its own package (regev_pke, mlkem), and nothing outside tests/ch09/
+imports ring_lwe.
 """
 
 from .params import RingParams, ModuleParams

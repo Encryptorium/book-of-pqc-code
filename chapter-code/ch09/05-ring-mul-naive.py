@@ -4,7 +4,7 @@
 # https://book.encryptorium.com/part-2-lattices/ch09-ring-lwe-and-module-lwe/
 #
 # Generated from the chapter text. Edits here do not reach the book.
-# Run: python3 chapter-code/ch09/04-ring-mul-naive.py
+# Run: python3 chapter-code/ch09/05-ring-mul-naive.py
 
 import numpy as np
 
