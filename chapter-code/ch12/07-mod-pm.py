@@ -1,6 +1,6 @@
 # The Encryptorium Book of Post-Quantum Cryptography
 # Chapter 12: ML-DSA (FIPS 204) from scratch
-# Section: "KeyGen"
+# Section: "Power2Round, Decompose, and the hint"
 # https://book.encryptorium.com/part-2-lattices/ch12-mldsa-from-scratch/
 #
 # Generated from the chapter text. Edits here do not reach the book.
@@ -23,29 +23,50 @@ def power2round(r):
     return (r - r0) >> D, r0
 
 
-# The ML-DSA key equation t = A s1 + s2, shown at ring degree n = 1 so each
-# ring element is a single integer in Z_q. Module shape (k, l) = (2, 2), secret
-# coefficients drawn from [-eta, eta] with eta = 4. The real scheme runs the
-# same equation over degree-255 polynomials with A expanded from rho.
-rng = np.random.default_rng(seed=204)
-A = rng.integers(0, Q, size=(2, 2), dtype=np.int64)
-s1 = rng.integers(-4, 5, size=2, dtype=np.int64)
-s2 = rng.integers(-4, 5, size=2, dtype=np.int64)
-t = (A @ s1 + s2) % Q
+def decompose(r, gamma2):
+    r %= Q
+    r0 = mod_pm(r, 2 * gamma2)
+    if r - r0 == Q - 1:
+        return 0, r0 - 1
+    return (r - r0) // (2 * gamma2), r0
 
-# Power2Round drops the low d = 13 bits of t; the public key ships t1 only.
-t1 = np.empty(2, dtype=np.int64)
-t0 = np.empty(2, dtype=np.int64)
-for i in range(2):
-    t1[i], t0[i] = power2round(int(t[i]))
 
-print("t  =", [int(x) for x in t])
-print("t1 =", [int(x) for x in t1])
-print("reconstructs t :",
-      all(int(t1[i]) * (1 << D) + int(t0[i]) == int(t[i]) for i in range(2)))
-print("t0 within (-2^12, 2^12] :",
-      bool(np.all((t0 > -(1 << (D - 1))) & (t0 <= (1 << (D - 1))))))
-# ==> t  = [2613718, 1033595]
-# ==> t1 = [319, 126]
-# ==> reconstructs t : True
-# ==> t0 within (-2^12, 2^12] : True
+def high_bits(r, gamma2):
+    return decompose(r, gamma2)[0]
+
+
+def make_hint(z, r, gamma2):
+    return 1 if high_bits(r, gamma2) != high_bits((r + z) % Q, gamma2) else 0
+
+
+def use_hint(h, r, gamma2):
+    m = (Q - 1) // (2 * gamma2)
+    r1, r0 = decompose(r, gamma2)
+    if h == 1:
+        return (r1 + 1) % m if r0 > 0 else (r1 - 1) % m
+    return r1
+
+
+gamma_2 = (Q - 1) // 32     # ML-DSA-65/87 low-order window
+
+# Power2Round splits a public coefficient into a top part and the dropped d bits.
+t = 4211255
+t1, t0 = power2round(t)
+print("power2round(t) = (t1, t0) =", (t1, t0))
+print("t1 * 2^d + t0 == t :", t1 * (1 << D) + t0 == t)
+
+# The hint lets a verifier that knows r and the hint recover HighBits(r + z)
+# whenever the perturbation z stays within the low-order window gamma_2.
+# UseHint decomposes r itself and branches on the sign of the low part.
+rng = np.random.default_rng(seed=7)
+ok = True
+for _ in range(20000):
+    r = int(rng.integers(0, Q))
+    z = int(rng.integers(-gamma_2, gamma_2 + 1))
+    if use_hint(make_hint(z, r, gamma_2), r, gamma_2) != high_bits((r + z) % Q, gamma_2):
+        ok = False
+        break
+print("UseHint(MakeHint(z, r), r) == HighBits(r + z) for |z| <= gamma_2 :", ok)
+# ==> power2round(t) = (t1, t0) = (514, 567)
+# ==> t1 * 2^d + t0 == t : True
+# ==> UseHint(MakeHint(z, r), r) == HighBits(r + z) for |z| <= gamma_2 : True

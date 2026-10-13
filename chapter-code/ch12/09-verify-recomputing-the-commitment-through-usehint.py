@@ -4,7 +4,7 @@
 # https://book.encryptorium.com/part-2-lattices/ch12-mldsa-from-scratch/
 #
 # Generated from the chapter text. Edits here do not reach the book.
-# Run: python3 chapter-code/ch12/08-verify-recomputing-the-commitment-through-usehint.py
+# Run: python3 chapter-code/ch12/09-verify-recomputing-the-commitment-through-usehint.py
 
 import sys
 

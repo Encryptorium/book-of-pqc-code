@@ -4,7 +4,7 @@ ML-DSA works in R_q = Z_q[X]/(X^256 + 1) with q = 8380417. Because q ≡ 1 (mod 
 the modulus X^256 + 1 factors into 256 distinct linear terms over Z_q, so the NTT
 is a *full* transform: a polynomial becomes 256 independent scalars and the ring
 product becomes coefficient-wise (pointwise) multiplication. This is simpler than
-ML-KEM's partial NTT, whose ring keeps degree-1 (quadratic) factors and needs a
+ML-KEM's partial NTT, whose ring splits into 128 quadratic factors and needs a
 base-case multiply.
 
 The zeta table is ``zetas[k] = zeta^(brv8(k)) mod q`` where ``brv8`` is the
@@ -90,10 +90,10 @@ def ntt_inverse(w_hat: np.ndarray) -> np.ndarray:
 
 
 def multiply_ntts(a_hat: np.ndarray, b_hat: np.ndarray) -> np.ndarray:
-    """Pointwise product of two NTT-domain polynomials (FIPS 204 §7.5).
+    """Pointwise product of two NTT-domain polynomials (FIPS 204 §7.6, Algorithm 45).
 
     The full transform makes this a plain coefficient-wise multiply mod q, unlike
-    ML-KEM's base-case multiply over degree-1 quotient rings.
+    ML-KEM's base-case multiply modulo each of its 128 quadratic factors.
     """
     a_hat = np.asarray(a_hat, dtype=np.int64)
     b_hat = np.asarray(b_hat, dtype=np.int64)

@@ -1,10 +1,10 @@
 """Symmetric primitives and hash derivations for ML-DSA (FIPS 204 §3.7, §6, §7).
 
-ML-DSA uses only the Keccak family: SHAKE256 is the general hash ``H`` (called with
-whatever output length a step needs) and SHAKE128 is the extendable output used to
-grow the public matrix A (see ``sampling.ExpandA``). There is no separate G/PRF/J
-zoo as in ML-KEM; every derivation below is one call to ``H`` on a specific,
-domain-separated byte string.
+ML-DSA uses only the Keccak family: SHAKE256 is FIPS 204's ``H`` (called with
+whatever output length a step needs) and SHAKE128 is its ``G``, the extendable
+output used to grow the public matrix A (see ``sampling.ExpandA``). Unlike ML-KEM,
+there is no PRF or J, and every derivation below is one call to ``H`` on a
+specific, domain-separated byte string.
 
 The derivations, all straight from FIPS 204:
 

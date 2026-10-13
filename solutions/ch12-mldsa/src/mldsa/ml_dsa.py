@@ -10,7 +10,8 @@ operations. As with ``ch11-mlkem``, the flagship functions are the *internal*
 
 Sign is a Fiat-Shamir-*with-aborts* loop: it samples a fresh mask y, forms the
 commitment, derives the challenge, and either accepts or restarts if the response
-z or the low-order remainder r0 is too large, or the hint would exceed its budget.
+z, the low-order remainder r0 or the product c*t0 is too large, or if the hint
+would exceed its budget (Algorithm 7, lines 23 and 28).
 The counter kappa advances by l per attempt so each ExpandMask call reads a fresh
 block of sub-seeds.
 

@@ -4,7 +4,7 @@
 # https://book.encryptorium.com/part-2-lattices/ch12-mldsa-from-scratch/
 #
 # Generated from the chapter text. Edits here do not reach the book.
-# Run: python3 chapter-code/ch12/02-bitlen.py
+# Run: python3 chapter-code/ch12/03-bitlen.py
 
 import numpy as np
 

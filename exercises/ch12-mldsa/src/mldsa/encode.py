@@ -1,7 +1,12 @@
 """Serialization for ML-DSA (FIPS 204 §7.1-7.2, Algorithms 16-28).
 
-Everything ML-DSA puts on the wire is a little-endian bit-packing of length-256
-polynomials at a field-specific width. Two primitives do the work:
+Every polynomial ML-DSA puts on the wire, apart from the hint, is a little-endian
+bit-packing of a length-256 coefficient vector at a field-specific width. Not
+everything on the wire is a polynomial: a public key starts with the raw seed rho
+and a signature with the raw challenge bytes c_tilde (Algorithms 22 and 26). The
+hint is the exception on the polynomial side, since HintBitPack writes the
+positions of its nonzero coefficients in the sparse format described below. Two
+primitives do the bit-packing:
 
 * ``SimpleBitPack(w, b)`` packs unsigned coefficients in [0, b] using bitlen(b)
   bits each.
@@ -17,7 +22,9 @@ The hint has its own sparse format: HintBitPack lists the set positions poly by
 poly followed by k cumulative end markers. HintBitUnpack is the one decoder that
 can *reject*: it returns None (FIPS 204's bottom symbol) when the positions are
 not strictly increasing, an end marker is out of range, or an unused slot is
-nonzero. That rejection is what makes a tampered-hint signature fail verification.
+nonzero. That rejection is what makes a signature with a malformed hint fail
+verification. A hint that still decodes after tampering fails at the challenge
+comparison instead.
 """
 
 from __future__ import annotations
