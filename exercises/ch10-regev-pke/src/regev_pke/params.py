@@ -55,14 +55,15 @@ class RegevParams:
         """Return (q // 2) / 2 - m * noise_bound.
 
         The decoder's two codewords are 0 and q // 2, so a decrypted
-        value survives rounding for both message bits exactly when
+        value survives rounding for both message bits whenever
         2 |e^T r| < q // 2. That is Regev's Lemma 5.1 condition,
-        |e| < floor(p/2) / 2, and it is tight: at q = 97 it admits
-        |e^T r| up to 23, and |e^T r| = -24 under the bit 1 lands on
-        24, which the decoder reads as 0. The asymptotic form of the
-        same condition is the more familiar |e^T r| < q / 4; the two
-        differ by a quarter for odd q, which is enough to matter at
-        the small moduli this package runs on.
+        |e| < floor(p/2) / 2, and no larger bound on |e^T r| holds for
+        both signs: at q = 97 it admits |e^T r| up to 23, and
+        e^T r = -24 under the bit 1 lands on 24, which the decoder
+        reads as 0. The asymptotic form of the same condition is the
+        more familiar |e^T r| < q / 4; the two differ by a quarter for
+        odd q, which is enough to matter at the small moduli this
+        package runs on.
 
         The worst case over r in {0, 1}^m with every |e_i| <= B is
         |e^T r| = m B, so 2 m B < q // 2 is sufficient for every
@@ -75,8 +76,8 @@ class RegevParams:
         # Return (q // 2) / 2 minus m * noise_bound, as a float, so (q, m,
         # B) = (97, 8, 1) gives 16.0. The decoder's two codewords are 0 and
         # q // 2, so a decrypted value survives rounding for both message
-        # bits exactly when 2 |e^T r| < q // 2, and the worst case over r in
-        # {0, 1}^m with every |e_i| <= B is m * B. The headroom is the gap
+        # bits whenever 2 |e^T r| < q // 2, and the worst case over r in {0,
+        # 1}^m with every |e_i| <= B is m * B. The headroom is the gap
         # between the two. Positive means every honest encryption decodes;
         # negative means some do not. Do not use q / 4: it is the asymptotic
         # form of the same condition and it is one step too generous at

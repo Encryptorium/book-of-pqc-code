@@ -27,11 +27,12 @@ def decrypt(
 ) -> int:
     """Decrypt a Regev ciphertext to a single bit.
 
-    Returns 0 if v = (c2 - c1^T s) mod q is nearer to 0 than to
-    q // 2 on the cycle Z_q, and 1 otherwise. The integer rounding
+    Returns the bit whose codeword, 0 or q // 2, is nearer to
+    v = (c2 - c1^T s) mod q on the cycle Z_q. The integer rounding
     expression ((2 v + q // 2) // q) mod 2 gives that answer without
-    floating-point arithmetic, breaking the midpoint tie toward the
-    bit 0.
+    floating-point arithmetic. For odd q exactly one residue is equally
+    near both codewords, and the expression sends it to the bit 0 when
+    q % 4 == 1, as at 97 and 13, and to the bit 1 when q % 4 == 3.
     """
     s = secret_key
     c1, c2 = ciphertext

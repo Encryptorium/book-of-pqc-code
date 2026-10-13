@@ -9,9 +9,10 @@ over flat LWE. Four public symbols:
 - decrypt: round (c2 - c1 @ s) mod q to the nearer of 0 or floor(q/2)
 
 The inline numpy code blocks of Chapter 10 are pedagogical slices of
-these four functions. Chapter 11 rebuilds the same shape over
-Module-LWE rather than importing it; nothing outside tests/ch10/
-imports regev_pke.
+these four symbols. The two that attack the toy also contain an
+adversary, which this package does not implement. Chapter 11 rebuilds
+the same shape over Module-LWE rather than importing it; nothing
+outside tests/ch10/ imports regev_pke.
 """
 
 from .params import RegevParams
