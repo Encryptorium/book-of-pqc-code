@@ -9,8 +9,8 @@ The embedding of the sample into a lattice is Kannan's construction
 lattice
 
     :math:`\\Lambda = \\{(\\mathbf{x}, y) \\in \\mathbb{Z}^m \\times
-    \\mathbb{Z}^{n+1} : (\\mathbf{A} \\,|\\, -\\mathbf{I}_m \\,|\\,
-    \\mathbf{b}) \\mathbf{x} = 0 \\bmod q\\}`
+    \\mathbb{Z}^{n+1} : (-\\mathbf{I}_m \\,|\\, \\mathbf{A} \\,|\\,
+    \\mathbf{b}) (\\mathbf{x}, y) = 0 \\bmod q\\}`
 
 of dimension :math:`d = m + n + 1` (for flat LWE) or
 :math:`d = m + kn + 1` (for Module-LWE at rank ``k`` with polynomial
@@ -61,9 +61,11 @@ def primal_success(beta: int, k: int, n: int, q: int, zeta: float, m: int) -> bo
     d = m + k * n + 1
     delta = delta_beta(beta)
 
-    # Right-hand side: GS vector length at rank (d - beta) inside the
-    # (d, Vol = q^m) lattice, per the GSA. Taking logs to avoid
-    # overflow for large beta and d.
+    # Right-hand side: the GSA length of the Gram-Schmidt vector at
+    # index d - beta, counting from 0 as the Kyber submission does,
+    # which is the first of the last beta, in the lattice of dimension
+    # d and volume q^m. Taking logs to avoid overflow for large beta
+    # and d.
     log_rhs = (2 * beta - d - 1) * math.log(delta) + (m / d) * math.log(q)
     log_lhs = math.log(zeta * math.sqrt(beta))
     return log_lhs <= log_rhs
@@ -81,9 +83,12 @@ def primal_beta(k: int, n: int, q: int, zeta: float,
     the primal-attack success condition and ``m_opt`` is the optimal
     ``m`` for that ``beta``.
 
-    ``m_max`` defaults to ``(k + 1) * n``, which is the ceiling the
-    Kyber Round 3 submission uses: the attacker has one ring element
-    per row of the public key, plus one from the ciphertext. A scheme
+    ``m_max`` defaults to ``(k + 1) * n``, the sample count the Kyber
+    Round 3 submission allows (Section 5.1.1). It is the size of the
+    Module-LWE instance its proof uses for encryption, ``k + 1`` ring
+    elements in ``k`` unknowns: a ciphertext carries ``k`` ring
+    elements in ``u`` and one in ``v``, all in the encryption
+    randomness. The public key gives ``k``, in the secret ``s``. A scheme
     whose public key is not square in the module needs the ceiling
     stated separately, because the number of unknowns and the number
     of samples then come from different module dimensions. ML-DSA is

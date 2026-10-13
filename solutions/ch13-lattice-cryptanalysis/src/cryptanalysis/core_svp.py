@@ -92,9 +92,11 @@ def delta_beta(beta: int) -> float:
         delta(beta) = ((pi * beta) ** (1/beta) * beta / (2 * pi * e))
                       ** (1 / (2 * (beta - 1)))
 
-    The formula is an asymptotic approximation; it is accurate to
-    roughly one percent for ``beta`` in the range 50 to 1000, and it
-    is what NIST PQC submissions use for parameter calibration.
+    The formula is an asymptotic approximation. Chapter 13 treats it
+    as valid for ``beta`` around 50 and above, which is why
+    ``primal_beta`` starts its search there. At small ``beta`` it is
+    not a useful root-Hermite factor: LLL-reduced bases show about
+    1.0219 (Gama and Nguyen 2008).
     """
     assert beta >= 2, f"delta_beta: beta must be >= 2, got {beta}"
     numerator = ((math.pi * beta) ** (1.0 / beta)) * beta

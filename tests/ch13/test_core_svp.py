@@ -84,7 +84,8 @@ def test_delta_beta_strictly_decreasing() -> None:
     The range is part of the claim. The asymptotic formula is not
     decreasing over its whole accepted domain, and Chapter 13 says it is
     unsuitable at small beta: delta_beta(2) returns 0.54, and the values
-    rise rather than fall until beta is around 12.
+    rise rather than fall until beta is 36, and stay below 1 until beta
+    is 13.
     """
     betas = list(range(50, 1001, 25))
     values = [delta_beta(b) for b in betas]

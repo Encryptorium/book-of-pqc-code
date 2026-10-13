@@ -9,8 +9,8 @@ The embedding of the sample into a lattice is Kannan's construction
 lattice
 
     :math:`\\Lambda = \\{(\\mathbf{x}, y) \\in \\mathbb{Z}^m \\times
-    \\mathbb{Z}^{n+1} : (\\mathbf{A} \\,|\\, -\\mathbf{I}_m \\,|\\,
-    \\mathbf{b}) \\mathbf{x} = 0 \\bmod q\\}`
+    \\mathbb{Z}^{n+1} : (-\\mathbf{I}_m \\,|\\, \\mathbf{A} \\,|\\,
+    \\mathbf{b}) (\\mathbf{x}, y) = 0 \\bmod q\\}`
 
 of dimension :math:`d = m + n + 1` (for flat LWE) or
 :math:`d = m + kn + 1` (for Module-LWE at rank ``k`` with polynomial
@@ -84,9 +84,12 @@ def primal_beta(k: int, n: int, q: int, zeta: float,
     the primal-attack success condition and ``m_opt`` is the optimal
     ``m`` for that ``beta``.
 
-    ``m_max`` defaults to ``(k + 1) * n``, which is the ceiling the
-    Kyber Round 3 submission uses: the attacker has one ring element
-    per row of the public key, plus one from the ciphertext. A scheme
+    ``m_max`` defaults to ``(k + 1) * n``, the sample count the Kyber
+    Round 3 submission allows (Section 5.1.1). It is the size of the
+    Module-LWE instance its proof uses for encryption, ``k + 1`` ring
+    elements in ``k`` unknowns: a ciphertext carries ``k`` ring
+    elements in ``u`` and one in ``v``, all in the encryption
+    randomness. The public key gives ``k``, in the secret ``s``. A scheme
     whose public key is not square in the module needs the ceiling
     stated separately, because the number of unknowns and the number
     of samples then come from different module dimensions. ML-DSA is

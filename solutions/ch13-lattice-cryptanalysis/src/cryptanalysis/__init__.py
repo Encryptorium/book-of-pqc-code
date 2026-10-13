@@ -16,9 +16,11 @@ parameter sets. The public entry points are:
   unique-SVP primal attack (Kyber Round 3 submission, equation 9)
   succeeds for a given Module-LWE parameter tuple.
 - :func:`dual_advantage`: the distinguishing advantage of a dual
-  attacker who has found a short vector ``w`` in the dual lattice.
+  attacker who has found a short vector ``w`` in the scaled dual
+  lattice.
 - :func:`estimate_parameter_set`: the full estimator that takes a
-  Module-LWE parameter set and returns ``(beta, classical, quantum)``.
+  Module-LWE parameter set and returns a ``CoreSVPEstimate`` record
+  with the block size and the classical and quantum bit costs.
 - :func:`estimate_ml_dsa_set`: the same estimator against ML-DSA's
   non-square Module-LWE instance, whose secret is uniform on
   ``[-eta, eta]`` rather than centered binomial.

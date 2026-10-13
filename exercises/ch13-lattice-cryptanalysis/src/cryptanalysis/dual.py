@@ -1,9 +1,10 @@
-"""Dual attack on Module-LWE via short vectors of the dual lattice.
+"""Dual attack on Module-LWE via short vectors of the scaled dual lattice.
 
 The dual attack searches for a short vector :math:`\\mathbf{w}` in the
-dual lattice :math:`\\Lambda^* = \\{\\mathbf{x} \\in \\mathbb{Z}^m :
-\\mathbf{A}^{\\top} \\mathbf{x} \\equiv \\mathbf{0} \\bmod q\\}`
-of a Module-LWE sample. Given such a vector, the attacker computes
+lattice :math:`\\{\\mathbf{x} \\in \\mathbb{Z}^m :
+\\mathbf{A}^{\\top} \\mathbf{x} \\equiv \\mathbf{0} \\bmod q\\}`,
+which is ``q`` times the dual of the LWE lattice of a Module-LWE
+sample (the chapter's scaled dual). Given such a vector, the attacker computes
 :math:`\\langle \\mathbf{w}, \\mathbf{b} \\rangle \\bmod q` for a fresh
 sample :math:`(\\mathbf{A}, \\mathbf{b})`. If :math:`\\mathbf{b}` is
 uniformly random, the inner product is uniform on

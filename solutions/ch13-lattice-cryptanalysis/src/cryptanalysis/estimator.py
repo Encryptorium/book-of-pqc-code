@@ -12,9 +12,15 @@ estimate; ``(3, 256, 3329, 2)`` produces ML-KEM-768's; and
 The secret-error standard deviation for a centered binomial
 distribution :math:`B_\\eta` is :math:`\\sqrt{\\eta / 2}`. The
 primal attack uses the key-generation noise parameter :math:`\\eta_1`
-because the short vector the attacker wants is
-:math:`(\\mathbf{s}, \\mathbf{e})` with :math:`\\mathbf{s},
-\\mathbf{e} \\sim B_{\\eta_1}`.
+for the secret and the error alike, as Table 4 of the Kyber Round 3
+submission does. Key recovery's :math:`(\\mathbf{s}, \\mathbf{e})`
+is drawn from :math:`B_{\\eta_1}`. The encryption instance, which
+sets ``primal_beta``'s sample ceiling, draws its secret from
+:math:`B_{\\eta_1}` and its errors from :math:`B_{\\eta_2}`. At
+ML-KEM-512, where :math:`\\eta_2` is the smaller, the submission
+contends that the instance's rounding noise makes it at least as hard
+as Module-LWE with secret and error from :math:`B_{\\eta_1}`, the
+problem Table 4 analyses (Section 4.4).
 """
 
 from __future__ import annotations
