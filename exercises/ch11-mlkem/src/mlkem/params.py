@@ -50,8 +50,9 @@ class MLKEMParams:
     Fields:
         name: the human-readable name from the standard.
         k: module rank (number of ring elements in the secret).
-        eta_1: noise parameter for secret key and decryption randomness.
-        eta_2: noise parameter for encryption randomness.
+        eta_1: CBD parameter for s and e in KeyGen and for the
+            ephemeral vector y in Encrypt.
+        eta_2: CBD parameter for the errors e1 and e2 in Encrypt.
         d_u: compression width for the ciphertext u component.
         d_v: compression width for the ciphertext v component.
         nist_category: claimed NIST security category.

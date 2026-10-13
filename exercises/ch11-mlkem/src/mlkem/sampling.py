@@ -154,8 +154,10 @@ def sample_matrix_ntt(rho: bytes, k: int, transpose: bool) -> np.ndarray:
     FIPS 203 §5.1 (``K-PKE.KeyGen``) builds $\\hat{A}[i][j]$ from the
     XOF input ``rho || j || i`` via ``sample_ntt``, with the byte
     order ``j`` first then ``i``. Passing ``transpose=True`` swaps the
-    two bytes, which is how ``K-PKE.Encrypt`` computes $\\hat{A}^\\top$
-    (FIPS 203 §5.2). Returns a $(k, k, 256)$ int64 array, entry
+    two bytes, which yields $\\hat{A}^\\top$ directly. FIPS 203 §5.2
+    (``K-PKE.Encrypt``) instead re-samples $\\hat{A}$ in KeyGen's byte
+    order and applies the transpose at Algorithm 14, line 19; the two
+    give the same product. Returns a $(k, k, 256)$ int64 array, entry
     ``(i, j)`` being the NTT-domain polynomial $\\hat{A}[i][j]$.
     """
     # EXERCISE: implement this function.

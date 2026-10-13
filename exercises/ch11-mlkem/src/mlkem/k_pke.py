@@ -22,15 +22,18 @@ v - s^T u)`` exploits the secret-cancellation identity. The differences relative
 - The secret ``s`` and errors live in the module ``R_q^k`` rather than
   in ``Z_q^n``.
 - Every polynomial multiplication runs in the NTT domain.
-- The error distributions are centered binomial ``CBD_eta_1`` for
-  the secret and long-term error, and ``CBD_eta_2`` for the
-  encryption randomness.
+- The error distributions are centered binomial: ``CBD_eta_1`` for
+  the secret ``s`` and error ``e`` in KeyGen and for the ephemeral
+  vector in Encrypt (FIPS 203's ``y``, ``r_vec`` here), and
+  ``CBD_eta_2`` for the encryption errors ``e1`` and ``e2``
+  (FIPS 203 §8).
 - The ciphertext is compressed: ``u`` is packed at width ``d_u``,
   ``v`` is packed at width ``d_v``.
 
-FIPS 203 distinguishes the matrix ``A_hat`` used in KeyGen from the
-``A_hat`` used in Encrypt by swapping the ``(i, j)`` byte order in
-the XOF seed. The effect is that Encrypt's matrix is KeyGen's
+FIPS 203 re-generates ``A_hat`` in Encrypt exactly as KeyGen does,
+from the XOF seed ``rho || j || i``, and applies the transpose
+algebraically (Algorithm 14, line 19). This package instead swaps
+the two suffix bytes in Encrypt, which yields KeyGen's matrix
 transposed, so that the plain ``sum_j A_hat[i][j] * r_hat[j]``
 evaluates to ``A^T r`` (from KeyGen's perspective) without an
 explicit transpose.
