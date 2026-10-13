@@ -2,8 +2,7 @@
 
 A pedagogical Python package for the algebra of full-rank integer
 lattices. Every function in this package is reused by the inline
-code blocks of Chapter 7 in simplified form and by Chapters 8, 9,
-10, and 11 where the lattice operations return.
+code blocks of Chapter 7 in simplified form.
 """
 
 from .lattice import Lattice
