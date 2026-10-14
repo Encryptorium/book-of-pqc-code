@@ -6,7 +6,6 @@ the one-time security of the underlying WOTS+ key.
 """
 
 import hashlib
-import math
 
 from .ltree import ltree
 from .wots import wots_keygen, wots_sign, wots_verify
@@ -32,7 +31,7 @@ def _build_tree(leaves: list[bytes]) -> list[bytes]:
 def _auth_path(tree: list[bytes], leaf_index: int) -> list[bytes]:
     """Extract the authentication path for *leaf_index*."""
     num_leaves = len(tree) // 2
-    depth = int(math.log2(num_leaves))
+    depth = num_leaves.bit_length() - 1
     node = num_leaves + leaf_index
     path: list[bytes] = []
     for _ in range(depth):

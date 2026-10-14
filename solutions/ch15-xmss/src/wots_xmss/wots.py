@@ -12,7 +12,6 @@ with the public key.  These two seeds must be kept distinct.
 """
 
 import hashlib
-import math
 
 
 def _sha256(data: bytes) -> bytes:
@@ -28,7 +27,7 @@ def base_w(data: bytes, w: int, out_len: int) -> list[int]:
     each byte, matching the convention in RFC 8391 Section 2.6.
     """
     assert w >= 2 and (w & (w - 1)) == 0, f"w must be a power of two, got {w}"
-    lg_w = int(math.log2(w))
+    lg_w = w.bit_length() - 1
     digits: list[int] = []
     for byte in data:
         for shift in range(8 - lg_w, -1, -lg_w):
@@ -43,10 +42,10 @@ def base_w(data: bytes, w: int, out_len: int) -> list[int]:
 def _ell_params(n: int, w: int) -> tuple[int, int, int]:
     """Return (ell_1, ell_2, ell) for hash output *n* bytes, base *w*."""
     assert w >= 2 and (w & (w - 1)) == 0, f"w must be a power of two, got {w}"
-    lg_w = int(math.log2(w))
-    ell_1 = math.ceil(8 * n / lg_w)
+    lg_w = w.bit_length() - 1
+    ell_1 = (8 * n + lg_w - 1) // lg_w
     max_checksum = ell_1 * (w - 1)
-    ell_2 = math.ceil((math.floor(math.log2(max_checksum)) + 1) / lg_w)
+    ell_2 = (max_checksum.bit_length() + lg_w - 1) // lg_w
     return ell_1, ell_2, ell_1 + ell_2
 
 
@@ -57,14 +56,14 @@ def checksum(msg_digits: list[int], w: int) -> list[int]:
     ``ell_2`` base-*w* digits (big-endian byte order).
     """
     c = sum(w - 1 - d for d in msg_digits)
-    lg_w = int(math.log2(w))
+    lg_w = w.bit_length() - 1
     max_checksum = len(msg_digits) * (w - 1)
-    ell_2 = math.ceil((math.floor(math.log2(max_checksum)) + 1) / lg_w)
+    ell_2 = (max_checksum.bit_length() + lg_w - 1) // lg_w
     # Left-shift c so that the ell_2 digits occupy the most significant
     # positions of the byte encoding, matching RFC 8391 Section 3.1.5
     # (Algorithm 5); Section 2.6 defines base_w and not this shift.
     total_bits = ell_2 * lg_w
-    num_bytes = math.ceil(total_bits / 8)
+    num_bytes = (total_bits + 7) // 8
     shift = 8 * num_bytes - total_bits
     c_shifted = c << shift
     c_bytes = c_shifted.to_bytes(num_bytes, "big")

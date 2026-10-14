@@ -6,10 +6,10 @@
 # Generated from the chapter text. Edits here do not reach the book.
 # Run: python3 chapter-code/ch15/05-base-w.py
 
-import hashlib, math
+import hashlib
 
 def base_w(data, w, out_len):
-    lg_w = int(math.log2(w))
+    lg_w = w.bit_length() - 1
     digits = []
     for byte in data:
         for shift in range(8 - lg_w, -1, -lg_w):
@@ -29,10 +29,12 @@ def chain_f(x, start, steps, pk_seed, addr):
 sk_seed = b"ch15-full-sk"   # secret: derives the WOTS+ secret values
 pk_seed = b"ch15-full-pk"   # public: domain-separates the chain
 w, n = 16, 32
-lg_w = int(math.log2(w))
-ell_1 = math.ceil(8 * n / lg_w)
+# Integer arithmetic only: FIPS 205 forbids floating point in SLH-DSA,
+# whose WOTS+ derives the same counts (Chapter 16).
+lg_w = w.bit_length() - 1
+ell_1 = (8 * n + lg_w - 1) // lg_w                # ceil(8n / lg_w)
 max_c = ell_1 * (w - 1)
-ell_2 = math.ceil((math.floor(math.log2(max_c)) + 1) / lg_w)
+ell_2 = (max_c.bit_length() + lg_w - 1) // lg_w   # bit_length() is floor(log2) + 1
 ell = ell_1 + ell_2
 
 sk = [hashlib.sha256(sk_seed + b"sk" + i.to_bytes(4, "big")).digest() for i in range(ell)]

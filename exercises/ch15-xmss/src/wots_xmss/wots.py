@@ -12,7 +12,6 @@ with the public key.  These two seeds must be kept distinct.
 """
 
 import hashlib
-import math
 
 
 def _sha256(data: bytes) -> bytes:
@@ -28,7 +27,7 @@ def base_w(data: bytes, w: int, out_len: int) -> list[int]:
     each byte, matching the convention in RFC 8391 Section 2.6.
     """
     assert w >= 2 and (w & (w - 1)) == 0, f"w must be a power of two, got {w}"
-    lg_w = int(math.log2(w))
+    lg_w = w.bit_length() - 1
     digits: list[int] = []
     for byte in data:
         for shift in range(8 - lg_w, -1, -lg_w):
@@ -43,10 +42,10 @@ def base_w(data: bytes, w: int, out_len: int) -> list[int]:
 def _ell_params(n: int, w: int) -> tuple[int, int, int]:
     """Return (ell_1, ell_2, ell) for hash output *n* bytes, base *w*."""
     assert w >= 2 and (w & (w - 1)) == 0, f"w must be a power of two, got {w}"
-    lg_w = int(math.log2(w))
-    ell_1 = math.ceil(8 * n / lg_w)
+    lg_w = w.bit_length() - 1
+    ell_1 = (8 * n + lg_w - 1) // lg_w
     max_checksum = ell_1 * (w - 1)
-    ell_2 = math.ceil((math.floor(math.log2(max_checksum)) + 1) / lg_w)
+    ell_2 = (max_checksum.bit_length() + lg_w - 1) // lg_w
     return ell_1, ell_2, ell_1 + ell_2
 
 
@@ -61,12 +60,14 @@ def checksum(msg_digits: list[int], w: int) -> list[int]:
     # Sum w - 1 - d over the message digits. That total falls by exactly
     # delta whenever any message digit rises by delta, which is the whole
     # point of the checksum. Then encode it as ell_2 base-w digits, where
-    # ell_2 = ceil((floor(log2(len(msg_digits) * (w - 1))) + 1) / lg_w). The
-    # encoding needs one wrinkle: base_w reads from the most significant
-    # end, so left-shift the sum by 8 * ceil(ell_2 * lg_w / 8) - ell_2 *
-    # lg_w bits before calling to_bytes, otherwise the low digits fall off
-    # the end of the byte array. At w = 16 and 64 message digits, ell_2 is 3
-    # and the shift is 4 bits.
+    # ell_2 = ceil((floor(log2(len(msg_digits) * (w - 1))) + 1) / lg_w).
+    # Compute it with integers, as the chapter's key-generation block does:
+    # ceil(a / b) is (a + b - 1) // b, and floor(log2(x)) + 1 is
+    # x.bit_length(). The encoding needs one wrinkle: base_w reads from the
+    # most significant end, so left-shift the sum by 8 * num_bytes - ell_2 *
+    # lg_w bits, where num_bytes = (ell_2 * lg_w + 7) // 8, before calling
+    # to_bytes, otherwise the low digits fall off the end of the byte array.
+    # At w = 16 and 64 message digits, ell_2 is 3 and the shift is 4 bits.
     #
     # Reference: Chapter 15, 'The checksum' (RFC 8391 Section 3.1.5, Algorithm 5)
     #
