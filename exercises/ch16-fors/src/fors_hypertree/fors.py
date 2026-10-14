@@ -16,7 +16,6 @@ exposed and is not by itself a forgery.
 """
 
 import hashlib
-import math
 
 
 def _sha256(data: bytes) -> bytes:
@@ -33,7 +32,7 @@ def _leaf_node(secret: bytes, n: int) -> bytes:
     return _sha256(secret)[:n]
 
 
-# -- Merkle tree (1-indexed flat array, same pattern as Ch 14/14) ------
+# -- Merkle tree (1-indexed flat array, same pattern as Ch 14/15) ------
 
 def _build_tree(leaves: list[bytes]) -> list[bytes]:
     """Build a complete binary Merkle tree from *leaves*."""
@@ -49,7 +48,7 @@ def _build_tree(leaves: list[bytes]) -> list[bytes]:
 def _auth_path(tree: list[bytes], leaf_index: int) -> list[bytes]:
     """Extract the authentication path for *leaf_index*."""
     num_leaves = len(tree) // 2
-    depth = int(math.log2(num_leaves))
+    depth = num_leaves.bit_length() - 1
     node = num_leaves + leaf_index
     path: list[bytes] = []
     for _ in range(depth):
@@ -82,7 +81,7 @@ def message_indices(message: bytes, k: int, t: int) -> list[int]:
     index from SHA-256(*message*), reading MSB-first within each byte.
     """
     assert t >= 2 and (t & (t - 1)) == 0, f"t must be a power of two, got {t}"
-    lg_t = int(math.log2(t))
+    lg_t = t.bit_length() - 1
     digest = _sha256(message)
     # Extract lg_t bits per index from the digest bytes
     bits_needed = k * lg_t
@@ -112,7 +111,7 @@ def fors_keygen(
 
     Returns
     -------
-    sk_leaves : list[list[bytes]]
+    sk_values : list[list[bytes]]
         *k* lists of *t* secret values (each *n* bytes); the Merkle
         leaves are their hashes.
     trees : list[list[bytes]]
@@ -120,29 +119,29 @@ def fors_keygen(
     pk : bytes
         Single *n*-byte public key: H(root_0 || ... || root_{k-1}).
     """
-    sk_leaves: list[list[bytes]] = []
+    sk_values: list[list[bytes]] = []
     trees: list[list[bytes]] = []
     roots = b""
 
     for j in range(k):
-        leaves: list[bytes] = []
+        secrets: list[bytes] = []
         for i in range(t):
             # Derive each secret value deterministically from the seed
-            leaf_val = _sha256(
+            secret = _sha256(
                 seed + b"fors" + j.to_bytes(4, "big") + i.to_bytes(4, "big")
             )[:n]
-            leaves.append(leaf_val)
-        sk_leaves.append(leaves)
-        tree = _build_tree([_leaf_node(s, n) for s in leaves])
+            secrets.append(secret)
+        sk_values.append(secrets)
+        tree = _build_tree([_leaf_node(s, n) for s in secrets])
         trees.append(tree)
         roots += tree[1]  # root is at index 1
 
     pk = _sha256(roots)[:n]
-    return sk_leaves, trees, pk
+    return sk_values, trees, pk
 
 
 def fors_sign(
-    sk_leaves: list[list[bytes]],
+    sk_values: list[list[bytes]],
     trees: list[list[bytes]],
     message: bytes,
     k: int = 6,
@@ -157,9 +156,9 @@ def fors_sign(
     sig: list[tuple[bytes, list[bytes]]] = []
     for j in range(k):
         idx = indices[j]
-        leaf = sk_leaves[j][idx]
+        secret = sk_values[j][idx]
         path = _auth_path(trees[j], idx)
-        sig.append((leaf, path))
+        sig.append((secret, path))
     return sig
 
 
@@ -176,13 +175,13 @@ def fors_verify(
         return False
     indices = message_indices(message, k, t)
     roots = b""
-    h = int(math.log2(t))
+    h = t.bit_length() - 1
     for j in range(k):
-        leaf, path = sig[j]
+        secret, path = sig[j]
         if len(path) != h:
             return False
         # Hash the disclosed secret into its leaf, then climb the auth path
-        current = _leaf_node(leaf, n)
+        current = _leaf_node(secret, n)
         idx = indices[j]
         for sibling in path:
             if idx % 2 == 0:

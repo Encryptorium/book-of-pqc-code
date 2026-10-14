@@ -9,7 +9,7 @@
 import hashlib
 
 # Hypertree size computation at d=2, h'=4, w=16, n=32.
-# FIPS 205 forbids floating point in parameter derivations, so ell is
+# FIPS 205 forbids floating point in SLH-DSA implementations, so ell is
 # computed with integer arithmetic only.
 d, h_prime, w, n = 2, 4, 16, 32
 

@@ -16,13 +16,13 @@ k, t, n = 6, 16, 32
 
 roots_concat = b""
 for j in range(k):
-    leaves = []
+    secrets = []
     for i in range(t):
-        leaf = sha(seed + b"fors" + j.to_bytes(4, "big") + i.to_bytes(4, "big"))[:n]
-        leaves.append(leaf)
+        sk = sha(seed + b"fors" + j.to_bytes(4, "big") + i.to_bytes(4, "big"))[:n]
+        secrets.append(sk)
     tree = [b""] * (2 * t)
-    for i, lf in enumerate(leaves):
-        tree[t + i] = sha(lf)[:n]  # leaf = F(secret)
+    for i, sk in enumerate(secrets):
+        tree[t + i] = sha(sk)[:n]  # leaf = F(secret)
     for i in range(t - 1, 0, -1):
         tree[i] = sha(tree[2 * i] + tree[2 * i + 1])
     roots_concat += tree[1]

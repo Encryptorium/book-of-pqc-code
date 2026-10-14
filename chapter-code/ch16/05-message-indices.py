@@ -34,11 +34,11 @@ for q_max in [5, 10, 15, 20]:
             if idxs[j] in used[j]:
                 redundant += 1
             used[j].add(idxs[j])
-    print(f"q={q_max:2d}: {redundant} redundant leaf exposures")
-# ==> q= 5: 3 redundant leaf exposures
-# ==> q=10: 18 redundant leaf exposures
-# ==> q=15: 32 redundant leaf exposures
-# ==> q=20: 52 redundant leaf exposures
+    print(f"q={q_max:2d}: {redundant} redundant draws")
+# ==> q= 5: 3 redundant draws
+# ==> q=10: 18 redundant draws
+# ==> q=15: 32 redundant draws
+# ==> q=20: 52 redundant draws
 
 # Distinct revealed indices per tree is what a reuse forgery needs, not the raw count.
 k, t, q = 6, 16, 20

@@ -15,18 +15,18 @@ seed = b"ch16-fors-toy"
 k, t, n = 3, 4, 4
 
 # Regenerate the key material.
-all_leaves = []
+all_secrets = []
 all_trees = []
 roots = b""
 for j in range(k):
-    leaves = []
+    secrets = []
     for i in range(t):
-        leaf = sha_n(seed + b"fors" + j.to_bytes(4, "big") + i.to_bytes(4, "big"), n)
-        leaves.append(leaf)
-    all_leaves.append(leaves)
+        sk = sha_n(seed + b"fors" + j.to_bytes(4, "big") + i.to_bytes(4, "big"), n)
+        secrets.append(sk)
+    all_secrets.append(secrets)
     tree = [b""] * (2 * t)
-    for i, lf in enumerate(leaves):
-        tree[t + i] = sha_n(lf, n)
+    for i, sk in enumerate(secrets):
+        tree[t + i] = sha_n(sk, n)
     for i in range(t - 1, 0, -1):
         tree[i] = sha_n(tree[2 * i] + tree[2 * i + 1], n)
     all_trees.append(tree)
@@ -47,7 +47,7 @@ print(f"Indices: {indices}")
 # Sign: reveal the selected secret value and its auth path from each tree.
 sig = []
 for j in range(k):
-    secret = all_leaves[j][indices[j]]
+    secret = all_secrets[j][indices[j]]
     node = t + indices[j]
     path = []
     for _ in range(2):  # depth = log2(t) = 2

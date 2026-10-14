@@ -16,20 +16,20 @@ seed = b"ch16-fors-toy"
 k, t, n = 3, 4, 4
 
 # Generate k lists of t secret values; each tree's leaves are their hashes.
-all_leaves = []
+all_secrets = []
 all_trees = []
 roots = b""
 for j in range(k):
-    leaves = []
+    secrets = []
     for i in range(t):
-        leaf = sha_n(seed + b"fors" + j.to_bytes(4, "big") + i.to_bytes(4, "big"), n)
-        leaves.append(leaf)
-    all_leaves.append(leaves)
+        sk = sha_n(seed + b"fors" + j.to_bytes(4, "big") + i.to_bytes(4, "big"), n)
+        secrets.append(sk)
+    all_secrets.append(secrets)
 
     # Merkle tree: 1-indexed flat array, same layout as Chapter 14.
     tree = [b""] * (2 * t)
-    for i, lf in enumerate(leaves):
-        tree[t + i] = sha_n(lf, n)  # the leaf is F(secret), never the secret
+    for i, sk in enumerate(secrets):
+        tree[t + i] = sha_n(sk, n)  # the leaf is F(secret), never the secret
     for i in range(t - 1, 0, -1):
         tree[i] = sha_n(tree[2 * i] + tree[2 * i + 1], n)
     all_trees.append(tree)
