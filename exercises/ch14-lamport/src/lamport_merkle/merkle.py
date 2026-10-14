@@ -30,8 +30,9 @@ def build_tree(leaves: list[bytes]) -> list[bytes]:
     """
     # EXERCISE: implement this function.
     #
-    # Store the tree as a flat list, leaves first. Each parent is the
-    # SHA-256 digest of its two children concatenated left then right.
+    # Store the tree as a flat list with the root at index 1 and the leaves
+    # in its second half. Each parent is the SHA-256 digest of its two
+    # children concatenated left then right.
     #
     # Reference: Chapter 14, 'Merkle tree at depth 3'
     #

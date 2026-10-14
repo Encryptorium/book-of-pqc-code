@@ -70,8 +70,9 @@ def sign(sk, message: bytes) -> list[bytes]:
 def verify(pk, message: bytes, sig: list[bytes]) -> bool:
     """Verify a Lamport signature.
 
-    Returns *True* iff every revealed secret hashes to the correct
-    public-key slot for the corresponding message-digest bit.
+    Returns *True* iff *sig* has one entry per key position and every
+    revealed secret hashes to the correct public-key slot for the
+    corresponding message-digest bit.
     """
     # EXERCISE: implement this function.
     #
