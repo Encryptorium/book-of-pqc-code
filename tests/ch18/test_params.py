@@ -1,7 +1,5 @@
 """The six SHA-2 parameter sets, checked against FIPS 205 Table 2."""
 
-import math
-
 import pytest
 
 from hash_cryptanalysis.params import (
@@ -69,7 +67,7 @@ def test_ell_1_covers_the_digest(short):
     """The message chains must carry every bit of the n-byte digest."""
     ps = by_name(short)
     ell_1, _ = wots_ell_parts(ps.n_bytes, ps.w)
-    lg_w = int(math.log2(ps.w))
+    lg_w = ps.w.bit_length() - 1
     assert ell_1 * lg_w >= 8 * ps.n_bytes
 
 

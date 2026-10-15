@@ -134,7 +134,7 @@ def expected_position_collisions(q: int, h: int) -> float:
     # same figure with the pair count rounded up, so your exact form should
     # agree with it to a relative error of about 1/q.
     #
-    # Reference: Chapter 18, 'FORS forgery and implementation attacks', the birthday estimate for FORS-instance collisions across the 2**h leaf positions
+    # Reference: Chapter 18, 'Multi-target advantage, birthday bound, and quantum cost formulas', the birthday estimate for FORS-instance collisions across the 2**h leaf positions
     #
     # Proved by:
     #   tests/ch18/test_fors_reuse.py

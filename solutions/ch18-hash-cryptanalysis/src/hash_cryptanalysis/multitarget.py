@@ -10,13 +10,15 @@ accounting is right: the chapter checks it at SLH-DSA-SHA2-128s only, and
 `tests/ch18/test_signature_accounting.py` checks it at all six.
 
 **Preimage targets** are the hash images an adversary could try to invert. The
-two counts overlap but neither contains the other. Authentication-path nodes are
-signature components and *not* preimage targets: substituting one is a
-second-preimage problem on a Merkle node, priced separately. FORS leaf hashes are
-preimage targets and *not* signature components: the verifier recomputes each
-leaf from a revealed secret, so the leaf hash never travels. Adding the two
-populations, or reading the 491 strings of a 128s signature as 491 targets, is
-the error the split guards against.
+two counts overlap but neither contains the other. Both hold the WOTS+ chain
+values, and the `k` FORS leaf hashes that open the authentication paths, the
+sibling of the selected index in each tree. The other authentication-path nodes
+are signature components and *not* preimage targets: substituting one is a
+second-preimage problem on a Merkle node, priced separately. The other FORS leaf
+hashes are preimage targets and *not* signature components: the verifier
+recomputes the selected leaf in each tree from its revealed secret value, and
+the rest never travel. Adding the two populations, or reading the 491 strings of
+a 128s signature as 491 targets, is the error the split guards against.
 
 The target population here is an intuition model scoped to one FORS instance and
 its hypertree layer, not the term the SPHINCS+/SLH-DSA proof carries. Chapter 18
@@ -72,10 +74,10 @@ def signature_bytes(ps: ParameterSet) -> int:
 def fors_instance_targets(ps: ParameterSet) -> int:
     """FORS leaf hashes in one instance's position space, `k * t`.
 
-    Every leaf of every FORS tree is a candidate, not only the `k` a signature
-    reveals: the adversary picks which message to forge, so it picks which
-    indices it needs. This is why the `s` sets, with their large `t`, expose the
-    larger population despite using fewer trees.
+    Every leaf of every FORS tree is a candidate, not only the `k` whose secret
+    values a signature reveals: the adversary picks which message to forge, so
+    it picks which indices it needs. This is why the `s` sets, with their large
+    `t`, expose the larger population despite using fewer trees.
     """
     return ps.k * ps.t
 

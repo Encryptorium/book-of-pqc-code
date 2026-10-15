@@ -24,7 +24,6 @@ Standard library only.
 
 from __future__ import annotations
 
-import math
 from dataclasses import dataclass
 
 
@@ -43,10 +42,13 @@ def wots_ell_parts(n_bytes: int, w: int) -> tuple[int, int]:
     exercise on custom parameters asks for both parts separately, and the
     package keeps them separate for the same reason.
     """
-    lg_w = int(math.log2(w))
-    ell_1 = math.ceil(8 * n_bytes / lg_w)
+    # Integers only, as FIPS 205 Section 3.1 requires: w is a power of
+    # two, bit_length() - 1 is floor(log2), and (x + y - 1) // y is
+    # ceil(x / y).
+    lg_w = w.bit_length() - 1
+    ell_1 = (8 * n_bytes + lg_w - 1) // lg_w
     max_checksum = ell_1 * (w - 1)
-    ell_2 = math.ceil((math.floor(math.log2(max_checksum)) + 1) / lg_w)
+    ell_2 = (max_checksum.bit_length() + lg_w - 1) // lg_w
     return ell_1, ell_2
 
 

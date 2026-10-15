@@ -58,11 +58,14 @@ terms. The chapter says so where it introduces the figure. Read
 security level anyone claims.
 
 **Signature components and preimage targets are different counts, and neither
-contains the other.** Authentication-path nodes are components and not preimage
-targets; substituting one is a second-preimage problem on a Merkle node. FORS
-leaf hashes are targets and not components; the verifier recomputes each leaf
-from a revealed secret, so the leaf hash never travels. The modules keep them in
-separate functions for that reason, and adding the two populations is wrong.
+contains the other.** Both hold the WOTS+ chain values, and the `k` FORS leaf
+hashes that open the authentication paths, the sibling of the selected index in
+each tree. The other authentication-path nodes are components and not preimage
+targets: substituting one is a second-preimage problem on a Merkle node. The
+other FORS leaf hashes are targets and not components. The verifier recomputes
+the selected leaf in each tree from its revealed secret value, and the rest
+never travel. The modules keep them in separate functions for that reason, and
+adding the two populations is wrong.
 
 **The SHAKE parameter sets are omitted rather than duplicated.** FIPS 205
 tabulates twelve sets; the six SHAKE ones carry the same `n, h, d, a, k, w` as
