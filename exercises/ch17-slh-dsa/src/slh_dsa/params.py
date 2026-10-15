@@ -1,14 +1,14 @@
 """FIPS 205 parameter sets for SLH-DSA.
 
 Each parameter set is a frozen dataclass encoding the values from
-FIPS 205 Table 1 (SHA2 instantiation) and Table 2 (SHAKE instantiation).
-Derived quantities (ell_1, ell_2, ell, signature size) are computed in
-``__post_init__`` and cached as frozen fields.
+FIPS 205 Table 2, which lists the SHA2 and SHAKE instantiations of each
+set together.  The derived WOTS+ quantities (lg_w, ell_1, ell_2, ell) are
+computed in ``__post_init__`` and cached as frozen fields; the signature
+size is computed by ``sig_bytes``.
 """
 
 from __future__ import annotations
 
-import math
 from dataclasses import dataclass
 
 
@@ -41,10 +41,13 @@ class SLHDSAParams:
             f"unknown hash_family={self.hash_family!r}"
         )
 
-        lg_w = int(math.log2(self.w))
-        ell_1 = math.ceil(8 * self.n / lg_w)
+        # Integers only, as FIPS 205 Section 3.1 requires: w is a power of
+        # two, bit_length() - 1 is floor(log2), and (x + y - 1) // y is
+        # ceil(x / y).
+        lg_w = self.w.bit_length() - 1
+        ell_1 = (8 * self.n + lg_w - 1) // lg_w
         max_csum = ell_1 * (self.w - 1)
-        ell_2 = math.ceil((math.floor(math.log2(max_csum)) + 1) / lg_w)
+        ell_2 = (max_csum.bit_length() + lg_w - 1) // lg_w
         ell = ell_1 + ell_2
 
         # Bypass frozen to set derived fields
@@ -81,7 +84,7 @@ class SLHDSAParams:
         # EXERCISE: implement this function.
         #
         # Three components summed. R is n bytes. SIG_FORS is k * (1 + a) *
-        # n, because each of the k FORS trees contributes one revealed leaf
+        # n, since each of the k FORS trees contributes one revealed secret
         # value and a authentication nodes. SIG_HT is d * (ell + hp) * n,
         # because each of the d hypertree layers contributes a WOTS+
         # signature of ell chain values and an authentication path of hp
@@ -106,7 +109,7 @@ class SLHDSAParams:
         return 4 * self.n
 
 
-# -- FIPS 205 Table 1: SHA2 parameter sets --------------------------------
+# -- FIPS 205 Table 2: SHA2 parameter sets --------------------------------
 
 SLH_DSA_SHA2_128s = SLHDSAParams(
     name="SLH-DSA-SHA2-128s", n=16, h=63, d=7, hp=9,

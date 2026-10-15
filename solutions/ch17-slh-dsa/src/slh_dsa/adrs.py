@@ -1,9 +1,10 @@
 """ADRS (address) structure for SLH-DSA (FIPS 205 Section 4.2).
 
-The ADRS is a mutable 32-byte structure that domain-separates every
-hash call in SLH-DSA.  Each hash function receives the ADRS as a
-tweak, ensuring that identical inputs at different positions in the
-tree produce different outputs.
+The ADRS is a mutable 32-byte structure that domain-separates the
+calls to four of SLH-DSA's six hash functions, PRF, F, H and T_l; H_msg
+and PRF_msg take no address.  Each of the four receives the ADRS as a
+tweak, so the same value at two positions in the tree is two different
+inputs to the hash.
 
 Field layout (all values big-endian, per FIPS 205 Section 4.2):
 
@@ -100,7 +101,7 @@ class ADRS:
         return bytes(self._data)
 
     def compress(self) -> bytes:
-        """Return the 22-byte compressed ADRS for SHA-256 instantiation.
+        """Return the 22-byte compressed ADRS the SHA2 instantiations hash.
 
         Compressed form (FIPS 205 Section 11.2):
             ADRS[3] || ADRS[8:16] || ADRS[19] || ADRS[20:32]

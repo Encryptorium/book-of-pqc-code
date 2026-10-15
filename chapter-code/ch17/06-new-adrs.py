@@ -4,7 +4,7 @@
 # https://book.encryptorium.com/part-3-hash-based/ch17-slh-dsa-fips-205/
 #
 # Generated from the chapter text. Edits here do not reach the book.
-# Run: python3 chapter-code/ch17/01-new-adrs.py
+# Run: python3 chapter-code/ch17/06-new-adrs.py
 
 import hashlib, struct
 
@@ -64,11 +64,10 @@ def tw_PRF(pk_s, sk_s, ad):
     return hashlib.sha256(pk_s + b"\x00"*(64-n) + compress(ad) + sk_s).digest()[:n]
 
 # --- Keygen: compute top XMSS tree root ---
-import math
-lg_w = int(math.log2(w))
-ell_1 = math.ceil(8 * n / lg_w)
+lg_w = w.bit_length() - 1                # log2(w), since w is a power of two
+ell_1 = (8 * n + lg_w - 1) // lg_w       # ceil(8n / lg_w)
 mc = ell_1 * (w - 1)
-ell_2 = math.ceil((math.floor(math.log2(mc)) + 1) / lg_w)
+ell_2 = (mc.bit_length() + lg_w - 1) // lg_w   # bit_length() is floor(log2) + 1
 ell = ell_1 + ell_2
 
 sk_seed = bytes.fromhex("a1b2c3d4e5f6a7b8c9d0e1f2a3b4c5d6")

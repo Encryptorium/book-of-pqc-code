@@ -1,6 +1,7 @@
 """FORS with ADRS for SLH-DSA (FIPS 205 Section 8, Algorithms 14-17).
 
-FORS signs by revealing selected leaves from k binary Merkle trees.
+FORS signs by revealing one selected secret value for each of its k
+binary Merkle trees.
 Each leaf is the hash of a PRF-derived secret value passed through the
 tweakable function F, binding it to its address, which Chapter 16's bare
 hash did not.

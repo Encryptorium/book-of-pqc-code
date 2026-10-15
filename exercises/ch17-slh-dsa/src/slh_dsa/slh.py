@@ -145,12 +145,14 @@ def slh_verify(params: SLHDSAParams, pk: bytes, message: bytes,
     # is not n + k(1 + a)n + d(ell + hp)n before hashing anything, then cut
     # it at those offsets into R, SIG_FORS, SIG_HT. Recompute the digest
     # from the transmitted R with H_msg and split it exactly as the signer
-    # did: the signing position is derived from the message, never carried
-    # in the signature, so an attacker cannot choose it. Recover PK_FORS
-    # with fors_pk_from_sig under an ADRS at layer 0 with tree address
-    # idx_tree and keypair address idx_leaf, then return ht_verify on that
-    # value. A wrong message moves idx_tree and idx_leaf as well as md, so a
-    # forgery usually dies at the hypertree rather than inside FORS.
+    # did: the signing position is derived from R and the message rather
+    # than carried in the signature, so an attacker cannot set it directly
+    # and can only search over R and the message to steer it. Recover
+    # PK_FORS with fors_pk_from_sig under an ADRS at layer 0 with tree
+    # address idx_tree and keypair address idx_leaf, then return ht_verify
+    # on that value. A wrong message moves idx_tree and idx_leaf as well as
+    # md, so a forgery usually dies at the hypertree rather than inside
+    # FORS.
     #
     # Reference: Chapter 17, 'Full SLH-DSA signing' (FIPS 205 Algorithm 20)
     #

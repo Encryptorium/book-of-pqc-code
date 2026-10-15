@@ -37,7 +37,7 @@ sk_seed = bytes.fromhex("a1b2c3d4e5f6a7b8c9d0e1f2a3b4c5d6")
 
 ad = bytearray(32)
 
-# Generate FORS secret at tree 0, leaf 5
+# Generate FORS secret at tree 0, index 5
 sk_ad = bytearray(ad); set_type_clear(sk_ad, 6); set_kp(sk_ad, 0)  # FORS_PRF
 set_idx(sk_ad, 5)
 secret = tw_PRF(pk_seed, sk_seed, sk_ad)

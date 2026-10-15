@@ -1,6 +1,7 @@
 """FORS with ADRS for SLH-DSA (FIPS 205 Section 8, Algorithms 14-17).
 
-FORS signs by revealing selected leaves from k binary Merkle trees.
+FORS signs by revealing one selected secret value for each of its k
+binary Merkle trees.
 Each leaf is the hash of a PRF-derived secret value passed through the
 tweakable function F, binding it to its address, which Chapter 16's bare
 hash did not.
@@ -80,7 +81,7 @@ def fors_sign(params: SLHDSAParams, sk_seed: bytes, pk_seed: bytes,
         # Global leaf index within this FORS instance
         global_idx = j * t + idx
 
-        # Reveal the secret leaf value
+        # Reveal the secret value
         sig += _fors_sk_gen(params, sk_seed, pk_seed, adrs, global_idx)
 
         # Authentication path: sibling nodes from leaf to root
@@ -115,7 +116,7 @@ def fors_pk_from_sig(params: SLHDSAParams, pk_seed: bytes,
     for j in range(k):
         idx = indices[j]
 
-        # The revealed leaf secret
+        # The revealed secret value
         sk_val = sig[offset : offset + n]
         offset += n
 

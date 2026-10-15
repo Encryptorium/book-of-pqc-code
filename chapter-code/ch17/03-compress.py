@@ -6,13 +6,13 @@
 # Generated from the chapter text. Edits here do not reach the book.
 # Run: python3 chapter-code/ch17/03-compress.py
 
-import hashlib, struct, math
+import hashlib, struct
 
 n, w = 16, 16
-lg_w = int(math.log2(w))
-ell_1 = math.ceil(8 * n / lg_w)
+lg_w = w.bit_length() - 1                # log2(w), since w is a power of two
+ell_1 = (8 * n + lg_w - 1) // lg_w       # ceil(8n / lg_w)
 mc = ell_1 * (w - 1)
-ell_2 = math.ceil((math.floor(math.log2(mc)) + 1) / lg_w)
+ell_2 = (mc.bit_length() + lg_w - 1) // lg_w   # bit_length() is floor(log2) + 1
 ell = ell_1 + ell_2
 
 def compress(ad):

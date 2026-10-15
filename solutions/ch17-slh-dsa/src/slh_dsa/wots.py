@@ -2,13 +2,11 @@
 
 This module re-implements WOTS+ with proper ADRS-based domain
 separation, replacing the simplified chain function from Ch 15.
-Every hash call carries an ADRS that encodes the chain position,
-preventing cross-chain collisions.
+Every hash call carries an ADRS that encodes the chain position, so
+the same value hashed in two chains is two different inputs to the hash.
 """
 
 from __future__ import annotations
-
-import math
 
 from .adrs import ADRS, WOTS_HASH, WOTS_PK, WOTS_PRF
 from .params import SLHDSAParams
@@ -19,7 +17,7 @@ from .tweakable import F, PRF, T_l
 
 def base_w(data: bytes, w: int, out_len: int) -> list[int]:
     """Encode *data* as *out_len* base-*w* digits, MSB-first per byte."""
-    lg_w = int(math.log2(w))
+    lg_w = w.bit_length() - 1  # w is a power of two; no float log
     digits: list[int] = []
     for byte_val in data:
         for shift in range(8 - lg_w, -1, -lg_w):
@@ -105,7 +103,7 @@ def wots_sign(params: SLHDSAParams, sk_seed: bytes, pk_seed: bytes,
     # Encode checksum in base w
     lg_w = params.lg_w
     total_bits = params.ell_2 * lg_w
-    num_bytes = math.ceil(total_bits / 8)
+    num_bytes = (total_bits + 7) // 8
     shift = 8 * num_bytes - total_bits
     c_bytes = (csum << shift).to_bytes(num_bytes, "big")
     csum_digits = base_w(c_bytes, w, params.ell_2)
@@ -152,7 +150,7 @@ def wots_pk_from_sig(params: SLHDSAParams, pk_seed: bytes,
 
     lg_w = params.lg_w
     total_bits = params.ell_2 * lg_w
-    num_bytes = math.ceil(total_bits / 8)
+    num_bytes = (total_bits + 7) // 8
     shift = 8 * num_bytes - total_bits
     c_bytes = (csum << shift).to_bytes(num_bytes, "big")
     csum_digits = base_w(c_bytes, w, params.ell_2)
