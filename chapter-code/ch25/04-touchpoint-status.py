@@ -6,7 +6,7 @@
 # Generated from the chapter text. Edits here do not reach the book.
 # Run: python3 chapter-code/ch25/04-touchpoint-status.py
 
-# Block 4: assemble the full CBOM and print the inventory summary.
+# Block 4: print the inventory summary.
 TOUCHPOINTS = [
     {"name": "tls_endpoint_api", "primitive": "key-agree",
      "exposure": "public", "families": ["ECDHE", "ECDSA", "AES", "SHA-384"]},
