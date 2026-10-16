@@ -78,8 +78,9 @@ def x25519_scalarmult(scalar: bytes, u: bytes) -> bytes:
     z2, z3 = _cswap(swap, z2, z3)
     result = (x2 * pow(z2, _P - 2, _P)) % _P
     if result == 0:
-        # RFC 7748 Section 6.1: implementations MUST abort if the
-        # Diffie-Hellman output u-coordinate is zero.
+        # RFC 7748 Section 6.1 lets an implementation abort on an all-zero
+        # output. TLS 1.3 requires it (RFC 9846 Section 7.4.2), and RFC 10024
+        # Section 4.3 applies it to the hybrid's X25519 half.
         raise ValueError("X25519 output u-coordinate is zero (RFC 7748 6.1)")
     return _encode_u(result)
 

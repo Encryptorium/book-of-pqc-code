@@ -71,8 +71,8 @@ def test_the_high_bit_of_the_x25519_component_is_not_bound():
     shared secrets and a fixed label only, so the derived key follows
     the secret rather than the ciphertext. This is the standalone
     ciphertext-binding gap the chapter discusses: TLS closes it later
-    through the transcript hash, and the analysed combiner of Bindel et
-    al. closes it by keying its second PRF with ``c1 || c2``.
+    through the transcript hash, and the analyzed combiner of Bindel et
+    al. closes it by feeding ``c1 || c2`` to its second PRF.
     """
     pk, sk = hybrid_kem_keygen()
     ct, ss_alice = hybrid_kem_encaps(pk)

@@ -67,9 +67,10 @@ def test_wrapper_aborts_on_zero_output_as_tls_requires():
 
     The normative source is TLS, not RFC 7748. RFC 7748 Section 6.1 says
     an implementation MAY check for the all-zero value; it is optional
-    there. RFC 8446 Section 7.4.2 makes it a MUST for TLS 1.3, and since
-    the hybrid KEM here is aimed at a TLS key share, the wrapper takes
-    the stricter rule.
+    there. RFC 9846, which obsoletes RFC 8446, makes it a MUST for TLS 1.3
+    in Section 7.4.2, and RFC 10024 Section 4.3 applies it to the hybrid's
+    X25519 half. The hybrid KEM here is aimed at a TLS key share, so the
+    wrapper takes the stricter rule.
     """
     zero_u = b"\x00" * 32
     scalar = bytes.fromhex(

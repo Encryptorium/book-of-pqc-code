@@ -64,8 +64,9 @@ def x25519_scalarmult(scalar: bytes, u: bytes) -> bytes:
     # z2, E = A^2 - B^2, and so on, with a24 = 121665. Swap one last time
     # after the loop, recover the affine result as x2 * z2^(p-2) mod p, and
     # encode it little-endian. Raise ValueError when the result is zero: RFC
-    # 7748 Section 6.1 allows the check and RFC 10024 Section 4.3 makes it a
-    # MUST for TLS.
+    # 7748 Section 6.1 allows the check, TLS 1.3 makes it a MUST (RFC 9846
+    # Section 7.4.2), and RFC 10024 Section 4.3 applies it to the hybrid's
+    # X25519 half.
     #
     # Reference: RFC 7748 Section 5 (the ladder and clamping) and Section 6.1 (the zero-output abort), cited in Chapter 27, 'The X25519MLKEM768 hybrid KEM'
     #

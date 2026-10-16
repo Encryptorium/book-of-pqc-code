@@ -18,18 +18,18 @@ returns 32 bytes where the RFC returns 64.
 The stand-in carries no standalone IND-CCA claim. The
 Bindel/Brendel/Fischlin/Goncalves/Stebila 2019 result is about the
 combiner ``PRF(dPRF(k1, k2), c1 || c2)``, where the concatenated
-component ciphertexts key the second PRF, and their Section 3.2 shows
-why that input is required. This module derives from the two component
-secrets alone, so the property fails here with both components intact:
-``_decode_u`` masks bit 255 of the u-coordinate as RFC 7748 Section 5
-requires, so flipping ``0x80`` in the last ciphertext byte yields a
-different, well-formed ciphertext that decapsulates to the same secret.
-Inside TLS the missing binding arrives further down the key schedule,
-from the transcript hash; RFC 10024 Section 6 states that the security
-analysis "relies crucially on the TLS 1.3 message transcript, and one
-cannot assume a similar hybridization is secure in other protocols".
-Treat this module as the TLS combiner shape, not as a KEM with
-standalone IND-CCA status. Appendix D, Chapter 27, Exercise 1 works
+component ciphertexts are the second PRF's input, and their Section 3.2
+shows why that input is required. This module derives from the two
+component secrets alone, so the property fails here with both components
+intact: ``_decode_u`` masks bit 255 of the u-coordinate as RFC 7748
+Section 5 requires, so flipping ``0x80`` in the last ciphertext byte
+yields a different, well-formed ciphertext that decapsulates to the same
+secret. Inside TLS the missing binding arrives further down the key
+schedule, from the transcript hash; RFC 10024 Section 6 states that the
+security analysis "relies crucially on the TLS 1.3 message transcript,
+and one cannot assume a similar hybridization is secure in other
+protocols". Treat this module as the TLS combiner shape, not as a KEM
+with standalone IND-CCA status. Appendix D, Chapter 27, Exercise 1 works
 through the difference.
 
 Public API:
@@ -202,9 +202,10 @@ def hybrid_kem_decaps(sk: bytes, ct: bytes) -> bytes:
     # 1088-byte ciphertext under the decapsulation key, recover the X25519
     # secret by multiplying the stored scalar against the sender's ephemeral
     # public key, and run the same combiner. ML-KEM decapsulation never
-    # reports failure, so a tampered ciphertext yields a different shared
-    # secret rather than an error; the round-trip test checks for a
-    # mismatch, not an exception.
+    # reports failure, so a tampered ML-KEM half yields a shared secret
+    # rather than an error. The round-trip tests check the secret, not an
+    # exception: one tampered byte gives a different one, and flipping the
+    # bit RFC 7748 masks in the X25519 half gives the same one.
     #
     # Reference: Chapter 27, 'The X25519MLKEM768 hybrid KEM'
     #

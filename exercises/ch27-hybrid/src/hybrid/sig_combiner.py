@@ -17,8 +17,8 @@ per Section 2.2, where Prefix is the 32-byte ASCII constant
 ``CompositeAlgorithmSignatures2025``, Label is the algorithm-specific
 string ``COMPSIG-MLDSA65-Ed25519-SHA512``, ctx is an application
 context of at most 255 bytes, and PH is SHA-512 for this combination.
-Both signers receive M' (ML-DSA additionally binds Label as its
-context).
+Both signers receive M'. The draft also passes Label to ML-DSA as its
+context, which the ML-DSA stub has no parameter for.
 
 Public API:
 
@@ -31,8 +31,8 @@ Public API:
 ML-DSA-65 is stubbed (see ``mldsa_stub.py``) by choice, not by absence:
 ``solutions/ch12-mldsa`` ships the real FIPS 204 implementation and can
 be swapped in. The combiner semantics, the serialization order, and the
-message representative M' are real; only the underlying ML-DSA
-signature scheme is a placeholder.
+message representative M' are real, apart from the Label context noted
+above; the ML-DSA signature scheme itself is a placeholder.
 """
 
 import hashlib

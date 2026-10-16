@@ -27,8 +27,10 @@ What this stub is NOT:
   hash-based binding function dressed in the ML-DSA-65 shape.
 - FIPS 204 ML-DSA-65. Swap this module out for
   ``solutions/ch12-mldsa`` to get the real one; the combiner in
-  ``sig_combiner`` depends only on the byte-size API, so the swap is
-  a one-line change.
+  ``sig_combiner`` depends only on the byte-size API, so the swap
+  needs an adapter for the three calls, which supplies the parameter
+  set and passes the composite Label as ML-DSA's context, as the
+  draft does.
 
 FIPS 204 Table 2 references the sizes used here.
 """
