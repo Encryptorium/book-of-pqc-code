@@ -12,7 +12,7 @@ Header Parameter mandatory, so the brittle token would be rejected
 outright by a conforming verifier; omitting it is what makes the
 observability cost visible. A production verifier also needs the
 key-to-algorithm binding of RFC 8725 Section 3.1, key-id lookup, and
-issuer, audience and expiry checks, none of which is modelled here.
+issuer, audience and expiry checks, none of which is modeled here.
 
 ``SECRET`` is a fixed pedagogical value so the module runs standalone.
 Every signing and verifying function takes the secret as a parameter
@@ -69,10 +69,9 @@ def sign_agile(
 ) -> str:
     """Sign ``payload`` under ``alg``, writing the identifier into the header.
 
-    Raises ``ValueError`` if the registry marks ``alg`` deprecated. A
-    deprecated algorithm is refused for signing but still accepted for
-    verification elsewhere, which is the asymmetry the chapter's
-    lifecycle-management area describes.
+    Raises ``ValueError`` if the registry marks ``alg`` deprecated.
+    ``verify_agile`` refuses it too, so retiring an identifier is a
+    registry flag rather than a caller change.
     """
 
     hash_fn, deprecated = REGISTRY[alg]

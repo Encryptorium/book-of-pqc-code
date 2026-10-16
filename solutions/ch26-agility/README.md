@@ -34,9 +34,9 @@ verifier would reject. That is deliberate: omitting the identifier is what
 makes the observability cost visible. `sign_agile` emits `alg` but is still
 not a production JWT implementation. RFC 8725 Section 3.1 additionally
 requires a caller-specified algorithm set, a check that the header `alg`
-matches the operation performed, and a binding from each key record to one
-algorithm family. `tokens.py` implements only the first two, and its
-single-secret design cannot express the third, which is why an HS/RS
+matches the operation performed, and a binding from each key to exactly one
+algorithm. `tokens.py` demonstrates identifier-driven dispatch only, and
+its single-secret design cannot express the third, which is why an HS/RS
 algorithm-confusion attack is out of scope here.
 
 **The registry states are local policy, not NIST status.** The four names

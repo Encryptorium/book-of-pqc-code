@@ -2,9 +2,9 @@
 
 ``REGISTRY``, ``POLICY`` and ``sign`` are Chapter 26's Block 3: a MAC
 registry carrying an approval state per identifier, a policy table
-mapping each Chapter 25 touchpoint to the identifier it uses, and a
-signer that refuses anything not currently approved for applying
-protection.
+mapping touchpoint names, Chapter 25's ``webhook_hmac`` among them, to
+the identifier each uses, and a signer that refuses an identifier whose
+state is ``disallowed`` or ``deprecated``.
 
 ``permits`` and ``approved_at`` are the two rules the chapter states in
 prose and does not print. ``permits`` encodes the asymmetry between the
@@ -12,13 +12,13 @@ four states; ``approved_at`` encodes the dated approved-algorithm list
 from the governance area.
 
 The four state names come from NIST SP 800-131A Rev. 2, which applies
-them to (algorithm, key-length) pairs on dated transitions rather than
-to hash functions. For HMAC in particular that document routes entirely
-through key length: generation keys of at least 112 bits are acceptable
-and shorter ones disallowed, while verification accepts shorter keys for
-legacy use. The entries below therefore borrow the vocabulary to record
-one organization's local policy, and are not a transcription of NIST
-per-algorithm status.
+them to (algorithm, key-length) pairs on dated transitions. For HMAC in
+particular, which may use any approved hash function, that document
+routes entirely through key length: generation keys of at least 112
+bits are acceptable and shorter ones disallowed, while verification
+accepts shorter keys for legacy use. The entries below therefore borrow
+the vocabulary to record one organization's local policy, and are not a
+transcription of NIST per-algorithm status.
 """
 
 from __future__ import annotations
