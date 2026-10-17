@@ -19,8 +19,8 @@ decomposition (Chapter 31):
 
 Every module is pedagogical. The package does NOT simulate a quantum
 adversary; the QROM content lives in Chapter 33's prose, and this
-package models only the classical reduction the measure-and-reprogram
-technique produces. See ``README.md`` for the scope boundary.
+package models only the classical side of the reduction the
+measure-and-reprogram technique produces. See ``README.md`` for the scope boundary.
 """
 
 from . import rom_simulator

@@ -27,7 +27,7 @@ then sends the proof ``(a, z)``. The verifier recomputes the same
 oracle query, derives ``e``, and runs the Schnorr verification
 equation.
 
-The classical Fiat-Shamir proof of soundness uses rewinding: extract
+The classical knowledge-soundness argument uses rewinding: extract
 two accepting transcripts at the same commitment ``a`` but different
 challenges, solve a 2x2 linear system in Z_n, recover x. The QROM
 obstruction is that rewinding is incompatible with superposition
@@ -127,11 +127,11 @@ def interactive_prove(
     #
     # Schnorr's first and third moves, with the verifier's challenge handed
     # in rather than derived. Commit to a = g^r mod p for a nonce r, sampled
-    # uniformly in [1, q - 1] when none is given, and answer z = (r + e * x)
-    # mod q. The commitment lives in F_p^* and the response in F_q; reducing
-    # the response modulo p, or the commitment modulo q, is the usual way to
-    # get this wrong. Reject a challenge outside [0, q - 1] and a nonce
-    # outside [1, q - 1].
+    # uniformly in [1, n - 1] when none is given, and answer z = (r + e * x)
+    # mod n. The commitment lives in F_p^* and the response in Z_n; reducing
+    # the response modulo p, or the commitment modulo n, is the usual way to
+    # get this wrong. Reject a challenge outside [0, n - 1] and a nonce
+    # outside [1, n - 1].
     #
     # Reference: Chapter 33, 'A Schnorr proof, interactive and compiled' (Block 1)
     #
@@ -193,11 +193,11 @@ def fs_prove(
     # The same prover with the verifier deleted. Compute a = g^r, then
     # derive the challenge yourself as oracle.query on the serialized
     # transcript prefix pk || a instead of waiting to receive it, and answer
-    # z = (r + e * x) mod q. The proof carries only (a, z); e is
+    # z = (r + e * x) mod n. The proof carries only (a, z); e is
     # reconstructable from the transcript by anyone holding the oracle.
-    # Require the oracle's output_modulus to equal q, so its response is
+    # Require the oracle's output_modulus to equal n, so its response is
     # already a legal element of the challenge space, and reject a nonce
-    # outside [1, q - 1].
+    # outside [1, n - 1].
     #
     # Reference: Chapter 33, 'Three-move sigma with Fiat-Shamir' (Block 2)
     #
@@ -222,9 +222,9 @@ def fs_verify(pk: int, proof: FiatShamirProof, oracle: RandomOracle) -> bool:
     # p. Determinism is the whole point of the compilation: any verifier
     # holding the same oracle derives the same challenge, so no interaction
     # is needed and a fresh oracle with the same seed accepts the same
-    # proof. Require the oracle's output_modulus to equal q. Reject a pk
+    # proof. Require the oracle's output_modulus to equal n. Reject a pk
     # outside [1, p - 1], then the two keys with no witness: pk = 1, and any
-    # pk outside the subgroup g generates, which pk^q != 1 mod p detects.
+    # pk outside the subgroup g generates, which pk^n != 1 mod p detects.
     #
     # Reference: Chapter 33, 'Three-move sigma with Fiat-Shamir' (Block 2)
     #
@@ -253,9 +253,9 @@ def rewind_extract(
     # EXERCISE: implement this function.
     #
     # Two accepting transcripts that share a commitment but differ in
-    # challenge yield the witness: x = (z_a - z_b) * (e_a - e_b)^{-1} mod q.
-    # Take both differences modulo q and invert the challenge difference
-    # with pow(delta_e, -1, q), which exists because q is prime and the
+    # challenge yield the witness: x = (z_a - z_b) * (e_a - e_b)^{-1} mod n.
+    # Take both differences modulo n and invert the challenge difference
+    # with pow(delta_e, -1, n), which exists because n is prime and the
     # challenges differ. Refuse mismatched commitments, equal challenges,
     # and either transcript failing interactive_verify. This is the
     # classical rewinding extractor, and it is exactly the step the QROM

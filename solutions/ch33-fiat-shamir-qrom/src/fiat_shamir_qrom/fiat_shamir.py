@@ -27,7 +27,7 @@ then sends the proof ``(a, z)``. The verifier recomputes the same
 oracle query, derives ``e``, and runs the Schnorr verification
 equation.
 
-The classical Fiat-Shamir proof of soundness uses rewinding: extract
+The classical knowledge-soundness argument uses rewinding: extract
 two accepting transcripts at the same commitment ``a`` but different
 challenges, solve a 2x2 linear system in Z_n, recover x. The QROM
 obstruction is that rewinding is incompatible with superposition
