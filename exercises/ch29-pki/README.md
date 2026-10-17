@@ -39,10 +39,11 @@ the NIST ACVP vectors byte for byte, is `solutions/ch12-mldsa`.
 (May 2026) gives single ML-DSA a finalized JOSE serialization (the AKP JWK key
 type, with `ML-DSA-44`, `ML-DSA-65` and `ML-DSA-87`), but composite
 ML-DSA + Ed25519 is still draft-level in JOSE:
-`draft-ietf-jose-pq-composite-sigs` registers `ML-DSA-65-Ed25519` in its
-Section 7.1.5 and sits at revision -03. `OKP-COMPOSITE` and
+`draft-ietf-jose-pq-composite-sigs` requests registration of
+`ML-DSA-65-Ed25519` in its Section 7.1.5. `OKP-COMPOSITE` and
 `Ed25519+ML-DSA-65` are therefore illustrative, and no JOSE library will
-interoperate with them.
+interoperate with them. Chapter 29 dates the draft's revision and IESG
+state.
 
 **The composite key's member split follows LAMPS, not the `alg` string.**
 `build_composite_jwk` publishes `mldsa_pk` as the leading 1952 bytes and

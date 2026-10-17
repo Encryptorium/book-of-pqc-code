@@ -23,8 +23,9 @@ exists; it can never rewind one.
 The POSIX file lock is the pedagogical simplification. SP 800-208
 section 8.1 validates key and signature generation only inside a
 hardware cryptographic module at FIPS 140 Level 3 physical security
-or higher, and section 9.1 recommends a hardware monotonic counter
-where one is available. A serializable database transaction is a
+or higher, and section 9.1 says a hardware monotonic counter, where
+one is available, "may be very helpful in avoiding unintentional
+reuse of an OTS key". A serializable database transaction is a
 weaker engineering alternative that the standard does not sanction.
 
 Public API:
@@ -35,7 +36,8 @@ Public API:
   shared lock on the same sibling lock file the writers use; raises
   ``RuntimeError`` if absent or corrupt.
 - ``durable_xmss_sign(counter_path, ...) -> xmss signature``:
-  reserve, persist, sign under a single exclusive lock. Raises
+  reserve and persist under a single exclusive lock, then sign after
+  releasing it. Raises
   ``RuntimeError`` for any precondition failure (missing file,
   corrupt file, exhausted counter).
 """
