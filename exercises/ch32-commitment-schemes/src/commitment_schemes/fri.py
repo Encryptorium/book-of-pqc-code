@@ -6,14 +6,14 @@ pedagogical, not production: Chapter 34 covers FRI-from-scratch at the
 depth required to wrap it into a STARK. Ch 32's scope is FRI as a
 polynomial commitment, demonstrating three things:
 
-1. The folding structure: given f: L -> F, compute f': L^2 -> F of
+1. The folding structure: given f: D -> F, compute f': D^2 -> F of
    roughly half the domain size via f'(y) = (f(x) + f(-x))/2 +
    beta * (f(x) - f(-x))/(2x), where y = x^2 and beta is a verifier-
    supplied challenge.
 2. The consistency check: after log_2(d) folds of a codeword of degree
-   below d, the folded vector on |L| / d points is constant; the
+   below d, the folded vector on |D| / d points is constant; the
    verifier checks that constancy and queries consistency at random
-   points along the folding chain. This toy folds the full log_2(|L|)
+   points along the folding chain. This toy folds the full log_2(|D|)
    rounds down to a single point so the whole chain can be inspected,
    which is past where the protocol would stop: one fold more than
    log_2(d) flattens degree below 2d as well, so the round count is a
@@ -62,7 +62,7 @@ def generate_domain(size: int, generator: int, prime: int) -> list[int]:
     """Build a size-``size`` multiplicative subgroup coset.
 
     ``generator`` must have order at least ``size`` in F_prime^*. The
-    resulting domain ``L`` is closed under negation when ``size`` is a
+    resulting domain ``D`` is closed under negation when ``size`` is a
     power of two, which is the requirement for FRI folding to be
     well-defined. Raises ValueError for non-power-of-two sizes or
     when the generator has insufficient order.
@@ -111,8 +111,8 @@ def fold_once(
     For each pair ``(x, -x)`` in ``domain``, compute
     ``f'(x^2) = (f(x) + f(-x))/2 + beta * (f(x) - f(-x))/(2x)``, where
     beta is the verifier-supplied challenge. Returns the folded
-    evaluations and the new domain ``{x^2 : x in first half of L}``.
-    Requires the domain to be ordered so that index i+|L|/2 holds -L[i].
+    evaluations and the new domain ``{x^2 : x in first half of D}``.
+    Requires the domain to be ordered so that index i+|D|/2 holds -D[i].
     """
     # EXERCISE: implement this function.
     #
@@ -199,7 +199,7 @@ def query_consistency(
 
     For each round r and its successor r+1, recompute the folded value
     at the projected index from the two evaluations at the sibling
-    pair ``(L[i], L[i + |L|/2])`` of round r, and compare to the
+    pair ``(D[i], D[i + |D|/2])`` of round r, and compare to the
     evaluation at the corresponding index in round r+1. Returns True
     if every consecutive pair is consistent, False otherwise.
     """

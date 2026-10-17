@@ -13,7 +13,7 @@ ORDER = 1013
 GEN = 4
 
 def shor_recover_tau(srs):
-    # Recover tau from (g, g^tau). Classical brute force here; Shor is poly(log q).
+    # Recover tau from (g, g^tau). Classical brute force here; Shor is poly(log ORDER).
     g_tau = srs[1]
     for candidate in range(1, ORDER):
         if pow(GEN, candidate, PRIME) == g_tau:

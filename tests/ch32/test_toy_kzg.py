@@ -86,6 +86,18 @@ def test_post_shor_forgery_accepts_wrong_evaluation() -> None:
         commitment, z, fake_y, fake_witness, srs, recovered_tau
     )
 
+    # Chapter 32's Exercise 2, whose worked values Appendix D prints: the
+    # Block 1 commitment under tau = 500, tau recovered from the SRS, and a
+    # witness for y_fake = 42 at z = 100, where the honest value is 243.
+    srs_500 = toy_kzg.setup(degree=4, tau=500)
+    commitment_500 = toy_kzg.commit([7, 11, 13, 17, 19], srs_500)
+    assert commitment_500 == 1499
+    assert toy_kzg.shor_recover_tau(srs_500) == 500
+    assert toy_kzg.eval_poly([7, 11, 13, 17, 19], 100, toy_kzg.DEFAULT_ORDER) == 243
+    witness_500 = toy_kzg.forge_opening(commitment_500, 100, 42, srs_500, 500)
+    assert witness_500 == 1146
+    assert toy_kzg.verify_with_trapdoor(commitment_500, 100, 42, witness_500, srs_500, 500)
+
 
 def test_classical_verifier_rejects_tampered_opening() -> None:
     """Without trapdoor recovery, a tampered y fails verification."""
@@ -142,5 +154,5 @@ def test_default_group_constants_match_the_chapter() -> None:
     assert toy_kzg.DEFAULT_ORDER == 1013
     assert toy_kzg.DEFAULT_GENERATOR == 4
     # The safe-prime structure the module docstring calls load-bearing:
-    # p = 2q + 1, which is what makes every nonzero exponent invertible.
+    # prime = 2 * order + 1, which is what makes every nonzero exponent invertible.
     assert toy_kzg.DEFAULT_PRIME == 2 * toy_kzg.DEFAULT_ORDER + 1

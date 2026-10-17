@@ -1,10 +1,11 @@
-"""Toy q-ary Merkle commitment for Chapter 32.
+"""Toy Merkle commitment of configurable arity for Chapter 32.
 
-Generalizes the binary toy Merkle tree sketched in Chapter 31 to q-ary
-trees with configurable hash-output width. Binding reduces to collision
+Generalizes the binary toy Merkle tree sketched in Chapter 31 to trees
+of any arity, which Chapter 32 writes b, with configurable hash-output
+width. Binding reduces to collision
 resistance of the underlying hash function. Quantum collision cost on
 an n-bit hash is approximately 2^{n/3} under the QRACM model
-(Brassard-Hoyer-Tapp 1998) and closer to 2^{2n/5} without QRACM
+(Brassard-Høyer-Tapp 1998) and closer to 2^{2n/5} without QRACM
 (Chailloux-Naya-Plasencia-Schrottenloher 2017); Chapter 32 uses both
 bounds when sizing hash output widths for post-quantum Merkle
 deployments.
@@ -13,7 +14,7 @@ The module is pedagogical: it exists to demonstrate the commit, open,
 and verify round trip across configurable arities and hash widths, not
 to serve as a production Merkle implementation. Leaves are byte
 strings; the commit routine hashes them into fixed-width digests and
-folds upward q digests at a time.
+folds upward arity digests at a time.
 """
 
 from __future__ import annotations
@@ -56,7 +57,7 @@ class MerkleOpening:
     """An opening proof for a single leaf index.
 
     ``leaf_value`` is the raw leaf bytes. ``siblings[i]`` is the list
-    of q-1 sibling digests at level ``i`` needed to reconstruct the
+    of arity - 1 sibling digests at level ``i`` needed to reconstruct the
     parent digest along the path from the leaf to the root.
     ``leaf_index`` records the position so the verifier knows where the
     hashed leaf sits among its siblings at each level.
@@ -101,10 +102,10 @@ def commit_leaves(
     arity: int = 2,
     width_bits: int = 256,
 ) -> MerkleCommit:
-    """Build a q-ary Merkle tree over ``leaves``.
+    """Build a Merkle tree of the given arity over ``leaves``.
 
-    Leaves are hashed into ``width_bits``-bit digests and folded q at a
-    time until a single root digest remains. Leaves are padded with a
+    Leaves are hashed into ``width_bits``-bit digests and folded arity
+    at a time until a single root digest remains. Leaves are padded with a
     fixed zero digest to the next power of ``arity``. Raises
     ValueError for an empty leaf list, arity below 2, or unsupported
     width.
@@ -129,7 +130,7 @@ def commit_leaves(
 def open_at(commit: MerkleCommit, leaf_index: int, leaf_value: bytes) -> MerkleOpening:
     """Produce an opening for the leaf at ``leaf_index``.
 
-    Records the q-1 sibling digests at each level along the path from
+    Records the arity - 1 sibling digests at each level along the path from
     the hashed leaf to the root. Raises ValueError if the leaf index
     is out of range or if ``leaf_value`` does not match the committed
     digest (a guard against an opening being constructed from a leaf
@@ -195,7 +196,7 @@ def quantum_collision_bits_bht(width_bits: int) -> int:
     """
     # EXERCISE: implement this function.
     #
-    # Brassard-Hoyer-Tapp bound quantum collision finding on an n-bit hash
+    # Brassard-Høyer-Tapp bound quantum collision finding on an n-bit hash
     # at roughly 2^(n/3) queries under the QRACM model, so the figure of
     # merit is n // 3 bits: 85 at n = 256, 128 at n = 384, 170 at n = 512.
     # Reject a non-positive width. This is the conservative of the two

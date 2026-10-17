@@ -25,9 +25,10 @@ Shor recovers tau, the quantum adversary is in the same position as
 the trapdoor-privileged oracle, and the forge_opening routine below
 exhibits the full binding break.
 
-Parameters use the safe-prime structure p = 2*q + 1 with q prime, so
-exponent arithmetic lives in F_q for a prime q = 1013. Coefficients of
-the committed polynomial are also elements of F_q. This alignment
+Parameters use the safe-prime structure p = 2*n + 1 with n prime, so
+exponent arithmetic lives in Z_n for the prime n = 1013, the subgroup
+order Chapters 31 and 33 write n. Coefficients of the committed
+polynomial are also elements of Z_n. This alignment
 between the field of coefficients and the exponent ring is what
 production KZG achieves via a pairing-friendly curve with a prime-order
 subgroup.
@@ -84,10 +85,10 @@ def setup(
     # order-1013 subgroup. Carry the exponent tau^i as a running product
     # reduced modulo the subgroup order, not modulo the prime: exponents
     # live in F_order while group elements live in F_prime, and the
-    # safe-prime structure p = 2q + 1 is what keeps those two rings aligned.
-    # Reject a negative degree and a tau outside [1, order - 1]. In
-    # production tau comes out of a trusted-setup ceremony and is destroyed;
-    # here it stays a parameter so the attack path is visible.
+    # safe-prime structure prime = 2 * order + 1 is what keeps those two
+    # rings aligned. Reject a negative degree and a tau outside [1, order -
+    # 1]. In production tau comes out of a trusted-setup ceremony and is
+    # destroyed; here it stays a parameter so the attack path is visible.
     #
     # Reference: Chapter 32, 'KZG: trapdoor in the structured reference string'
     #
@@ -229,11 +230,11 @@ def shor_recover_tau(srs: SRS) -> int:
     #
     # The SRS publishes g at index 0 and g^tau at index 1, so recovering tau
     # is a discrete logarithm and nothing more. Shor solves it in time
-    # polynomial in log q; here brute force over [1, order - 1] stands in,
-    # 1013 candidates, and returns the identical value a quantum adversary
-    # would obtain. Raise ValueError when the SRS is too short to contain
-    # g^tau at all rather than returning a value that was never searched
-    # for.
+    # polynomial in the bit length of the order; here brute force over [1,
+    # order - 1] stands in, 1013 candidates, and returns the identical value
+    # a quantum adversary would obtain. Raise ValueError when the SRS is too
+    # short to contain g^tau at all rather than returning a value that was
+    # never searched for.
     #
     # Reference: Chapter 32, 'KZG: trapdoor in the structured reference string'
     #

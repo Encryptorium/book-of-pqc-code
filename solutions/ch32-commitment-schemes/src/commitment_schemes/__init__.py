@@ -5,12 +5,13 @@ decomposition (Chapter 31):
 
 - ``toy_kzg``: pedagogical KZG-like polynomial commitment with simulated
   Shor trapdoor recovery and opening forgery.
-- ``merkle``: q-ary Merkle commitment with configurable hash output width
+- ``merkle``: Merkle commitment of configurable arity and hash output width
   and BHT/CNPS quantum-collision-bit helpers.
 - ``fri``: toy FRI commitment with Reed-Solomon codeword construction,
   folding rounds, and query-based consistency checks.
 - ``lattice_pcs``: scalar-SIS vector commitment demonstrating the
-  binding reduction and hiding-via-error pattern.  The toy works over
+  binding reduction. It is binding only: hiding in the real schemes
+  comes from an independent Module-LWE term the toy does not carry.  The toy works over
   ``Z_q``, so its displayed instance is plain SIS; production lattice
   PCS works over ``R_q`` and reduces to Module-SIS.
 

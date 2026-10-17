@@ -25,9 +25,10 @@ Shor recovers tau, the quantum adversary is in the same position as
 the trapdoor-privileged oracle, and the forge_opening routine below
 exhibits the full binding break.
 
-Parameters use the safe-prime structure p = 2*q + 1 with q prime, so
-exponent arithmetic lives in F_q for a prime q = 1013. Coefficients of
-the committed polynomial are also elements of F_q. This alignment
+Parameters use the safe-prime structure p = 2*n + 1 with n prime, so
+exponent arithmetic lives in Z_n for the prime n = 1013, the subgroup
+order Chapters 31 and 33 write n. Coefficients of the committed
+polynomial are also elements of Z_n. This alignment
 between the field of coefficients and the exponent ring is what
 production KZG achieves via a pairing-friendly curve with a prime-order
 subgroup.

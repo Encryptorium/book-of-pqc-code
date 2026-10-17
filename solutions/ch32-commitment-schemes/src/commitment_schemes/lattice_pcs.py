@@ -22,7 +22,7 @@ What this module does capture is the load-bearing design pattern:
 - Openings reveal the committed vector; the verifier recomputes the
   commitment equation and compares.
 
-Randomising the error alone would not make the toy hiding: wherever the
+Randomizing the error alone would not make the toy hiding: wherever the
 two candidates have separated images, a receiver subtracts ``A m`` for
 each from ``C`` and keeps the one whose residual is short, and on these
 parameters that tells the two apart. It is a distinguisher and not a
@@ -166,7 +166,8 @@ def sample_error(params: LatticeParams) -> list[int]:
     Each coordinate is uniform in ``[-error_bound, error_bound]``. The
     returned representation is centered; the caller adds modulo q. The
     error carries no hiding guarantee: see the module docstring for the
-    short-residual distinguisher that recovers the message anyway.
+    short-residual distinguisher that tells two candidates apart wherever
+    their images under A are separated.
     """
     width = 2 * params.error_bound + 1
     return [secrets.randbelow(width) - params.error_bound for _ in range(params.commit_size)]
