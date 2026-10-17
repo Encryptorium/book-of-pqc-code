@@ -4,9 +4,9 @@
 # https://book.encryptorium.com/part-6-post-quantum-zero-knowledge/ch31-four-layer-decomposition/
 #
 # Generated from the chapter text. Edits here do not reach the book.
-# Run: python3 chapter-code/ch31/01-dot.py
+# Run: python3 chapter-code/ch31/02-dot.py
 
-# Block 1: pedagogical slice of the R1CS format used at L1 (stdlib only).
+# Block 2: pedagogical slice of the R1CS format used at L1 (stdlib only).
 # A pairing-based SNARK like Groth16 uses a ~256-bit prime field. Some
 # systems in this Part do not: Boojum runs over Goldilocks and Stwo over
 # Mersenne-31 (Ch 35), and Binius commits over binary-field towers (Ch 32).

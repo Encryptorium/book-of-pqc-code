@@ -41,7 +41,7 @@ def test_every_layer_states_a_role():
 
 def test_the_posture_vocabulary_is_ordered_worst_first():
     assert POSTURES[0] == "broken"
-    assert POSTURES[-1] == "not-applicable"
+    assert POSTURES[-1] == "safe"
     assert POSTURES.index("weakened") < POSTURES.index("safe")
     assert POSTURES.index("pq-assumption") < POSTURES.index("safe")
 
@@ -49,14 +49,15 @@ def test_the_posture_vocabulary_is_ordered_worst_first():
 def test_each_system_carries_its_own_l2_and_l4_posture():
     """Pin each system to its own row of Table 31.2.
 
-    Every posture value in the table appears more than once, so a test
-    that checked only which values are used, or how many systems are
-    broken at L2, would survive swapping two systems' postures. Swapping
-    the STARK and PLONK rows leaves both of those unchanged and makes
-    the chapter's central claim backwards. This is the test that fails.
+    Swapping two systems' postures keeps every value the table uses and
+    how often each appears, so a test that checked only which values are
+    used, or how many systems are broken at L2, would survive the swap.
+    Swapping the STARK and PLONK rows leaves both of those unchanged and
+    makes the chapter's central claim backwards. This is the test that
+    fails.
     """
     expected = {
-        "groth16": ("broken", "not-applicable"),
+        "groth16": ("broken", "broken"),
         "plonk_kzg": ("broken", "pending"),
         "ipa_fs": ("broken", "pending"),
         "starks_fri": ("weakened", "pending"),
@@ -86,11 +87,14 @@ def test_l3_inherits_l2_for_every_system(system):
 
 
 def test_groth16_has_no_fiat_shamir_surface():
-    assert layer_posture("groth16", "L4") == "not-applicable"
+    # Its L4 is the CRS, whose trapdoor falls to the same Shor computation
+    # as its L2 pairing equation (Chapter 31, Figure 31.2).
+    assert SYSTEMS["groth16"].non_interactivity == "CRS (no Fiat-Shamir)"
+    assert layer_posture("groth16", "L4") == "broken"
 
 
 def test_only_groth16_lacks_a_fiat_shamir_surface():
-    lacking = [k for k, v in SYSTEMS.items() if v.l4_posture == "not-applicable"]
+    lacking = [k for k, v in SYSTEMS.items() if v.non_interactivity != "Fiat-Shamir"]
     assert lacking == ["groth16"]
 
 
@@ -106,8 +110,9 @@ def test_l2_is_the_first_audit_target_for_each_of_these_four_systems(system):
 
 
 def test_a_lattice_system_moves_the_thinnest_layer_to_l4():
-    # With L2 resting on an unbroken post-quantum assumption, the open
-    # question is the QROM one at L4 rather than the commitment.
+    # With L2 resting on a post-quantum assumption that Shor's algorithm
+    # does not break, the open question is the QROM one at L4 rather than
+    # the commitment.
     assert thinnest_layer("lattice_fs") == "L4"
 
 

@@ -8,13 +8,14 @@ pip install -e .          # optional; the test suite adds src/ to sys.path
 pytest tests/ch31         # from the repository root
 ```
 
-Three modules, one per thing Chapter 31 needs to make concrete.
+Four modules, one per thing Chapter 31 needs to make concrete.
 
 | Module | Layer | What it holds |
 |---|---|---|
+| `zk_layers.schnorr` | none | The Schnorr identification protocol the chapter opens on, with the extraction behind its knowledge soundness and the simulator behind its zero knowledge, as the chapter prints them. |
 | `zk_layers.r1cs` | L1 | The rank-1 constraint format the chapter prints, plus the per-gate cost model behind its constraint counts. |
 | `zk_layers.merkle` | L2 | The binary Merkle commitment the chapter prints, with the domain separation the printed block flags as omitted. |
-| `zk_layers.layers` | all four | The layer table, the per-system posture table, and the three lookups that read them. |
+| `zk_layers.layers` | all four | The layer table, the per-system posture table, the two lookups that read them, and one sizing routine. |
 
 ## What this is not
 
@@ -26,6 +27,13 @@ deployed.
 Divergences from what a real system does, in the order a reader is
 likely to trip over them:
 
+- **The Schnorr group has order 1013.** `P = 2027`, `N = 1013` and
+  `G = 4` are the toy group Chapters 32 and 33 use, small enough for
+  the suite to list every transcript for a challenge and compare the
+  real and simulated ones as sets, and far too small for anything else.
+  `verify`, `extract` and `simulate` are the chapter's printed block
+  verbatim, and `verify` trusts its public key to lie in the subgroup,
+  which Chapter 33's verifier checks before anything else.
 - **The R1CS field is `P = 97`.** A pairing-based system such as Groth16
   works over a prime of around 255 bits, for BLS12-381 the scalar field.
   Not every deployed SNARK does: Boojum runs over Goldilocks, Stwo over
@@ -59,7 +67,7 @@ likely to trip over them:
   deployment parameters are Chapter 32's and Chapter 35's work, not this
   table's.
 - **`hash_bits_for_pq_collision` inverts a query-model bound.** The
-  Brassard-Hoyer-Tapp `2^{n/3}` figure and the
+  Brassard-Høyer-Tapp `2^{n/3}` figure and the
   Chailloux-Naya-Plasencia-Schrottenloher `2^{2n/5}` figure are
   worst-case theoretical targets rather than literal deployment-cost
   estimates, and sizing against them is conservative by construction.
@@ -72,9 +80,8 @@ likely to trip over them:
 and
 `tests/ch31/test_r1cs.py::test_each_gate_carries_its_own_cost_and_arity`
 each pin every row of a labelled table to its own value. Neither is
-redundant with the tests around it. Every posture value in the table
-appears more than once, and the gate costs sum to the same total under a
-permutation, so a test that checks which values are used, how many there
-are, or what they add up to survives swapping two rows and leaves the
+redundant with the tests around it. Swapping two rows of either table
+keeps the values it uses, how often each appears, and what they add up
+to, so a test that checks only those survives the swap and leaves the
 table wrong. Both were confirmed to fail against a swapped table before
 being relied on.

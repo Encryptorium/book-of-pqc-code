@@ -4,9 +4,9 @@
 # https://book.encryptorium.com/part-6-post-quantum-zero-knowledge/ch31-four-layer-decomposition/
 #
 # Generated from the chapter text. Edits here do not reach the book.
-# Run: python3 chapter-code/ch31/02-h.py
+# Run: python3 chapter-code/ch31/03-h.py
 
-# Block 2: pedagogical slice of a Merkle commitment at L2 (stdlib only).
+# Block 3: pedagogical slice of a Merkle commitment at L2 (stdlib only).
 # Production trees domain-separate leaves and internal nodes,
 # e.g. H(b"\x00" + leaf) vs H(b"\x01" + left + right); omitted here.
 import hashlib

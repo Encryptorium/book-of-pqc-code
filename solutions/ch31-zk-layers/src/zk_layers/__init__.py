@@ -1,7 +1,10 @@
 """Chapter 31: the four-layer decomposition of a zero-knowledge proof system.
 
-Three modules, one per thing the chapter needs to make concrete:
+Four modules, one per thing the chapter needs to make concrete:
 
+- ``schnorr``: the Schnorr identification protocol the chapter opens
+  on, with the extraction behind its knowledge soundness and the
+  simulator behind its zero knowledge, as the chapter prints them.
 - ``r1cs``: the L1 constraint format the chapter prints, plus the
   per-gate cost model that decides what arithmetizing a computation
   costs.
@@ -37,6 +40,7 @@ from .merkle import (
     verify_path,
 )
 from .r1cs import GATES, Gate, check_r1cs, dot, gate_constraints
+from .schnorr import extract, simulate, verify
 
 __all__ = [
     "GATES",
@@ -53,12 +57,15 @@ __all__ = [
     "check_r1cs",
     "commit",
     "dot",
+    "extract",
     "gate_constraints",
     "hash_bits_for_pq_collision",
     "hash_leaf",
     "hash_node",
     "layer_posture",
     "open_path",
+    "simulate",
     "thinnest_layer",
+    "verify",
     "verify_path",
 ]

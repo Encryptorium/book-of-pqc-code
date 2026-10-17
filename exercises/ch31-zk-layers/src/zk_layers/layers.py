@@ -1,8 +1,8 @@
-"""The four-layer decomposition itself, as data plus three lookups.
+"""The four-layer decomposition itself: data, two lookups, one sizing routine.
 
 Chapter 31's Table 31.1 names the four layers, Table 31.2 sorts five
 representative systems by their L2 commitment and L4 transform, and the
-chapter's two figures colour the result. This module is that table,
+chapter's two figures color the result. This module is that table,
 written so a test can pin each assignment to the chapter rather than
 leaving the layer labels to prose alone.
 
@@ -26,20 +26,15 @@ from math import ceil
 # order, so the tuple is the ranking and not merely a list of the values
 # that happen to appear.
 #
-# "pq-assumption" sits below "safe" on purpose. A lattice commitment is
-# unbroken, but its L2 binding rests on a computational assumption,
-# where L1 rests on nothing an adversary can attack. "not-applicable"
-# sits last because a layer a system does not have is a layer with
-# nothing in it to audit, which is not the same as that layer being an
-# advantage: Chapter 31 says outright that Groth16's missing L4 is not a
-# safety advantage but the shape that makes its L2 break structural.
+# "pq-assumption" sits below "safe" on purpose. Shor's algorithm does not
+# break a lattice commitment, but its L2 binding rests on a computational
+# assumption, where L1 rests on nothing an adversary can attack.
 POSTURES = (
     "broken",
     "weakened",
     "pending",
     "pq-assumption",
     "safe",
-    "not-applicable",
 )
 
 
@@ -109,11 +104,11 @@ SYSTEMS: dict[str, SystemProfile] = {
         key="groth16",
         label="Groth16",
         arithmetization="R1CS / QAP",
-        commitment="Pairing equation (KZG-style, SRS-bound)",
+        commitment="Pairing equation (SRS-bound)",
         protocol_logic="Algebraic NIZK",
-        non_interactivity="none (no Fiat-Shamir)",
+        non_interactivity="CRS (no Fiat-Shamir)",
         l2_posture="broken",
-        l4_posture="not-applicable",
+        l4_posture="broken",
     ),
     "plonk_kzg": SystemProfile(
         key="plonk_kzg",
@@ -223,7 +218,7 @@ def thinnest_layer(system: str) -> str:
 def hash_bits_for_pq_collision(target_bits: int, model: str = "bht") -> int:
     """Minimum hash output width for ``target_bits`` of PQ collision security.
 
-    Under the Brassard-Hoyer-Tapp query-model bound an ``n``-bit hash
+    Under the Brassard-Høyer-Tapp query-model bound an ``n``-bit hash
     delivers about ``n / 3`` bits of quantum collision resistance, so
     reaching ``target_bits`` needs ``n >= 3 * target_bits``. Under the
     Chailloux-Naya-Plasencia-Schrottenloher bound, which assumes no
@@ -239,13 +234,13 @@ def hash_bits_for_pq_collision(target_bits: int, model: str = "bht") -> int:
     """
     # EXERCISE: implement this function.
     #
-    # Invert the collision bound. Under Brassard-Hoyer-Tapp an n-bit hash
+    # Invert the collision bound. Under Brassard-Høyer-Tapp an n-bit hash
     # delivers about n/3 bits, so a target of t bits needs n >= 3t. Under
     # Chailloux-Naya-Plasencia-Schrottenloher, which assumes no quantum
     # random-access classical memory, the exponent is 2n/5 and the
     # requirement is n >= 5t/2. Round the second one up rather than down: a
     # width that lands half a bit short of the target does not reach it.
-    # Reject a non-positive target and an unrecognised model with
+    # Reject a non-positive target and an unrecognized model with
     # ValueError.
     #
     # Reference: Chapter 31, 'Cryptanalysis: per-layer quantum-safety'
