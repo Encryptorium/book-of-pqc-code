@@ -19,7 +19,10 @@ The urgency score is
     urgency = quantum_mult * exposure_mult * sum((5 - score) * weight)
 
 where the sum runs over PQRA domains. A ``quantum-safe`` touchpoint
-always scores 0 (already migrated, no quantum-migration work). A
+always scores 0, since its multiplier is 0. The status records the
+roles assessed, not the absence of quantum-migration work: the running
+example's ``tls_endpoint_api`` is ``quantum-safe`` for key
+establishment while its certificate chain is still classical. A
 ``public vulnerable`` touchpoint with every domain at readiness 1 scores
 the maximum (3 * 2 * sum((5 - 1) * w) = 6 * 4 = 24 when weights sum to
 1.0). Ties break on name for determinism.
@@ -83,13 +86,13 @@ def migration_urgency(
     #
     # urgency = quantum_mult * exposure_mult * sum over the weighted domains
     # of (5 - score) * weight. Check the weights sum to 1.0 within 1e-9
-    # before scoring anything, then per touchpoint reject an unrecognised
+    # before scoring anything, then per touchpoint reject an unrecognized
     # quantum_status or exposure, a domain the weights name that the
     # readiness dict lacks, and any score outside 1 through 5. Zero is not a
     # valid readiness score: 'not yet assessed' has to be resolved before a
     # rollup, not averaged into one. A readiness of 5 contributes nothing to
-    # the gap and quantum-safe multiplies by 0, so an already-migrated
-    # touchpoint scores zero however weak the rest of its record is; this
+    # the gap and quantum-safe multiplies by 0, so a touchpoint recorded as
+    # quantum-safe scores zero however weak the rest of its record is; this
     # ranks quantum migration urgency, not general operational risk. Sort
     # descending by score with the name as the tie-break so the ordering is
     # deterministic.

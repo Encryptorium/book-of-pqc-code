@@ -19,7 +19,10 @@ The urgency score is
     urgency = quantum_mult * exposure_mult * sum((5 - score) * weight)
 
 where the sum runs over PQRA domains. A ``quantum-safe`` touchpoint
-always scores 0 (already migrated, no quantum-migration work). A
+always scores 0, since its multiplier is 0. The status records the
+roles assessed, not the absence of quantum-migration work: the running
+example's ``tls_endpoint_api`` is ``quantum-safe`` for key
+establishment while its certificate chain is still classical. A
 ``public vulnerable`` touchpoint with every domain at readiness 1 scores
 the maximum (3 * 2 * sum((5 - 1) * w) = 6 * 4 = 24 when weights sum to
 1.0). Ties break on name for determinism.

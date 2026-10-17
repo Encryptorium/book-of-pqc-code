@@ -60,7 +60,7 @@ phases. `PHASE_EXIT_CRITERIA` is a worked example a program would replace with
 its own.
 
 **`milestone_tracker` is deliberately phase-agnostic.** It does not know which
-milestones belong to which phase, and it does not prioritise: it preserves
+milestones belong to which phase, and it does not prioritize: it preserves
 input order in the slipped tuple. Coupling milestones to phases is a policy
 choice the chapter leaves to the program.
 

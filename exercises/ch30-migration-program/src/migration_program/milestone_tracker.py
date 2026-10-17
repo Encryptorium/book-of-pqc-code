@@ -57,7 +57,7 @@ def report(milestones: Sequence[Milestone], today: str) -> MilestoneReport:
     # by zero. A milestone is slipped when it is not complete and its target
     # date is strictly earlier than today, so a target falling on today's
     # date is not yet slipped. Keep the input order in the slipped tuple;
-    # the tracker reports, it does not prioritise.
+    # the tracker reports, it does not prioritize.
     #
     # Reference: Chapter 30, 'End-of-migration and classical deprecation (2035+)'
     #

@@ -6,13 +6,15 @@ a gate record. The four phases follow the NCSC 2025 timeline anchors:
 - ``discovery`` (2025-2028): CBOM complete, PQRA scored, owners
   assigned.
 - ``first-wave`` (2028-2031): public-facing vulnerable touchpoints
-  migrated, rollback drill completed.
+  migrated, JWT signing migrated, rollback drill completed.
 - ``broad-rollout`` (2031-2035): remaining vulnerable touchpoints
-  migrated, composite-aware client population above a threshold.
-- ``end-of-migration`` (2035+): classical algorithms retired from
-  every surviving chain, PQ-only mode asserted (the classical
-  component of every composite chain is now retired, leaving single-PQ
-  signers everywhere), post-migration review signed off.
+  migrated, composite-aware client population above a threshold, every
+  work-stream reporting green.
+- ``end-of-migration`` (2035+): every classical public-key algorithm
+  retired, including those on the chains that survived the rollout window,
+  PQ-only mode asserted (the classical component of every composite
+  chain is now retired, leaving single-PQ signers on every composite
+  chain), post-migration review signed off.
 
 A gate record is a ``Mapping[str, object]`` where each key is a
 criterion name and the value is ``True`` if the criterion has been met.

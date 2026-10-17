@@ -10,10 +10,9 @@
 from datetime import date
 
 MILESTONES = [
-    ("cbom_complete",                "2026-12-31", True),
-    ("pqra_scored",                  "2027-06-30", True),
-    ("owners_assigned",              "2025-12-31", False),
-    ("public_vulnerable_migrated",   "2028-12-31", False),
+    ("classical_retired",            "2035-12-31", False),
+    ("pq_only_mode",                 "2035-06-30", True),
+    ("post_migration_review_signed", "2036-06-30", False),
 ]
 
 def report(milestones, today):
@@ -27,7 +26,7 @@ def report(milestones, today):
     return {"total": total, "completed": completed,
             "percent": pct, "slipped": slipped}
 
-r = report(MILESTONES, "2026-04-17")
+r = report(MILESTONES, "2036-01-15")
 print(f"{r['completed']}/{r['total']} complete ({r['percent'] * 100:.0f}%), "
       f"slipped={r['slipped']}")
-# ==> 2/4 complete (50%), slipped=['owners_assigned']
+# ==> 1/3 complete (33%), slipped=['classical_retired']
