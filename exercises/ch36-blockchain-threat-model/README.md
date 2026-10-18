@@ -67,7 +67,7 @@ crash is the reminder to make that edit deliberately.
 
 **The Strand numbers are a fixture, not a measurement.** The per-surface `X` and
 `Y` values the tests pin come from the chapter's running example on a fictional
-chain, and the transaction surface's `X` of 50 years is a stand-in for an
-archival horizon the chapter describes as effectively unbounded. They are there
+chain, and the transaction surface's `X` of 50 years caps a value lifetime the
+chapter describes as effectively unbounded. They are there
 so the arithmetic has something to chew on and so a later chapter cannot quietly
 reassign them, not because any of them was measured on a deployed chain.

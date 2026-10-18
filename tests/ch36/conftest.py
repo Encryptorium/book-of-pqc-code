@@ -108,11 +108,11 @@ def strand_xy() -> dict[str, tuple[int, int]]:
     """Per-surface (X, Y) pairs for Mosca's inequality.
 
     X is the data-lifetime horizon in years; Y is the migration time.
-    The transaction surface sits at the public-ledger archival
-    horizon (effectively unbounded; the fixture uses 50 years as a
+    The transaction surface sits at the value-lifetime cap (the value
+    lifetime is effectively unbounded; the fixture uses 50 years as a
     practical cap). The consensus surface sits at the validator-set
     rotation cadence. The on-chain verifier sits at the proof-system
-    upgrade cadence. The governance surface sits at the multisig
+    upgrade cadence. The governance surface sits at the joint-key
     rotation cadence.
     """
     return {

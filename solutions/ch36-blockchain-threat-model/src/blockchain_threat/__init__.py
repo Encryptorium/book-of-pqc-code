@@ -2,8 +2,8 @@
 
 Two utilities:
 
-- ``surface_taxonomy``: classify a blockchain signature primitive by
-  quantum vulnerability (``"shor-vulnerable"``,
+- ``surface_taxonomy``: classify a primitive deployed on a blockchain
+  surface by quantum vulnerability (``"shor-vulnerable"``,
   ``"hash-quantum-degraded"``, or ``"post-quantum-standardized"``).
 - ``mosca_window``: given Mosca's three parameters ``X`` (data
   lifetime, in years), ``Y`` (migration time), and ``Z`` (years until

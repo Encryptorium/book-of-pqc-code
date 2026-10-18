@@ -9,7 +9,7 @@ of three labels:
   ECDSA, Schnorr, EdDSA, BLS over BLS12-381, and RSA all fall here.
 - ``"hash-quantum-degraded"``: the primitive is a hash or symmetric
   function. Grover gives a square-root preimage speedup and
-  Brassard-Hoyer-Tapp gives a roughly ``2^(n/3)`` collision-search
+  Brassard-Høyer-Tapp gives a roughly ``2^(n/3)`` collision-search
   cost, but neither yields a polynomial-time break; the mitigation
   is a parameter bump, not a primitive swap.
 - ``"post-quantum-standardized"``: the primitive is a standardized
@@ -22,14 +22,13 @@ FIPS 206, is under development at chain-tip 2026 with no Initial
 Public Draft released, so no final parameter set exists to classify
 and the third label would be false of it. An asset record naming
 ``FN-DSA-512`` therefore crashes on the unknown-primitive assertion,
-which is the intended behaviour: the table records what a standard
+which is the intended behavior: the table records what a standard
 says today, not what one is expected to say.
 
-Asset records are mappings with at least the keys ``surface``,
-``primitive``, ``exposure``, and ``lifecycle``. The classifier reads
-the ``primitive`` key only; the other keys carry context for code
-that walks the same records in Ch 37 through Ch 41 (the chapters
-that perform the actual migrations).
+Asset records are mappings carrying at least the ``primitive`` key,
+which is all ``classify`` reads; ``classify_all`` also reads
+``surface``. Any other key, such as the ``exposure`` and
+``lifecycle`` fields the test fixtures carry, is ignored.
 
 The contract is narrow on purpose. The classifier refuses any
 primitive name not in the lookup table. New primitive names land via
@@ -49,7 +48,7 @@ PRIMITIVE_CLASSIFICATION: Mapping[str, str] = {
     "BLS-BLS12-381": "shor-vulnerable",
     "RSA-2048": "shor-vulnerable",
     # Hash- or symmetric-based; Grover yields a square-root preimage
-    # speedup and Brassard-Hoyer-Tapp gives roughly 2^(n/3) collision
+    # speedup and Brassard-Høyer-Tapp gives roughly 2^(n/3) collision
     # search, but neither yields a polynomial-time break. The
     # mitigation is a parameter bump, not a primitive swap.
     "SHA-256": "hash-quantum-degraded",
