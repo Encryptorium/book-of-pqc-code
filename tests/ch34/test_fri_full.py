@@ -523,7 +523,7 @@ def test_fri_grinding_nonce_decides_the_query_positions():
     # is absorbed BEFORE the positions are squeezed. The old order
     # squeezed the positions first and ground last, so proofs at g = 0
     # and g = 12 carried identical openings and differed in the nonce
-    # alone: a forger could search for a favourable query set for free
+    # alone: a forger could search for a favorable query set for free
     # and pay the proof of work once at the end.
     codeword, dom = _honest_codeword()
     prime = DEFAULT_PRIME

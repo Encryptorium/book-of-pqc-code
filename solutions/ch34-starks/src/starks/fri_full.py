@@ -486,17 +486,17 @@ def fri_verify(
         return False
 
     # Final codeword must be constant: after num_rounds of folding a
-    # codeword close to a polynomial of degree less than degree_bound,
-    # the polynomial degree bound halves each round. For the Chapter 34
+    # codeword of degree less than degree_bound, the polynomial degree
+    # bound halves each round. For the Chapter 34
     # toy (trace length 8, LDE size 32, num_rounds 3), the final
     # polynomial has degree less than one on a 4-point domain, so every
     # value in the final codeword equals the same constant. One fold
     # more would flatten every polynomial of degree below 16 as well,
     # so the round count is what makes this check test the claimed
-    # degree and not twice it. A random codeword that
-    # happens to pass every fold-consistency check by coincidence
-    # cannot also make the final codeword constant except with the
-    # negligible probability governed by the proximity-gap theorem.
+    # degree and not twice it. A word far from the code that happens
+    # to pass every fold-consistency check by coincidence cannot also
+    # make the final codeword constant except with the probability
+    # Chapter 34 Section 5.1 bounds.
     if len(proof.final_codeword) < 1:
         return False
     anchor = proof.final_codeword[0]

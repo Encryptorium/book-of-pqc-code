@@ -279,28 +279,30 @@ def fri_prove(
     """
     # EXERCISE: implement this function.
     #
-    # Commit, fold, open, grind. Merkle-commit the initial codeword and
+    # Commit, fold, grind, open. Merkle-commit the initial codeword and
     # absorb its root under a round-0 label. Then for each round, squeeze
     # that round's beta from the transcript, fold the current codeword and
     # domain with it, commit the folded result, and absorb the new root
     # before the next squeeze; binding each root before its successor
     # challenge is what stops a prover picking a beta that cancels a flawed
-    # codeword. Squeeze num_queries positions against the initial domain
-    # size, then for every round record each position reduced modulo that
-    # round's size, along with the leaf value there, the value at the paired
-    # index half a round-size away, and the Merkle path. Finally search for
-    # a grinding nonce over the transcript state and absorb it. Derive the
-    # fold count from the degree bound: log2(degree_bound) folds turn degree
-    # below degree_bound into a constant on N / degree_bound points, and one
-    # fold more would flatten degree below 2 * degree_bound as well, so the
-    # count is what makes the final constancy check test the claimed degree
-    # and not twice it. Default degree_bound to N / 4, the STARK's rate,
-    # floored at 2 so a four-point domain still gets its one fold, and
-    # reject a bound that is not a power of two in [2, N / 2]; accept
-    # num_rounds as a direct override in [1, log2(N) - 1], but not together
-    # with degree_bound. Reject mismatched codeword and domain lengths, a
-    # domain below size four or not a power of two, num_queries below one,
-    # and negative grinding bits.
+    # word. Once every root is absorbed, search for a grinding nonce over
+    # the transcript state and absorb it, and only then squeeze num_queries
+    # positions against the initial domain size, so the nonce decides which
+    # positions are queried. Then for every round record each position
+    # reduced modulo that round's size, the leaf value there, the value at
+    # the paired index half a round-size away, and a Merkle path for each of
+    # the two. Derive the fold count from the degree bound:
+    # log2(degree_bound) folds turn degree below degree_bound into a
+    # constant on N / degree_bound points, and one fold more would flatten
+    # degree below 2 * degree_bound as well, so the count is what makes the
+    # final constancy check test the claimed degree and not twice it.
+    # Default degree_bound to N / 4, the STARK's rate, floored at 2 so a
+    # four-point domain still gets its one fold, and reject a bound that is
+    # not a power of two in [2, N / 2]; accept num_rounds as a direct
+    # override in [1, log2(N) - 1], but not together with degree_bound.
+    # Reject mismatched codeword and domain lengths, a domain below size
+    # four or not a power of two, num_queries below one, and negative
+    # grinding bits.
     #
     # Reference: Chapter 34, '4.3 FRI with Fiat-Shamir challenges' and '4.4 Transcript and grinding'
     #
@@ -335,17 +337,18 @@ def fri_verify(
     #
     # Rederive everything the prover claimed instead of trusting it. Replay
     # the transcript in the prover's exact order (absorb root 0, then
-    # alternate squeezing beta_j and absorbing root j+1), squeeze the same
-    # query positions, check the grinding nonce against the state before
-    # absorbing it, and rebuild each round's domain by squaring the first
+    # alternate squeezing beta_j and absorbing root j+1), check the grinding
+    # nonce against the state and absorb it, and only then squeeze the same
+    # query positions. Rebuild each round's domain by squaring the first
     # half of the previous one. Then per query, per round: the opening's
     # leaf index must equal the query position reduced modulo that round's
-    # size, and its Merkle path must rebuild that round's committed root.
-    # Across consecutive rounds, refold the pair by hand with that round's
-    # beta and require the result to equal the successor round's opened leaf
-    # value at the successor index. Finally the final codeword must recommit
-    # to the last root and must be constant, because log2(degree_bound)
-    # folds of a codeword close to a polynomial of degree below degree_bound
+    # size, and the leaf's Merkle path and its sibling's must both rebuild
+    # that round's committed root, the sibling's at the index half a
+    # round-size away. Across consecutive rounds, refold the pair by hand
+    # with that round's beta and require the result to equal the successor
+    # round's opened leaf value at the successor index. Finally the final
+    # codeword must recommit to the last root and must be constant, because
+    # log2(degree_bound) folds of a codeword of degree below degree_bound
     # leave degree below one; derive the round count from degree_bound
     # exactly as the prover does, since a verifier that folds once more
     # accepts twice the claimed degree. Return False on any of those

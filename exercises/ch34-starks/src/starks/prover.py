@@ -17,21 +17,21 @@ production STARK does not send it: the verifier checks the constraints
 through a composition polynomial (a random linear combination of the
 constraint quotients) whose own LDE codeword is also Merkle-committed
 and FRI-proven. Not sending the trace is not the same as hiding it;
-zero knowledge needs a separate randomisation of the trace and its
+zero knowledge needs a separate randomization of the trace and its
 commitments, which the toy also omits. The toy's role is to
 demonstrate the four-stage pipeline at minimal complexity, not to
 implement privacy or optimize proof size. Chapter
-35 connects the toy to Zcash, ZKsync, and Starknet, where the
-production version is deployed.
+35 reads Zcash, ZKsync, and Starknet against the toy, and the last
+two run production FRI-based STARKs.
 
-The verifier side of the toy binds the sent trace to the committed
-codeword by (i) checking AIR directly on the trace and (ii) checking
-that every FRI-queried position of the codeword agrees with the
-Lagrange interpolation of the sent trace at the corresponding LDE
-point. The FRI proof then certifies that the committed codeword is
-close to a polynomial of degree less than the trace length. Together,
-the three checks force the prover to be honest about both the trace
-and the codeword.
+The verifier side of the toy (i) checks the AIR directly on the sent
+trace and (ii) checks that the committed word agrees with the Lagrange
+interpolation of the sent trace at every FRI query position, which
+tests that the committed word encodes that trace. The FRI proof then
+certifies that the committed word is close to a polynomial of degree
+less than the trace length. Together, the three checks bind the sent
+trace to the AIR and the committed word to the trace, up to the
+soundness error Chapter 34 Section 5 bounds.
 """
 
 from __future__ import annotations
@@ -118,7 +118,7 @@ def stark_prove(
     # polynomial, the random linear combination of the constraint quotients
     # that FRI also proves low-degree, and this toy drops that route for
     # compactness. Not sending the trace would not be hiding it either: zero
-    # knowledge needs a separate randomisation of the trace and its
+    # knowledge needs a separate randomization of the trace and its
     # commitments, which the toy also leaves out.
     #
     # Reference: Chapter 34, '4.5 Prover and verifier wiring' (Block 5)

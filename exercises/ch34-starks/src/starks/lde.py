@@ -149,9 +149,9 @@ def extend_polynomial(
     # trace becomes a length-N codeword, and any L of the N values
     # reconstruct the polynomial. That redundancy is not a cryptographic
     # step in itself; it is what FRI later exploits, because a codeword
-    # close to a low-degree polynomial passes proximity testing and one far
-    # from every such polynomial fails. Raise ValueError for an empty
-    # coefficient list or an empty domain.
+    # passes proximity testing and a word far from every low-degree
+    # polynomial fails. Raise ValueError for an empty coefficient list or an
+    # empty domain.
     #
     # Reference: Chapter 34, 'AIR, LDE, and the Reed-Solomon lift' and '4.2 LDE' (Block 3)
     #

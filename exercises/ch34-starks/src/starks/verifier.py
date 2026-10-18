@@ -5,8 +5,8 @@ replays the three checks that bind the four stages of the pipeline:
 
 1. AIR constraints hold on the sent trace (L1 check).
 2. The Lagrange interpolation of the trace agrees with the committed
-   codeword at every FRI query position (L1-to-L2 consistency).
-3. The codeword is close to a polynomial of degree less than the
+   word at every FRI query position (L1-to-L2 consistency).
+3. The committed word is close to a polynomial of degree less than the
    trace length (L2 FRI proximity).
 
 The Fiat-Shamir transcript is reconstructed from scratch: the verifier

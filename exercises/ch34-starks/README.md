@@ -34,18 +34,19 @@ Three things this package is not, none of which the module names give away.
 
 **It is not zero-knowledge.** The prover sends the trace in the clear
 alongside the FRI proof, and not sending it would not be hiding it
-either: zero knowledge needs a separate randomisation of the trace and
+either: zero knowledge needs a separate randomization of the trace and
 its commitments, which this package does not do. Separately, and it is a
 different omission, this package has no composition polynomial at all,
 the random linear combination of the constraint quotients that FRI also
 proves low-degree, so it drops the production route by which a verifier
 checks the constraints without receiving the trace. Restoring the
 composition polynomial alone would close that route and still supply no
-ZK. Chapter 34 Section 4.5 explains both; the soundness argument still
-closes, via a consistency check binding the sent trace to the committed
-codeword, but the "ZK" in zk-STARK is absent by construction.
+ZK. Chapter 34 Section 4.5 explains both. The verifier checks the AIR
+directly on the sent trace, and a consistency check tests, at the FRI
+query positions, that the committed word encodes that trace, but the
+"ZK" in zk-STARK is absent by construction.
 
-**It implements nothing standardised**, so there is no specification to be
+**It implements nothing standardized**, so there is no specification to be
 byte-compatible with and no known-answer tests to match. FRI, AIR and the
 Fiat-Shamir transcript here follow the chapter's own conventions.
 
