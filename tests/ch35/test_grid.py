@@ -11,12 +11,12 @@ from zk_case_studies.grid import (
 )
 
 
-def test_every_l2_class_carries_the_colour_the_chapter_assigns_it():
+def test_every_l2_class_carries_the_color_the_chapter_assigns_it():
     assert L2_COLORS == {"pairing": "red", "ipa_dlp": "red",
                          "fri": "amber", "lattice_pcs": "amber"}
 
 
-def test_every_l4_class_carries_the_colour_the_chapter_assigns_it():
+def test_every_l4_class_carries_the_color_the_chapter_assigns_it():
     assert L4_COLORS == {"crs": "red", "fs_over_dlp": "red",
                          "fs_tier1": "amber", "fs_tier2": "amber",
                          "fs_tier3_classical_rom": "amber"}
@@ -26,7 +26,7 @@ def test_severity_order_runs_red_then_amber_then_green():
     assert ORDER["red"] < ORDER["amber"] < ORDER["green"]
 
 
-def test_dominance_takes_the_more_severe_colour_in_both_orders():
+def test_dominance_takes_the_more_severe_color_in_both_orders():
     for pair in (("red", "amber"), ("red", "green"), ("amber", "green")):
         assert dominant_color(*pair) == pair[0]
         assert dominant_color(*reversed(pair)) == pair[0]
@@ -39,7 +39,7 @@ def test_a_green_layer_never_rescues_a_red_one():
     assert dominant_color("green", "amber") == "amber"
 
 
-def test_dominance_rejects_an_unknown_colour_and_an_empty_call():
+def test_dominance_rejects_an_unknown_color_and_an_empty_call():
     with pytest.raises(ValueError):
         dominant_color("red", "purple")
     with pytest.raises(ValueError):

@@ -12,7 +12,7 @@ margin. Standard library only, no dependencies.
 | Module | What it holds |
 |---|---|
 | `zk_case_studies.margins` | The three decoding radii, the composed FRI soundness budget, the DFMS20 challenge-width rule in exact and approximate form, and the pairing zero-margin result |
-| `zk_case_studies.grid` | The L2 and L4 colour tables, the severity order, the dominance rule, and the `classify` entry point |
+| `zk_case_studies.grid` | The L2 and L4 color tables, the severity order, the dominance rule, and the `classify` entry point |
 | `zk_case_studies.systems` | The six deployed configurations the chapter walks, and Stwo's published defaults |
 
 ## Running it
@@ -28,18 +28,20 @@ tree in `exercises/ch35-case-studies`.
 
 ## What the chapter prints and what it does not
 
-Six routines here appear as listings in the chapter: `bit_margin_pairing`,
-`shor_pairing_margin`, `stark_classical_margin`, `dfms20_exact_cbits`,
-`query_miss_bits`, and `classify`, together with the `L2_COLORS` and
-`L4_COLORS` tables.
+Four routines here appear as listings in the chapter: `stark_classical_margin`,
+`dfms20_exact_cbits`, `query_miss_bits`, and `classify`, together with the
+`L2_COLORS` and `L4_COLORS` tables.
 
-Four more exist because the chapter states them in prose and never prints them, or printed them once and no longer does.
+Six more exist because the chapter states them in prose and never prints them, or printed them once and no longer does.
 `decoding_radius` is the three radii of Ch 34 Section 5.1 as one function.
 `composed_margin` is the budget with its three terms kept apart rather than
 summed away, which is what the prose needs when it asks which term dominates.
 `dfms20_required_cbits` is the approximate challenge width earlier editions
 printed, kept so the gap to the exact form stays measurable. `posture` is the per-system lookup that the
-five-step case-study procedure produces.
+five-step case-study procedure produces. `bit_margin_pairing` and
+`shor_pairing_margin` are the zero margin of a red L2, which earlier editions
+printed as Blocks 1 and 2. The chapter now states that margin in prose and
+points at Chapter 32's KZG break instead.
 
 ## Scope boundary
 
@@ -61,7 +63,7 @@ ethSTARK parameter points in the chapter are reference-like configurations,
 because neither project publishes parameters at that granularity. Stwo is the
 exception: `STWO_DEFAULTS` carries the triple published in the
 `starkware-libs/stwo-cairo` README, and it is the only entry in this package
-that is quoted rather than modelled.
+that is quoted rather than modeled.
 
 **Margins are quoted at the Johnson radius by default.** `composed_margin` takes
 a `regime` argument and defaults to `"johnson"`, because that is the largest radius

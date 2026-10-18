@@ -4,9 +4,9 @@
 # https://book.encryptorium.com/part-6-post-quantum-zero-knowledge/ch35-case-studies/
 #
 # Generated from the chapter text. Edits here do not reach the book.
-# Run: python3 chapter-code/ch35/06-classify.py
+# Run: python3 chapter-code/ch35/04-classify.py
 
-# Block 6: taxonomy grid classifier. Takes a dict describing a
+# Block 4: taxonomy grid classifier. Takes a dict describing a
 # deployed system's L2 and L4 layers and returns the grid cell color
 # per Figure 35.1 plus the CNFL route per the two specializations from
 # the math-preliminaries section of this chapter. Red dominates amber

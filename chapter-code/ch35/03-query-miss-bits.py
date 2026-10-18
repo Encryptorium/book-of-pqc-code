@@ -4,9 +4,9 @@
 # https://book.encryptorium.com/part-6-post-quantum-zero-knowledge/ch35-case-studies/
 #
 # Generated from the chapter text. Edits here do not reach the book.
-# Run: python3 chapter-code/ch35/05-query-miss-bits.py
+# Run: python3 chapter-code/ch35/03-query-miss-bits.py
 
-# Block 5: Stwo's published defaults, read at all three decoding
+# Block 3: Stwo's published defaults, read at all three decoding
 # radii. A blowup of 2^log_blowup gives rate rho; each of the
 # n_queries FRI query paths misses a delta_0-far word with
 # probability at most (1 - delta_0), and grinding adds pow_bits on

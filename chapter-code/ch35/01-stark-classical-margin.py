@@ -4,9 +4,9 @@
 # https://book.encryptorium.com/part-6-post-quantum-zero-knowledge/ch35-case-studies/
 #
 # Generated from the chapter text. Edits here do not reach the book.
-# Run: python3 chapter-code/ch35/03-stark-classical-margin.py
+# Run: python3 chapter-code/ch35/01-stark-classical-margin.py
 
-# Block 3: Boojum inner FRI-STARK classical-ROM margin via the Ch 34
+# Block 1: Boojum inner FRI-STARK classical-ROM margin via the Ch 34
 # Section 5.5 composed-soundness formula. The proximity threshold
 # delta_0 = 1 - sqrt(rho) is the Johnson / Guruswami-Sudan
 # list-decoding radius. BCIKS Theorem 1.2 proves the proximity gap

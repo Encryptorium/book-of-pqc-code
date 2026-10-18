@@ -1,11 +1,12 @@
 """Bit-margin arithmetic for the Chapter 35 case studies.
 
-The chapter prints five of these routines as listings. Three more are here
+The chapter prints three of these routines as listings. Five more are here
 because the chapter states them in prose but never prints them, or printed
 them once and no longer does: the three decoding radii as one function, the
-composed FRI budget with its three terms exposed rather than summed away, and
-the approximate DFMS20 width earlier editions printed, kept so the gap to the
-exact form stays measurable.
+composed FRI budget with its three terms exposed rather than summed away, the
+approximate DFMS20 width earlier editions printed, kept so the gap to the
+exact form stays measurable, and the two pairing zero-margin routines earlier
+editions printed as Blocks 1 and 2.
 """
 
 import math
@@ -69,7 +70,7 @@ class MarginTerms:
         # change actually moves, and getting the sign convention backwards
         # is the whole difficulty.
         #
-        # Reference: Chapter 35, 'The (L2 x L4) grid and bit-margin arithmetic' (Blocks 3 and 4)
+        # Reference: Chapter 35, 'The (L2 x L4) grid and bit-margin arithmetic' (Blocks 1 and 2)
         #
         # Proved by:
         #   tests/ch35/test_margins.py
@@ -106,7 +107,7 @@ def decoding_radius(rho: float, regime: str) -> float:
     # Guruswami-Sudan list-decoding radius 1 - sqrt(rho), strictly below
     # which BCIKS Theorem 1.2 proves the proximity gap, and at which the
     # chapter's model reads its terms; 'capacity' is 1 - rho, which
-    # production pipelines parameterised toward on the strength of
+    # production pipelines parameterized toward on the strength of
     # conjectures Crites and Stewart disproved in 2025. Reject a rate
     # outside the open interval (0, 1) and a regime name not in REGIMES. The
     # three values are strictly ordered at every rate, and a test holds them
@@ -151,7 +152,7 @@ def composed_margin(field_bits: int, L: int, N: int, mu: int, r_FRI: int,
     # parameter point the chapter prints, so a test reads it directly rather
     # than through the total.
     #
-    # Reference: Chapter 35, 'The (L2 x L4) grid and bit-margin arithmetic' (Blocks 3 and 4)
+    # Reference: Chapter 35, 'The (L2 x L4) grid and bit-margin arithmetic' (Blocks 1 and 2)
     #
     # Proved by:
     #   tests/ch35/test_margins.py

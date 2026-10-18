@@ -1,11 +1,12 @@
 """Bit-margin arithmetic for the Chapter 35 case studies.
 
-The chapter prints five of these routines as listings. Three more are here
+The chapter prints three of these routines as listings. Five more are here
 because the chapter states them in prose but never prints them, or printed
 them once and no longer does: the three decoding radii as one function, the
-composed FRI budget with its three terms exposed rather than summed away, and
-the approximate DFMS20 width earlier editions printed, kept so the gap to the
-exact form stays measurable.
+composed FRI budget with its three terms exposed rather than summed away, the
+approximate DFMS20 width earlier editions printed, kept so the gap to the
+exact form stays measurable, and the two pairing zero-margin routines earlier
+editions printed as Blocks 1 and 2.
 """
 
 import math

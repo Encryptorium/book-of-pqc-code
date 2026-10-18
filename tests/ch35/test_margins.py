@@ -132,7 +132,7 @@ def test_composed_margin_rejects_negative_grinding():
 
 
 def test_dfms20_exact_form_matches_the_printed_requirements():
-    # Blocks 3 and 4 print 184 at (k = 128, r_FS = 6); D35 Exercise 3 prints
+    # Blocks 1 and 2 print 184 at (k = 128, r_FS = 6); D35 Exercise 3 prints
     # 176 at k = 80; D34 Exercises 2 and 4 print 179 at r_FS = 8 and 169 at
     # r_FS = 20.
     assert dfms20_exact_cbits(k_target=128, q_bits=80, r_FS=6) == 184
@@ -162,7 +162,7 @@ def test_dfms20_approximation_is_the_retired_form():
 
 
 def test_the_exact_dfms20_form_exceeds_the_approximation_by_about_two_bits():
-    # The chapter's Block 3 comment says the approximation drops the
+    # The chapter's Block 1 comment says the approximation drops the
     # log2(2q + 1) correction and lands about two bits short.
     for k, q, r in ((128, 80, 6), (128, 64, 4), (80, 80, 6)):
         gap = dfms20_exact_cbits(k, q, r) - dfms20_required_cbits(k, q, r)

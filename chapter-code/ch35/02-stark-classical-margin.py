@@ -4,13 +4,13 @@
 # https://book.encryptorium.com/part-6-post-quantum-zero-knowledge/ch35-case-studies/
 #
 # Generated from the chapter text. Edits here do not reach the book.
-# Run: python3 chapter-code/ch35/04-stark-classical-margin.py
+# Run: python3 chapter-code/ch35/02-stark-classical-margin.py
 
-# Block 4: illustrative ethSTARK-style classical-ROM margin at a
+# Block 2: illustrative ethSTARK-style classical-ROM margin at a
 # reference-like parameter point (not a verified deployed Starknet
 # parameter table), via the Ch 34 Section 5.5 composed-soundness
 # formula at the Johnson-bound proximity radius (same regime note as
-# Block 3: the model's output at that radius, not a proven floor).
+# Block 1: the model's output at that radius, not a proven floor).
 # The DFMS20-shaped challenge-width check compares
 # the F_{p^4} challenge-field width (~244 bits, recommended in
 # ethSTARK Documentation v1.2 Section 5.10.2 for provable 128-bit

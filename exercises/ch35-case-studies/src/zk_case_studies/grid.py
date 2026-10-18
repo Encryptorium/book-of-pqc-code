@@ -1,4 +1,4 @@
-"""The (L2, L4) grid: colour tables, the dominance rule, and the classifier."""
+"""The (L2, L4) grid: color tables, the dominance rule, and the classifier."""
 
 __all__ = ["L2_COLORS", "L4_COLORS", "ORDER", "classify", "dominant_color"]
 
@@ -8,19 +8,19 @@ L4_COLORS = {"crs": "red", "fs_over_dlp": "red",
              "fs_tier1": "amber", "fs_tier2": "amber",
              "fs_tier3_classical_rom": "amber"}
 
-# Severity order. A cell takes the more severe of its two colours, which is
+# Severity order. A cell takes the more severe of its two colors, which is
 # why the ZKsync composite reads red: the on-chain verifier meets the outer
 # wrapper first, and a forger who breaks it never touches the inner STARK.
 ORDER = {"red": 0, "amber": 1, "green": 2}
 
 
 def dominant_color(*colors: str) -> str:
-    """Return the most severe of the colours given."""
+    """Return the most severe of the colors given."""
     if not colors:
-        raise ValueError("need at least one colour")
+        raise ValueError("need at least one color")
     for color in colors:
         if color not in ORDER:
-            raise ValueError(f"unknown colour: {color!r}")
+            raise ValueError(f"unknown color: {color!r}")
     return min(colors, key=lambda c: ORDER[c])
 
 
@@ -37,9 +37,9 @@ def classify(system: dict) -> dict:
     dominant = dominant_color(l2_color, l4_color)
     if dominant == "red":
         if system["l2"] == "pairing":
-            cnfl = "pairing forward forgery plus retroactive soundness erosion"
+            cnfl = "pairing forward forgery plus retroactive trust erosion"
         else:
-            cnfl = "DLP forward forgery plus retroactive soundness erosion"
+            cnfl = "DLP forward forgery plus retroactive trust erosion"
     else:
         # The amber route depends on what the L2 commitment binds with:
         # a FRI Merkle tree binds by hash, a lattice PCS by SIS.
