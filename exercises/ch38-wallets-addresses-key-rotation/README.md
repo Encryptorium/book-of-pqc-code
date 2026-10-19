@@ -46,8 +46,8 @@ conclusion the chapter states in prose.
 **This package implements no signature scheme.** Nothing here signs, verifies, or
 generates a key under any of the six candidates it names. `derive_step` runs real
 HMAC-SHA-512, and that is the only cryptographic operation in the package. The
-executable primitives whose derivation properties it tabulates are in Chapters
-11, 12 and 17.
+executable signature schemes nearest the ones it tabulates are ML-DSA in
+Chapter 12, XMSS in Chapter 15 and SLH-DSA in Chapter 17.
 
 **Non-hardened derivation is a placeholder, not an implementation.** Real BIP-32
 non-hardened derivation hashes the serialized parent public key and then offsets
@@ -61,9 +61,11 @@ bytes.
 **The fit labels are editorial judgments, not measurements.** `legacy`, `fit`,
 `marginal` and `unfit` encode the chapter's reading of state-management
 tolerance and signature-size economics. No cell is benchmarked. The `marginal`
-label on the two stateful schemes at `single-device-hot` rests on what NIST
-SP 800-208 effectively assumes about one-time-signature state discipline, which
-is a judgment about consumer hardware rather than a rule the document states.
+label on the two stateful schemes at `single-device-hot` rests on NIST
+SP 800-208 Section 8.1, which validates signing only inside a hardware module
+that cannot export private keys and stores the incremented leaf index before
+releasing a signature. Whether a consumer wallet's signing module meets that is
+a judgment about consumer hardware, not a rule the document states.
 
 **The signature sizes are standards figures; the byte-budget conclusions are
 not.** The 3309-byte ML-DSA-65 and 7856-byte SLH-DSA-128s figures come from

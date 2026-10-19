@@ -23,13 +23,14 @@ The four cadence options:
   rather than seed age.
 - ``external-trigger``: rotate on a named external signal (CRQC
   arrival rumor, jurisdictional mandate, vendor recall). The
-  default when Z <= Y, where the rotation interval drops below
-  practical operational tempo.
+  default when Z <= Y leaves no room for a fixed-interval rotation.
 
-The recommendation function picks the cadence whose effective X
-clears the breach inequality with the smallest operational cost. A
-caller can override the recommendation by inspecting the per-cadence
-cost rankings the function returns alongside the recommendation.
+The recommendation function picks the cheapest cadence whose
+effective X clears the breach inequality. When none does, it falls
+back to external-trigger, which clears it only if the trigger fires
+with migration time left. A caller can override the recommendation
+by inspecting the per-cadence cost rankings the function returns
+alongside the recommendation.
 """
 
 from typing import Dict, Tuple, TypedDict

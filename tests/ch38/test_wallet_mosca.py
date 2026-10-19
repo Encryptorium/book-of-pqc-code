@@ -16,7 +16,7 @@ def test_breach_years_aggressive(strand_wallet_xy):
 
 def test_breach_years_ncsc_2035(strand_wallet_xy):
     X, Y = strand_wallet_xy
-    # Z = 9 (NCSC working assumption). Breach = 10 + 4 - 9 = 5.
+    # Z = 9 (the NCSC 2035 planning scenario). Breach = 10 + 4 - 9 = 5.
     assert mosca_wallet.breach_years(X, Y, 9) == 5
 
 
@@ -97,7 +97,7 @@ def test_cadence_option_costs_are_ranked():
 
 
 def test_evaluate_uses_strand_anchor_by_default():
-    # No X or Y override; Z=9 (NCSC working assumption).
+    # No X or Y override; Z=9 (the NCSC 2035 planning scenario).
     out = mosca_wallet.evaluate(9)
     assert out["X"] == mosca_wallet.STRAND_WALLET_X == 10
     assert out["Y"] == mosca_wallet.STRAND_WALLET_Y == 4

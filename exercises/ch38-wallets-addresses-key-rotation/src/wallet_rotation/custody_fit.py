@@ -31,8 +31,9 @@ Fit labels:
 - ``fit``: operationally viable as a migration target with no
   significant friction.
 - ``marginal``: operationally viable but with measurable friction
-  (signature size on per-spend hot wallets, signing speed on
-  constrained hardware, or composite byte overhead).
+  (signature size and signing cost on per-spend hot wallets, or the
+  state discipline a stateful scheme needs on a single-device hot
+  wallet).
 - ``unfit``: operationally broken under the shape's assumptions.
 
 The compatibility flags capture the underlying rationale:
@@ -85,7 +86,8 @@ def _row(
     Two overrides apply on top: ``legacy_shapes`` overrides the cell
     label to ``legacy`` (the pre-migration baseline); ``marginal_shapes``
     overrides the cell label to ``marginal`` (the cell is operationally
-    viable but with measurable byte-budget or signing-time pressure).
+    viable but with measurable byte-budget, signing-time or
+    state-discipline pressure).
     """
     row: Dict[str, FitCell] = {}
     for shape in CUSTODY_SHAPES:
@@ -150,11 +152,13 @@ _COMPOSITE = _row(
 # XMSS-MT is stateful. Hardware-only single-device shapes sustain a local
 # state file inside a secure element; multi-device shapes that replicate
 # one key break under state sync requirements. Independent-key multisig
-# holds: each cosigner advances only its own key's counter, the
-# multi-module design SP 800-208 Section 7 permits. The single-device
-# hot shape is downgraded to marginal because consumer-grade single-device
-# hot wallets typically lack the tamper-resistant non-volatile state plus
-# atomic-counter discipline NIST SP 800-208 effectively requires.
+# holds: each cosigner advances only its own key's counter. SP 800-208
+# Section 7 describes this key arrangement, independent keys in separate
+# modules, though for a verifier that accepts a signature from any one of
+# them rather than a quorum. The single-device hot shape is downgraded
+# to marginal because consumer-grade single-device hot wallets typically
+# lack the tamper-resistant non-volatile state plus atomic-counter
+# discipline NIST SP 800-208 Section 8.1 requires.
 _XMSS_MT = _row(
     state_compat={
         "single-device-hot": True,

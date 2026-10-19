@@ -45,11 +45,15 @@ The six-candidate set:
   composite signature requires both halves; the composite as a
   whole is therefore hardened-only.
 - ``XMSS-MT`` per RFC 8391 / NIST SP 800-208 supports hardened
-  mode only. Derivation produces a fresh seed for each subtree;
-  state management runs over the hypertree; no public-key-only
-  derivation map exists.
+  mode only. Each tree's seed derives from one secret seed through
+  a PRF, the pseudorandom construction RFC 8391 recommends. SP 800-208
+  Section 6.2 instead requires a separate random secret seed per tree
+  in a conforming module. State management runs over the hypertree;
+  no public-key-only derivation map exists.
 - ``LMS`` per RFC 8554 / NIST SP 800-208 supports hardened mode
-  only. Same rationale.
+  only. In its multi-level form, HSS, each LMS key pair is
+  generated independently (RFC 8554 Section 6.1); no
+  public-key-only derivation map exists.
 
 This module never instantiates a real signature scheme. It walks a
 derivation PATH using HMAC-SHA-512 over a deterministic byte
@@ -87,7 +91,7 @@ PROPERTIES: Dict[str, PrimitiveProperties] = {
         "hardened": True,
         "non_hardened": False,
         "watch_only": False,
-        "rationale": "hash hypertree derivation from a fresh seed at each subtree",
+        "rationale": "hash hypertree derived from one secret seed; a new key needs fresh seed material",
     },
     "Ed25519+ML-DSA-65": {
         "hardened": True,
@@ -99,7 +103,7 @@ PROPERTIES: Dict[str, PrimitiveProperties] = {
         "hardened": True,
         "non_hardened": False,
         "watch_only": False,
-        "rationale": "hypertree subtree derivation from a fresh seed per layer",
+        "rationale": "hypertree subtree seeds derived from one secret seed, as RFC 8391 recommends",
     },
     "LMS": {
         "hardened": True,
@@ -164,7 +168,10 @@ def derive_step(parent_secret: bytes, parent_chain_code: bytes, index: int, hard
     Returns ``(child_secret, child_chain_code)`` where each is 32 bytes.
 
     Hardened mode hashes the parent secret, a 0x00 prefix byte, and
-    the index with the hardened bit set, exactly per BIP-32 §3.
+    the index with the hardened bit set, exactly as BIP-32's private
+    parent key to private child key function (CKDpriv) does. It returns
+    the left half as the child seed, the chapter's BIP-32-like seed
+    schedule, where CKDpriv adds it to the parent scalar.
 
     Non-hardened mode is a pedagogical PLACEHOLDER for this module.
     Real BIP-32 non-hardened derivation hashes the SERIALIZED PARENT
@@ -198,9 +205,9 @@ def derive_step(parent_secret: bytes, parent_chain_code: bytes, index: int, hard
 def derive(primitive: str, master_seed: bytes, path: str) -> List[Dict[str, object]]:
     """Walk the derivation path under the candidate and return the chain.
 
-    The first step expands the 64-byte master seed into the master
-    secret and the master chain code per BIP-32. Each subsequent
-    step applies one HMAC-SHA-512 derivation. The function flags
+    The first step expands the master seed (BIP-32 allows 128 to 512
+    bits) into the master secret and the master chain code per BIP-32.
+    Each subsequent step applies one HMAC-SHA-512 derivation. The function flags
     any non-hardened step against a primitive that does not support
     non-hardened mode, but does NOT abort: the byte-level walk
     continues so the chapter's pedagogy can illustrate exactly
@@ -253,10 +260,10 @@ def watch_only_supported(primitive: str) -> bool:
 def evaluate(primitive: str) -> Dict[str, object]:
     """Combined property report for the candidate primitive.
 
-    Returns a dict with the four pedagogical fields the chapter's
-    inline Block 2 prints: the primitive name, the hardened-mode
-    survival flag, the non-hardened-mode survival flag, and the
-    watch-only wallet survival flag.
+    Returns a dict with the primitive name, the hardened-mode,
+    non-hardened-mode and watch-only survival flags, and the
+    rationale. The chapter states these in prose and in its survival
+    table; its Block 2 prints the per-step flags of the path walk.
     """
     # EXERCISE: implement this function.
     #

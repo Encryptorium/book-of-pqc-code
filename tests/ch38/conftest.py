@@ -12,7 +12,7 @@ Provides shared fixtures:
 - ``strand_wallet_xy``: the (X=10, Y=4) anchor for the Strand wallet
   surface, mirroring the tests/ch36/conftest.py wallet row.
 - ``mosca_z_values``: three Z scenarios spanning aggressive (Z=4),
-  NCSC working assumption (Z=9), and mid-2040 (Z=14).
+  the NCSC 2035 planning scenario (Z=9), and mid-2040 (Z=14).
 """
 
 import os
@@ -65,11 +65,11 @@ def strand_wallet_xy() -> tuple[int, int]:
 
 @pytest.fixture
 def mosca_z_values() -> dict[str, int]:
-    """Three Z scenarios spanning aggressive, working assumption, and mid-2040.
+    """Three Z scenarios: aggressive, the NCSC 2035 planning scenario, mid-2040.
 
     ``aggressive`` puts a CRQC closer than the wallet's full migration
-    window. ``ncsc_2035`` is the book's own hypothetical arrival
-    scenario, Z = 9 years from chain-tip 2026, aligned for planning with
+    window. ``ncsc_2035`` is the NCSC 2035 planning scenario,
+    Z = 9 years from chain-tip 2026, Chapter 36's stress-test value for
     NCSC's 2035 migration milestone. NCSC's March 2025 guidance sets
     migration deadlines; it forecasts no CRQC arrival date, and this
     number does not borrow its authority for one. ``mid_2040`` puts the
