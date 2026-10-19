@@ -38,14 +38,17 @@ L2 commitment candidates (on-chain; the load-bearing security axis):
 - ``FRI``: Merkle commitment plus the Fast Reed-Solomon Interactive
   Oracle Proof of Proximity. Soundness reduces to collision
   resistance of the Merkle hash and the proximity-gap parameter.
-  Grover speeds up collision-finding from 2^n to 2^{n/3} (BHT) or
-  2^{2n/5} (CNPS without quantum RAM); pq_status is grover-weakened.
+  BHT brings collision search from the classical birthday cost of
+  about 2^{n/2} to about 2^{n/3} queries with about 2^{n/3} entries
+  of quantum-accessible memory, and CNPS to about 2^{2n/5} without
+  it; pq_status is grover-weakened.
 - ``Merkle``: plain Merkle-tree commitment used as a vector
   commitment. Same Grover-weakening as FRI on the hash.
 - ``lattice-PCS``: lattice-based polynomial commitment built from
-  Module-SIS. No quantum speedup beyond the classical hardness of
-  Module-SIS; pq_status is pq-secure. Research-grade at chain-tip
-  2026; no production rollup deployment.
+  Module-SIS. No Shor-style polynomial-time quantum break; quantum
+  sieving trims the core-SVP exponent constant from 0.292 to 0.265
+  (Ch 13), which parameters absorb; pq_status is pq-secure.
+  Research-grade at chain-tip 2026; no production rollup deployment.
 
 L3 protocol-logic candidates (the IOP layer):
 
@@ -63,9 +66,9 @@ L4 Fiat-Shamir hash candidates (on-chain; the second load-bearing
 security axis, governing transcript binding under non-interactivity
 plus extraction):
 
-- ``SHA-256``: 256-bit output, Grover-weakened to ~85 bits of
-  preimage and ~85 bits of collision resistance under the BHT
-  bound (BrassardHoyerTapp 1998).
+- ``SHA-256``: 256-bit output, Grover-weakened to ~128 bits of
+  preimage resistance, and to ~85 bits of collision resistance under
+  the BHT bound (BrassardHoyerTapp 1998).
 - ``SHAKE-128``: SHA-3-family extendable-output function at the
   128-bit security level. Output length is variable; for a STARK
   Fiat-Shamir at 256-bit transcript bytes the BHT bound gives
@@ -79,9 +82,12 @@ plus extraction):
 
 Status vocabulary (chosen to avoid collision with prose adjectives):
 
-- ``pq-secure``: no known quantum speedup beyond polynomial.
-- ``grover-weakened``: Grover gives a square-root or cube-root
-  speedup against the underlying primitive.
+- ``pq-secure``: no known polynomial-time quantum attack; the known
+  quantum speedups (quantum sieving among them, Ch 13) are absorbed
+  by parameters.
+- ``grover-weakened``: generic quantum search weakens the underlying
+  hash: Grover takes preimage search to about 2^{n/2} queries and
+  BHT takes collision search to about 2^{n/3}.
 - ``shor-broken``: Shor gives a polynomial-time attack against the
   underlying primitive's hardness assumption.
 - ``pq-research``: candidate is a research-grade construction with
@@ -91,27 +97,31 @@ Status vocabulary (chosen to avoid collision with prose adjectives):
   completeness but the cell decision does not bind on-chain.
 
 Two production-system anchors at chain-tip 2026 (for the chapter's
-real-world framing):
+real-world framing), each recording the inner verifier:
 
 - ZKsync Era (Boojum upgrade, PLONK arithmetization with FRI
-  commitment) deploys L1=Plonkish, L2=FRI, L4=SHA-256.
-- Starknet (ethSTARK with FRI commitment) deploys L1=AIR, L2=FRI,
-  L4=SHA-256.
+  commitment): L1=Plonkish, L2=FRI, L3=FRI-IOP.
+- Starknet's Stone root (an ethSTARK-shaped STARK over the 252-bit
+  Cairo field, with FRI commitment): L1=AIR, L2=FRI, L3=FRI-IOP.
+
+Both anchors put SHA-256 at L4, the book's own pedagogical
+transcript and neither system's deployed one. Chapter 40 gives
+ZKsync's as a Keccak transcript at the published outer wrapper and a
+Poseidon2 transcript at the wrapped stage, and Starknet's published
+Solidity verifier draws its channel randomness with Keccak-256.
 
 Both are recorded as named tuples in the module so the chapter can
 reference them by name without re-deriving.
 
-Note on outer-wrapper claims (ZKsync): public reporting indicates
-ZKsync's Boojum verifier wraps the inner FRI-based proof in an
-outer pairing-based proof for compression. This outer-wrapper
-claim is engineering-level inference from public sources, not a
-direct consequence of a primary technical specification (the same
-hedge Ch 35 attaches to the same statement). The data model in
-this module records only the inner four-layer decomposition; an
-outer wrapper, if present, sits at a separate L2 layer that
-``system_profile`` does not surface. Callers reasoning about the
-ZKsync outer-wrapper PQ status should consult Ch 35 and the
-chapter prose, not the raw output of ``system_profile``.
+Note on the outer wrapper (ZKsync): ZKsync's Boojum announcement of
+17 July 2023 documents that the inner STARK proofs are wrapped in a
+non-transparent pairing-based SNARK and that Ethereum verifies that
+SNARK; what it leaves unnamed is the exact construction. The data
+model in this module records only the inner four-layer
+decomposition. The wrapper sits outside the profile
+``system_profile`` returns and not outside the four-layer model,
+since it has four layers of its own, and its pairing L2 is the
+dominant Shor-vulnerable acceptance surface. Ch 35 decomposes it.
 """
 
 from typing import Dict, List, Tuple, TypedDict
@@ -176,7 +186,7 @@ MATRIX: Dict[str, Dict[str, LayerCell]] = {
         "FRI": _cell(
             "grover-weakened",
             "production",
-            "Merkle plus proximity gap; Grover gives a cube-root speedup on the hash",
+            "Merkle plus proximity gap; BHT takes hash collisions to about 2^(n/3) queries",
         ),
         "Merkle": _cell(
             "grover-weakened",
@@ -317,13 +327,14 @@ def system_profile(system_name: str) -> Dict[str, object]:
     Each layer carries the candidate name plus the per-cell decision
     so the chapter can read off the system's chain-tip 2026 posture.
     The profile records the inner four-layer decomposition only. An
-    outer-wrapper layer, if present (as on ZKsync per the Ch 35
-    hedge), sits outside the data model; consult the chapter prose
-    for the operator-side outer-wrapper migration framing.
+    outer wrapper, where a system carries one (ZKsync Era's
+    pairing-based SNARK, which the Boojum announcement documents),
+    sits outside the returned profile and not outside the four-layer
+    model, since it has four layers of its own.
 
     The returned dict carries an ``inner_only`` flag set to True so
     a caller cannot silently misread the inner-only scope. The flag
-    is the data-model equivalent of the docstring hedge.
+    is the data-model form of that scope.
     """
     assert system_name in SYSTEM_ANCHORS, f"unknown system: {system_name!r}"
     anchor = SYSTEM_ANCHORS[system_name]

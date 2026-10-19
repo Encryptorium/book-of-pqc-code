@@ -13,7 +13,7 @@ verifier-contract governance cycle on Ethereum.
 
 The four cadence options:
 
-- ``per-rollup-cycle``: rotate the verifier-contract bytecode every
+- ``per-rollup-cycle``: change the verifier's parameters every
   rollup cycle (one hour in the Strand fixture). Operationally
   prohibitive because every cycle would require a multisig propose-
   audit-approve-activate-transition choreography. Recorded as the
@@ -30,13 +30,15 @@ The four cadence options:
   by Mosca arithmetic.
 - ``hard-fork-trigger``: rotate at a named L1 hard-fork event (CRQC
   arrival rumor, jurisdictional mandate, post-quantum activation
-  fork). The default when Z <= Y; the rotation interval drops below
-  the practical governance tempo.
+  fork). The default for a breach with Z <= Y, which leaves no room
+  for a fixed-interval rotation.
 
-The recommendation function picks the cadence whose effective X
-clears the breach inequality with the smallest operational cost. A
-caller can override the recommendation by inspecting the per-cadence
-cost rankings the function returns alongside the recommendation.
+The recommendation function picks the cheapest feasible cadence.
+``governance-trigger`` and ``every-N-rollup-cycles`` clear the breach
+inequality; ``hard-fork-trigger``, the fallback when neither applies,
+names a trigger rather than clearing it. A caller can override the
+recommendation by inspecting the per-cadence cost rankings the
+function returns alongside the recommendation.
 """
 
 from typing import Dict, Tuple, TypedDict
@@ -79,7 +81,7 @@ def breach_years(X: int, Y: int, Z: int) -> int:
     """Return the on-chain-verifier surface's signed margin X + Y - Z in years.
 
     Its positive part is the Mosca window (Ch 36's exposure window). A
-    positive value means the verifier-bytecode reuse window plus the
+    positive value means the verifier parameter-set reuse window plus the
     migration time runs past the CRQC arrival horizon. A non-positive
     value is years of clearance (the boundary X + Y == Z counts as
     cleared per Ch 36's strict inequality framing).
@@ -112,22 +114,23 @@ def cadence_options(X: int, Y: int, Z: int) -> Dict[str, CadenceOption]:
     #
     # Compute the breach and the safe window (max of 0 and Z - Y) once, then
     # build all four CadenceOption records. per-rollup-cycle is always
-    # feasible with interval 0 and cost 'prohibitive', because rotating
-    # verifier bytecode every one to two hours would need a full propose,
-    # audit, approve, activate, transition choreography per cycle; it is the
-    # zero-interval lower bound, the shortest schedule the model can name,
-    # and never the answer; the zero is the rotation interval and not the
-    # overhead, which is the ceremony repeated every cycle.
-    # every-N-rollup-cycles is feasible when the safe window is at least one
-    # year and the breach is positive, carries the safe window as its
-    # interval, and costs 'medium'. governance-trigger is feasible only when
-    # the breach is non-positive, carries interval 0, and costs 'low',
-    # because the council sets the tempo rather than the arithmetic.
-    # hard-fork-trigger is always feasible with interval 0 and cost 'high'.
-    # Key the returned dict by the four CADENCE_NAMES. The suite pins a
-    # phrase in each rationale string and allows no phrase in a second
-    # record. In CADENCE_NAMES order, the phrases are 'every rollup cycle',
-    # 'N tuned', 'named governance event' and 'hard-fork event'.
+    # feasible with interval 0 and cost 'prohibitive', because changing the
+    # verifier's parameters every rollup cycle, an hour in the Strand
+    # fixture, would need a full propose, audit, approve, activate,
+    # transition choreography per cycle; it is the zero-interval lower
+    # bound, the shortest schedule the model can name, and never the answer;
+    # the zero is the rotation interval and not the overhead, which is the
+    # ceremony repeated every cycle. every-N-rollup-cycles is feasible when
+    # the safe window is at least one year and the breach is positive,
+    # carries the safe window as its interval, and costs 'medium'.
+    # governance-trigger is feasible only when the breach is non-positive,
+    # carries interval 0, and costs 'low', because the council sets the
+    # tempo rather than the arithmetic. hard-fork-trigger is always feasible
+    # with interval 0 and cost 'high'. Key the returned dict by the four
+    # CADENCE_NAMES. The suite pins a phrase in each rationale string and
+    # allows no phrase in a second record. In CADENCE_NAMES order, the
+    # phrases are 'every rollup cycle', 'N tuned', 'named governance event'
+    # and 'hard-fork event'.
     #
     # Reference: Chapter 40, 'Plan the verifier-upgrade cadence'
     #
@@ -185,7 +188,7 @@ def evaluate_named_scenario(scenario: str) -> Dict[str, object]:
 
     The scenario names (narrow, central, wide) and Z values are locked
     at planning time. ``narrow`` is Z=4 (CRQC arrival sooner than the
-    verifier-bytecode reuse window plus migration time, forcing a
+    verifier parameter-set reuse window plus migration time, forcing a
     one-year breach with a two-year safe rotation window), ``central``
     is Z=9 (the chapter's central NCSC-style estimate, which clears the
     on-chain-verifier surface), ``wide`` is Z=13 (a comfortable horizon

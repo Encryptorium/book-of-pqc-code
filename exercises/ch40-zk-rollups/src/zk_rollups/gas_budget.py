@@ -3,10 +3,13 @@
 The chapter compares three verifier configurations on the on-chain
 gas budget at chain-tip 2026:
 
-- ``legacy-sha256-stark``: a FRI-based STARK verifier with SHA-256 as
-  the L4 Fiat-Shamir hash. The chain-tip 2026 ethSTARK reference
-  shape: roughly five million gas per proof on Ethereum L1, dominated
-  by the FRI verifier loop and the SHA-256 precompile hash calls.
+- ``legacy-sha256-stark``: an ethSTARK-shaped FRI-based STARK
+  verifier with SHA-256 as the L4 Fiat-Shamir hash, the book's own
+  pedagogical transcript (the ethSTARK document's reference hash is
+  BLAKE2s, and StarkWare's Solidity verifier draws its channel
+  randomness with Keccak-256). Anchored at an illustrative five
+  million gas per proof on Ethereum L1, not bound to any deployed
+  verifier.
 - ``wider-hash-stark``: the same FRI-based STARK verifier with a
   wider-output Fiat-Shamir construction at L4. SHAKE-256 has no
   EVM opcode or precompile at chain-tip 2026, so the pragmatic
@@ -248,16 +251,16 @@ def evaluate(configuration: str) -> ConfigEnvelope:
     """
     # EXERCISE: implement this function.
     #
-    # Assemble the eight-field envelope the chapter's Block 2 prints:
-    # configuration, per_proof_gas, per_batch_proof_count, per_batch_gas,
-    # per_effective_proof_gas, factor_vs_legacy, proofs_per_block_max, and
-    # rationale. Delegate the five computed fields to the functions above
-    # rather than recomputing any of them, take per_batch_proof_count
-    # straight from RECURSIVE_STARK_BATCH_PROOFS, and keep the rationale
-    # strings in a dict keyed by configuration so each row explains its own
-    # cell: the Grover-weakened SHA-256 transcript for legacy, the
-    # wider-output Fiat-Shamir construction for wider-hash, and batch
-    # amortization for the wrapper.
+    # Assemble the eight-field envelope, which carries more than Block 2
+    # prints: configuration, per_proof_gas, per_batch_proof_count,
+    # per_batch_gas, per_effective_proof_gas, factor_vs_legacy,
+    # proofs_per_block_max, and rationale. Delegate the five computed fields
+    # to the functions above rather than recomputing any of them, take
+    # per_batch_proof_count straight from RECURSIVE_STARK_BATCH_PROOFS, and
+    # keep the rationale strings in a dict keyed by configuration so each
+    # row explains its own cell: the Grover-weakened SHA-256 transcript for
+    # legacy, the wider-output Fiat-Shamir construction for wider-hash, and
+    # batch amortization for the wrapper.
     #
     # Reference: Chapter 40, 'Quantify the per-proof gas-cost change'
     #
@@ -291,12 +294,12 @@ def per_rollup_cycle_gas(
     # cycle_proof_count is non-negative, allowing zero. Legacy and
     # wider-hash verify every proof separately, so return cycle_proof_count
     # times per_proof_gas: a hundred proofs under legacy is five hundred
-    # million gas, roughly eight full blocks at the 60M limit. The recursive
-    # wrapper pays one outer proof per batch, so take the ceiling of
-    # cycle_proof_count over RECURSIVE_STARK_BATCH_PROOFS and multiply by
-    # the outer cost: a hundred proofs is one invocation at seven million
-    # gas, a hundred and fifty is two. Ceiling rather than floor, or the
-    # trailing partial batch verifies for free.
+    # million gas, about 8.3 blocks of gas at the 60M limit, which pack into
+    # 9. The recursive wrapper pays one outer proof per batch, so take the
+    # ceiling of cycle_proof_count over RECURSIVE_STARK_BATCH_PROOFS and
+    # multiply by the outer cost: a hundred proofs is one invocation at
+    # seven million gas, a hundred and fifty is two. Ceiling rather than
+    # floor, or the trailing partial batch verifies for free.
     #
     # Reference: Chapter 40, 'Quantify the per-proof gas-cost change'
     #

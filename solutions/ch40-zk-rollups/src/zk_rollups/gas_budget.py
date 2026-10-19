@@ -3,10 +3,13 @@
 The chapter compares three verifier configurations on the on-chain
 gas budget at chain-tip 2026:
 
-- ``legacy-sha256-stark``: a FRI-based STARK verifier with SHA-256 as
-  the L4 Fiat-Shamir hash. The chain-tip 2026 ethSTARK reference
-  shape: roughly five million gas per proof on Ethereum L1, dominated
-  by the FRI verifier loop and the SHA-256 precompile hash calls.
+- ``legacy-sha256-stark``: an ethSTARK-shaped FRI-based STARK
+  verifier with SHA-256 as the L4 Fiat-Shamir hash, the book's own
+  pedagogical transcript (the ethSTARK document's reference hash is
+  BLAKE2s, and StarkWare's Solidity verifier draws its channel
+  randomness with Keccak-256). Anchored at an illustrative five
+  million gas per proof on Ethereum L1, not bound to any deployed
+  verifier.
 - ``wider-hash-stark``: the same FRI-based STARK verifier with a
   wider-output Fiat-Shamir construction at L4. SHAKE-256 has no
   EVM opcode or precompile at chain-tip 2026, so the pragmatic
