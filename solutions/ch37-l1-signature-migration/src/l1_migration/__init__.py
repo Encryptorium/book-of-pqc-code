@@ -11,8 +11,9 @@ chain (Ch 36):
 - ``composite_overhead`` compares a classical+PQ composite signature
   against the underlying primitives in isolation.
 
-The candidate set, the Bitcoin weight limit (4 MB), and the
-Ethereum post-Pectra gas limit (36 million) are deliberately fixed.
+The candidate set, the Bitcoin block weight limit (4 million weight
+units), and the Ethereum block gas limit (60 million, the client
+default EIP-7935 recommends) are deliberately fixed.
 The chapter's two inline blocks operate over these constants.
 """
 

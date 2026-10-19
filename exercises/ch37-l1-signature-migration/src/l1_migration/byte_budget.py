@@ -37,11 +37,12 @@ P2MR-style script outputs. The BIP's draft version is deliberately
 not pinned here: it moves faster than this module does, and the
 chapter and its bibliography entry are the two places that carry it.
 
-Bitcoin block budget anchored at the 4 MB weight unit limit (1 weight
-unit per witness byte, 4 weight units per non-witness byte). Ethereum
-block budget anchored to the chain-tip 2026 60-million-gas limit set
-by EIP-7935 in the Fusaka upgrade (December 2025), recorded here as
-a constant so the chapter can revise the anchor without re-deriving
+Bitcoin block budget anchored at the 4-million-weight-unit limit (1
+weight unit per witness byte, 4 weight units per non-witness byte).
+Ethereum block budget anchored to the chain-tip 2026 60-million-gas
+limit, the execution-client default EIP-7935 recommends for the
+Fusaka cycle rather than a consensus constant, recorded here as a
+constant so the chapter can revise the anchor without re-deriving
 every figure.
 """
 
@@ -97,8 +98,9 @@ framing. Used as a fixed per-tx overhead in the per-block throughput
 calculation."""
 
 ETH_BLOCK_GAS_LIMIT = 60_000_000
-"""Ethereum block gas limit at chain-tip 2026, set by EIP-7935 in the
-Fusaka upgrade (December 2025). Recorded as a constant so the chapter's
+"""Ethereum block gas limit at chain-tip 2026: the execution-client
+default EIP-7935 recommends for the Fusaka cycle, which a validator can
+configure away from. Recorded as a constant so the chapter's
 anchor is unambiguous and so a future revision can update one number
 rather than recompute every figure."""
 
@@ -109,9 +111,9 @@ ETH_GAS_PER_NONZERO_CALLDATA_BYTE = 16
 """Gas cost per non-zero calldata byte under the legacy standard path
 (the execution-gas-dominant branch of the EIP-7623 max()). Used as
 the marginal-model upper bound for the signature-bytes calldata
-charge; signature bytes are uniformly random in practice, so a small
-fraction of bytes ride at the 4-gas zero-byte rate and the 16-gas
-figure overstates calldata cost by a few percent."""
+charge; a signature's few zero bytes ride at the 4-gas zero-byte
+rate, so the 16-gas figure overstates calldata cost, by under one
+percent on average for the candidates here."""
 
 ETH_GAS_TOKENS_PER_NONZERO_BYTE = 4
 """Per-byte EIP-7623 token count for a nonzero calldata byte. The

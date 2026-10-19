@@ -5,8 +5,9 @@ Ethereum calldata-gas budget.
 The chapter's inline Block 2 calls ``rank("btc")`` and ``rank("eth")``
 to print the two orderings side by side. The same candidate set is
 shared with ``byte_budget``; this module imports the candidate names
-and the budget anchors (4 MB weight limit on Bitcoin, 60 million gas
-on Ethereum per EIP-7935 in the Fusaka upgrade) from there.
+and the budget anchors (the 4-million-weight-unit limit on Bitcoin,
+60 million gas on Ethereum per EIP-7935 in the Fusaka upgrade) from
+there.
 """
 
 from typing import List, Tuple
@@ -24,7 +25,8 @@ VALID_BUDGETS = ("btc", "eth")
 def rank(budget: str = "btc") -> List[Tuple[str, int]]:
     """Rank candidates by transactions per block, descending.
 
-    ``budget`` is either ``"btc"`` (Bitcoin 4 MB weight) or ``"eth"``
+    ``budget`` is either ``"btc"`` (Bitcoin block weight, 4 million
+    weight units) or ``"eth"``
     (Ethereum post-Pectra calldata gas). Ties break alphabetically by
     primitive name so the ordering is deterministic across Python
     runtimes.
