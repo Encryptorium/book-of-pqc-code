@@ -1,7 +1,7 @@
 """Cross-stakeholder activation-window arithmetic.
 
 The chapter compares two named coordination cycles on the on-chain
-L1 surface — a Bitcoin-style soft-fork / BIP process and an
+L1 surface, a Bitcoin-style soft-fork / BIP process and an
 Ethereum-style All Core Devs hard-fork process:
 
 - ``bitcoin-bip-cycle``: the Bitcoin Improvement Proposal cycle. A
@@ -167,7 +167,9 @@ def evaluate(cycle: str) -> CycleEnvelope:
     """
     # EXERCISE: implement this function.
     #
-    # Assemble the seven-field envelope the chapter's Block 2 prints: cycle,
+    # Assemble the seven-field envelope behind the chapter's Block 2, which
+    # prints only the two totals, their year conversions and the
+    # infrastructure-lead constant. The fields are cycle,
     # proposal_review_weeks, economic_or_client_lead_weeks,
     # consensus_participant_update_weeks, infrastructure_lead_weeks,
     # activation_window_weeks, and rationale. Branch on the cycle to pick

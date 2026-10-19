@@ -48,7 +48,7 @@ protocol constants.** `BIP_PROPOSAL_REVIEW_WEEKS`,
 and `INFRASTRUCTURE_LEAD_WEEKS` are pedagogical anchors at chain-tip
 2026, chosen so the shape of the cross-cycle comparison is right. No
 Bitcoin soft fork and no Ethereum hard fork was measured to produce
-them, and the chapter and both figures say so in the same words. A
+them, and the chapter and Figure 41.2's caption say so in the same words. A
 production hard fork measures against its own coordination history.
 
 **The three stakeholders are this chapter's own taxonomy.** Ch 26
@@ -59,7 +59,7 @@ infrastructure service provider, because on a public chain the owners
 are not internal teams. The owner / cadence / deliverable framing is
 Ch 30's; the membership is this chapter's.
 
-**The infrastructure-lead window is modelled as off the critical path,
+**The infrastructure-lead window is modeled as off the critical path,
 and a real upgrade can contradict that.** `activation_window_weeks`
 deliberately omits `INFRASTRUCTURE_LEAD_WEEKS` from both sums, which
 encodes the planning assumption that RPC, indexer, and explorer
@@ -70,8 +70,9 @@ window. The chapter says so; the arithmetic cannot.
 
 **`pq-research` is in the `pq_status` vocabulary and no cell carries
 it.** `cells_with_pq_status` accepts it and returns an empty list. The
-value is retained so the module's status vocabulary matches the notation
-Chapter 40 uses, not because the matrix has a research-grade cell.
+value is retained because it is the one value the module's vocabulary
+shares with Chapter 40's status notation, not because the matrix has a
+research-grade cell.
 
 **`per-vote-cycle` is never the recommendation.** It is always feasible
 and always `prohibitive`, so `recommend_cadence` returns it inside the

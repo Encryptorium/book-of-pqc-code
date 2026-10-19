@@ -1,7 +1,7 @@
 """Cross-stakeholder activation-window arithmetic.
 
 The chapter compares two named coordination cycles on the on-chain
-L1 surface — a Bitcoin-style soft-fork / BIP process and an
+L1 surface, a Bitcoin-style soft-fork / BIP process and an
 Ethereum-style All Core Devs hard-fork process:
 
 - ``bitcoin-bip-cycle``: the Bitcoin Improvement Proposal cycle. A

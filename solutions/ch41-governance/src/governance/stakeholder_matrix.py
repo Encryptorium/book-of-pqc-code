@@ -51,12 +51,13 @@ cycle, validator-set update cycle, infrastructure-lead cycle)
 sits in ``fork_choreography``; this module records only the
 stakeholder-by-action role assignment.
 
-PQ-status notation matches Ch 40 conventions: ``deployed``
+PQ-status notation: ``deployed``
 labels chain-tip 2026 deployed work-stream owners; ``pq-pending``
 labels work-stream owners still ramping post-quantum capability
 (for example, RPC providers that have not yet published a
-post-quantum deployment policy at chain-tip 2026); ``pq-research``
-labels research-grade owners (for example, threshold-ML-DSA
+post-quantum deployment policy at chain-tip 2026); ``pq-research``,
+the one value shared with Ch 40's status notation, labels
+research-grade owners (for example, threshold-ML-DSA
 governance committees that exist only in published proposals).
 """
 
@@ -238,9 +239,7 @@ def primary_owners() -> Dict[str, List[str]]:
     Each action has at least one stakeholder marked ``primary``. The
     deploy action carries two primaries (one on the consensus surface
     and one on the read-side surface); the propose and audit actions
-    each carry one primary. The chapter's tradeoffs table reads from
-    this map to label the primary-owner column without re-walking
-    the full matrix.
+    each carry one primary. The chapter's Block 1 prints this map.
     """
     out: Dict[str, List[str]] = {}
     for action in ACTIONS:

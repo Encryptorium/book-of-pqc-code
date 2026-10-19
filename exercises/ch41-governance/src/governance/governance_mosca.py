@@ -8,14 +8,14 @@ strict breach condition is X + Y > Z.
 This module specializes the calculation to the Strand governance
 surface (X = 4 years, Y = 3 years per the Ch 36 fixture) and
 recommends one of four governance-rotation cadences based on the
-signed margin X + Y - Z. The four cadence options are tuned to the multisig
+signed margin X + Y - Z. The four cadence options are tuned to the threshold
 governance committee's per-vote tempo.
 
 The four cadence options:
 
 - ``per-vote-cycle``: rotate the governance signing keys at every
   governance vote (per-vote rotation). Operationally prohibitive
-  because every vote would require a multisig key-ceremony plus
+  because every vote would require a key ceremony plus
   on-chain registration. Recorded as the zero-interval lower bound,
   the shortest schedule the model can name, and never recommended
   in practice.
@@ -25,19 +25,21 @@ The four cadence options:
   run from a small number of votes (sub-annual cadence) to many
   votes (multi-year cadence).
 - ``governance-trigger``: rotate at a named governance event (a
-  multisig committee membership change, a treasury proposal milestone,
+  committee membership change, a treasury proposal milestone,
   a chain-tip protocol upgrade). The default when no breach
   exists; the rotation interval is set by the governance
   cadence rather than by Mosca arithmetic.
 - ``hard-fork-trigger``: rotate at a named L1 hard-fork event (CRQC
   arrival rumor, jurisdictional mandate, post-quantum activation
-  fork). The default when Z <= Y; the rotation interval drops below
-  the practical governance tempo.
+  fork). The default for a breach with Z <= Y; the rotation interval
+  drops below the practical governance tempo.
 
-The recommendation function picks the cadence whose effective X
-clears the breach inequality with the smallest operational cost. A
-caller can override the recommendation by inspecting the per-cadence
-cost rankings the function returns alongside the recommendation.
+The recommendation function picks the cheapest feasible cadence.
+``governance-trigger`` and ``every-N-vote-cycles`` clear the breach
+inequality; ``hard-fork-trigger``, the fallback when neither applies,
+names a trigger rather than clearing it. A caller can override the
+recommendation by inspecting the per-cadence cost rankings the
+function returns alongside the recommendation.
 """
 
 from typing import Dict, Tuple, TypedDict
@@ -67,9 +69,9 @@ STRAND_GOVERNANCE_Y = 3
 # any deployment-status or pq-status cell value in
 # stakeholder_matrix or fork_choreography. Z = 6 forces a breach
 # (X + Y = 7 > 6) and selects the every-N-vote-cycles cadence
-# with a three-year safe window. Z = 9 mirrors the Ch 36 / Ch 39
-# / Ch 40 NCSC-2035 anchor and clears the breach by two years;
-# Z = 13 is a wide-horizon scenario that also clears.
+# with a three-year safe window. Z = 9 is Ch 36's NCSC 2035 planning
+# scenario, which Ch 39 and Ch 40 also use, and clears the breach by
+# two years; Z = 13 is a wide-horizon scenario that also clears.
 SCENARIO_Z_VALUES: Dict[str, int] = {
     "narrow": 6,
     "central": 9,
@@ -115,21 +117,21 @@ def cadence_options(X: int, Y: int, Z: int) -> Dict[str, CadenceOption]:
     # Compute the breach and the safe window (max of 0 and Z - Y) once, then
     # build all four CadenceOption records. per-vote-cycle is always
     # feasible with interval 0 and cost 'prohibitive', because rotating the
-    # committee's keys at every vote would need a multisig key ceremony plus
-    # on-chain registration each time; it is the zero-interval lower bound,
-    # the shortest schedule the model can name, and never the answer; the
-    # zero is the rotation interval and not the overhead, which is the
-    # ceremony repeated every cycle. every-N-vote-cycles is feasible when
-    # the safe window is at least one year and the breach is positive,
-    # carries the safe window as its interval, and costs 'medium'.
-    # governance-trigger is feasible only when the breach is non-positive,
-    # carries interval 0, and costs 'low', because the committee sets the
-    # tempo rather than the arithmetic. hard-fork-trigger is always feasible
-    # with interval 0 and cost 'high'. Key the returned dict by the four
-    # CADENCE_NAMES. The suite pins a phrase in each rationale string, and
-    # the four strings must differ. In CADENCE_NAMES order, the phrases are
-    # 'every governance vote', 'every N governance votes', 'named governance
-    # event' and 'named L1 hard-fork event'.
+    # committee's keys at every vote would need a key ceremony plus on-chain
+    # registration each time; it is the zero-interval lower bound, the
+    # shortest schedule the model can name, and never the answer; the zero
+    # is the rotation interval and not the overhead, which is the ceremony
+    # repeated every cycle. every-N-vote-cycles is feasible when the safe
+    # window is at least one year and the breach is positive, carries the
+    # safe window as its interval, and costs 'medium'. governance-trigger is
+    # feasible only when the breach is non-positive, carries interval 0, and
+    # costs 'low', because the committee sets the tempo rather than the
+    # arithmetic. hard-fork-trigger is always feasible with interval 0 and
+    # cost 'high'. Key the returned dict by the four CADENCE_NAMES. The
+    # suite pins a phrase in each rationale string, and the four strings
+    # must differ. In CADENCE_NAMES order, the phrases are 'every governance
+    # vote', 'every N governance votes', 'named governance event' and 'named
+    # L1 hard-fork event'.
     #
     # Reference: Chapter 41, 'Plan the governance-rotation cadence'
     #
@@ -189,7 +191,7 @@ def evaluate_named_scenario(scenario: str) -> Dict[str, object]:
     locked at planning time. ``narrow`` is Z = 6 (CRQC arrival sooner
     than the governance-key reuse window plus migration time, forcing
     a breach with a three-year safe window), ``central`` is Z = 9
-    (the chapter's central NCSC-style estimate, which clears the
+    (the NCSC 2035 planning scenario, which clears the
     governance surface by two years), ``wide`` is Z = 13 (a
     comfortable horizon for governance-paced rotation).
     """
