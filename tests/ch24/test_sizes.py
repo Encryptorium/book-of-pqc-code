@@ -1,4 +1,4 @@
-"""Key-size and Kipnis-Shamir cost arithmetic, pinned to the round-2 packages."""
+"""Key-size and Kipnis-Shamir cost arithmetic, pinned to the round-3 specifications."""
 
 import math
 
@@ -30,15 +30,15 @@ def test_upper_triangular_count_rejects_negative_n():
 
 
 def test_uov_Is_public_key_matches_the_specification():
-    """uov-Is expanded public key is 412,160 bytes in Table 1 of the round-2 spec."""
+    """uov-Is expanded public key is 412,160 bytes in Table 1 of the round-3 spec, as in round 2."""
     assert uov_public_key_bytes(n=160, m=64, elements_per_byte=2) == 412_160
     assert uov_public_key_bytes(n=160, m=64, elements_per_byte=2) == SUBMISSION_SIZES["uov-Is"].public_key
 
 
 def test_uov_Ip_public_key_matches_the_specification():
-    """uov-Ip is over GF(256), so one element per byte, and n = 112, m = 44."""
-    assert uov_public_key_bytes(n=112, m=44, elements_per_byte=1) == 278_432
-    assert uov_public_key_bytes(n=112, m=44, elements_per_byte=1) == SUBMISSION_SIZES["uov-Ip"].public_key
+    """uov-Ip is over GF(256), so one element per byte, and round 3 has n = 119, m = 45."""
+    assert uov_public_key_bytes(n=119, m=45, elements_per_byte=1) == 321_300
+    assert uov_public_key_bytes(n=119, m=45, elements_per_byte=1) == SUBMISSION_SIZES["uov-Ip"].public_key
 
 
 def test_compact_public_key_is_far_smaller_than_the_expanded_one():
@@ -79,7 +79,7 @@ def test_search_exponent_grows_with_the_gap():
 
 
 def test_literature_cost_is_near_the_specification_estimate():
-    """The spec tabulates 154 bits for uov-Is; the n^4 form lands within a few bits."""
+    """The round-3 spec tabulates 153 bits for uov-Is; the n^4 form lands within a few bits."""
     estimate = kipnis_shamir_log2_cost(q=16, n=160, m=64)
     assert 150.0 < estimate < 160.0
 
@@ -89,7 +89,7 @@ def test_cost_model_rejects_overbalanced_parameters():
         kipnis_shamir_log2_cost(q=16, n=100, m=64)
 
 
-def test_round2_sizes_are_internally_consistent():
+def test_recorded_sizes_are_internally_consistent():
     """Every recorded set names its source and targets a NIST level."""
     for name, entry in SUBMISSION_SIZES.items():
         assert entry.name == name

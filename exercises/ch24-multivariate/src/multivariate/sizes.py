@@ -6,12 +6,15 @@ monomial for each of m quadratic forms, and at GF(16) two coefficients pack
 into a byte. The second is the Kipnis-Shamir cost model, whose exponent is what
 forces the unbalanced choice n > 2m.
 
-Every figure in ``SUBMISSION_SIZES`` is read from the submission package the
-entry's ``source`` names, and ``tests/ch24/test_sizes.py`` checks the derived
-quantities against it. UOV and SNOVA are round-2 figures. MAYO's are from the
-round-3 specification of 31 August 2026, which reparameterised MAYO1 and
-MAYO2 and changed the construction (Track 2 round 12, P1-09); the round-2
-figures it replaced are kept in each entry's ``source`` for the record.
+Every figure in ``SUBMISSION_SIZES`` is read from the round-3 specification
+the entry's ``source`` names, and ``tests/ch24/test_sizes.py`` checks the
+derived quantities against it. UOV's are from Version 3.0 (title page 30
+August 2026), which kept uov-Is and reparameterised uov-Ip. MAYO's are from
+the specification of 31 August 2026, which reparameterised MAYO1 and MAYO2
+and changed the construction (Track 2 round 12, P1-09). SNOVA's are from
+Version 3.0 (August 2026), whose recommended sets replaced every round-2 set;
+Version 3.1 leaves them unchanged. Where round 3 changed a figure, the round-2
+one is kept in the entry's ``source`` for the record.
 """
 
 from __future__ import annotations
@@ -63,9 +66,10 @@ def uov_public_key_bytes(n: int, m: int, elements_per_byte: int = 2) -> int:
     # upper_triangular_count(n) // elements_per_byte. Reject
     # elements_per_byte below 1 with ValueError. At uov-Is the field is
     # GF(16), so two elements pack into a byte and n = 160, m = 64 gives
-    # 412,160 bytes; at uov-Ip the field is GF(256), so pass 1 and n = 112,
-    # m = 44 gives 278,432. Both figures are Table 1 of the round-2
-    # specification, which is the check Exercise 1 asks you to close.
+    # 412,160 bytes; at uov-Ip the field is GF(256), so pass 1 and n = 119,
+    # m = 45 gives 321,300. Both figures are Table 1 of the round-3
+    # specification, and the first is the check Exercise 1 asks you to
+    # close.
     #
     # Reference: Chapter 24, Exercise 1
     #
@@ -79,27 +83,27 @@ def kipnis_shamir_log2_cost(q: int, n: int, m: int) -> float:
 
     The attack searches for a single vector in the oil subspace, and the
     expected number of candidates it must try is q^(n - 2m). The literature
-    cost quoted in the UOV round-2 specification is O(q^(n-2m) * n^4), so this
+    cost quoted in the UOV round-3 specification is O(q^(n-2m) * n^4), so this
     returns ``(n - 2m) * log2(q) + 4 * log2(n)``.
 
     For balanced parameters (n = 2m) the exponent vanishes and the attack runs
     in polynomial time, which is exactly the Kipnis-Shamir 1998 break of the
     original Oil-Vinegar scheme.
 
-    The round-2 specification refines the estimate to q^(n-2m) * n^2.8 *
-    (2r^2 + r) and tabulates 154 bits for uov-Is, a few bits below what this
-    function returns. Use it for the shape of the exponent, not as a security
-    claim.
+    The round-3 specification refines the estimate to q^(n-2m) * n^2.8 *
+    (2r^2 + r), with r = log2(q), and tabulates 153 bits for uov-Is, a few
+    bits below what this function returns. Use it for the shape of the
+    exponent, not as a security claim.
     """
     # EXERCISE: implement this function.
     #
     # The literature cost is O(q^(n-2m) * n^4), so return (n - 2m) * log2(q)
     # + 4 * log2(n), raising ValueError when n < 2m. Add the polynomial
-    # factor to the search exponent rather than recomputing it. The round-2
-    # specification refines this to q^(n-2m) * n^2.8 * (2r^2 + r) and
-    # tabulates 154 bits for uov-Is, so this function should land a few bits
-    # above that, not on it; treat the answer as the shape of the exponent
-    # rather than as a security claim.
+    # factor to the search exponent rather than recomputing it. The round-3
+    # specification refines this to q^(n-2m) * n^2.8 * (2r^2 + r), with r =
+    # log2(q), and tabulates 153 bits for uov-Is, so this function should
+    # land a few bits above that, not on it; treat the answer as the shape
+    # of the exponent rather than as a security claim.
     #
     # Reference: Chapter 24, 'Cryptanalysis: MinRank, Grobner bases, and the quantum picture'
     #
@@ -142,21 +146,25 @@ SUBMISSION_SIZES: dict[str, SchemeSizes] = {
         nist_level=1,
         public_key=412_160,
         signature=96,
-        source="UOV round-2 specification v2.0, Table 1 (expanded public key)",
+        source="UOV round-3 specification, Version 3.0, Table 1 (expanded "
+        "public key); unchanged from round 2",
     ),
     "uov-Is-pkc": SchemeSizes(
         name="uov-Is-pkc",
         nist_level=1,
         public_key=66_576,
         signature=96,
-        source="UOV round-2 specification v2.0, Table 1 (compact public key)",
+        source="UOV round-3 specification, Version 3.0, Table 1 (compact "
+        "public key); unchanged from round 2",
     ),
     "uov-Ip": SchemeSizes(
         name="uov-Ip",
         nist_level=1,
-        public_key=278_432,
-        signature=128,
-        source="UOV round-2 specification v2.0, Table 1 (expanded public key)",
+        public_key=321_300,
+        signature=135,
+        source="UOV round-3 specification, Version 3.0, Table 1 (expanded "
+        "public key), at (n, m, q) = (119, 45, 256); round 2 had 278,432 B "
+        "and 128 B at (112, 44, 256)",
     ),
     "MAYO1": SchemeSizes(
         name="MAYO1",
@@ -174,18 +182,23 @@ SUBMISSION_SIZES: dict[str, SchemeSizes] = {
         source="MAYO round-3 specification (31 August 2026), Table 2.1; "
         "round 2 had 4,912 B and 186 B before the wedge attack",
     ),
-    "SNOVA-(24,5,16,4)": SchemeSizes(
-        name="SNOVA-(24,5,16,4)",
+    "SNOVA_I_K": SchemeSizes(
+        name="SNOVA_I_K",
+        nist_level=1,
+        public_key=376,
+        signature=528,
+        source="SNOVA round-3 specification, Version 3.0, Table 5, at "
+        "(v, o, q, l, r, m1, m2) = (29, 3, 16, 4, 8, 5, 96), the "
+        "smaller-public-key set",
+    ),
+    "SNOVA_I_S": SchemeSizes(
+        name="SNOVA_I_S",
         nist_level=1,
         public_key=1_016,
-        signature=248,
-        source="SNOVA round-2 specification, Table 6",
-    ),
-    "SNOVA-(37,17,16,2)": SchemeSizes(
-        name="SNOVA-(37,17,16,2)",
-        nist_level=1,
-        public_key=9_842,
-        signature=124,
-        source="SNOVA round-2 specification, Table 6",
+        signature=272,
+        source="SNOVA round-3 specification, Version 3.0, Table 5, at "
+        "(v, o, q, l, r, m1, m2) = (27, 5, 16, 4, 4, 5, 80), the "
+        "smaller-signature set; round 2's SNOVA-(24,5,16,4) had the same "
+        "public key and a 248 B signature",
     ),
 }

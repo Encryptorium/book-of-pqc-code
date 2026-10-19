@@ -55,14 +55,15 @@ Because so much is handed over, 28 of the 43 tests still pass against the
 stubbed tree. `test_gf_linalg.py` and `test_uov_roundtrip.py` pass in full;
 `test_trapdoor.py` fails 4 of 7 and `test_sizes.py` fails 11 of 15.
 
-## Divergences from the round-2 UOV specification
+## Divergences from the round-3 UOV specification
 
-Figures below are from version 2.0 of the UOV specification, dated
-2025-02-05. They are round-2 figures. NIST IR 8610 (May 2026) advanced UOV to
-the third round and anticipates a longer timeline before any multivariate
-scheme is standardized, so a third-round tweak could move all of them.
+Figures below are from Version 3.0 of the UOV specification, the round-3
+submission, whose title page is dated 2026-08-30. It keeps uov-Is as round 2
+defined it. NIST IR 8610 (May 2026) advanced UOV to the third round and
+anticipates a longer timeline before any multivariate scheme is standardized,
+so a later revision could still move these figures.
 
-| Axis | uov-Is (round 2) | This toy |
+| Axis | uov-Is (round 3) | This toy |
 | --- | --- | --- |
 | Field | GF(16), an extension field | GF(7), prime, so inversion is `pow(x, q - 2, q)` |
 | Variables | `n = 160`, `n_v = 96`, `n_o = m = 64` | `n = 5`, `n_v = 3`, `n_o = m = 2` |
@@ -71,7 +72,7 @@ scheme is standardized, so a third-round tweak could move all of them.
 | Vinegar derivation | Pseudorandom from message, salt, secret seed and counter | Uniform from a caller-supplied `random.Random` |
 | Public key | 412,160 bytes expanded, 66,576 bytes compressed | `m` explicit `n x n` matrices |
 | Signature | 96 bytes | A list of `n` field elements |
-| Security argument | EUF-CMA for salt-UOV, with the round-2 attack survey behind it | None |
+| Security argument | EUF-CMA for salt-UOV, with the round-3 attack survey behind it | None |
 
 The toy is several orders of magnitude too small to resist any of the attacks
 the chapter describes. Its Kipnis-Shamir search exponent is `q^(n - 2m) = 7`,
@@ -84,13 +85,13 @@ against the UOV submission.
 ## Where the recorded sizes come from
 
 `SUBMISSION_SIZES` in `multivariate.sizes` records public-key and signature sizes
-for seven parameter sets, each with the table it was read from: UOV Table 1,
-MAYO Table 2.1, SNOVA Table 6. `test_sizes.py` recomputes both UOV expanded-key
-entries from `uov_public_key_bytes` and checks them against the recorded
-figures, so the chapter's 412,160-byte claim is derived rather than
-transcribed. The 278,432-byte uov-Ip figure is recomputed the same way; the
+for seven parameter sets, each with the round-3 table it was read from: UOV
+Table 1, MAYO Table 2.1, SNOVA Table 5. `test_sizes.py` recomputes both UOV
+expanded-key entries from `uov_public_key_bytes` and checks them against the
+recorded figures, so the chapter's 412,160-byte claim is derived rather than
+transcribed. The 321,300-byte uov-Ip figure is recomputed the same way; the
 chapter does not quote it.
 
 The recorded MAYO and SNOVA figures are not recomputed. They are transcriptions
-from those specifications, and `test_round2_sizes_are_internally_consistent`
+from those specifications, and `test_recorded_sizes_are_internally_consistent`
 checks only that every entry names a source and a NIST level.
