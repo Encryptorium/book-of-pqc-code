@@ -2,7 +2,8 @@
 
 The chapter operates over a fixed five-by-three matrix of candidate
 primitives by threshold-protocol roles. Each cell carries a deployment
-status drawn from {production, fips-final, pre-draft, research} and two
+status (production, fips-final, pre-draft, research-grade,
+research-early, research-classical-only or incompatible) and two
 qualitative flags (admits T-of-N split, requires online combine round)
 that produce the per-cell decision.
 
@@ -17,9 +18,9 @@ The three threshold-protocol roles:
   Shor-vulnerable; included only to disqualify it from the
   post-quantum candidate set.
 - ``threshold-PQ``: threshold variant of a post-quantum scheme. At
-  chain-tip 2026 the deployed status is research-grade for every PQ
-  candidate; no NIST standard exists for threshold post-quantum
-  signatures.
+  chain-tip 2026 every post-quantum primitive's cell carries a research
+  status, research-grade or research-early; no NIST standard exists for
+  threshold post-quantum signatures.
 
 The function ``lookup`` returns the per-cell decision; the function
 ``deployment_summary`` flattens the matrix for a chapter table.
@@ -113,8 +114,9 @@ MATRIX: Dict[str, Dict[str, ThresholdCell]] = {
             admits_t_of_n=False,
             requires_combine_round=False,
             rationale=(
-                "FROST is Schnorr-only; ML-DSA does not admit a "
-                "Schnorr-style identification protocol"
+                "FROST is threshold Schnorr over a discrete-log group; "
+                "ML-DSA moves Schnorr's identification scheme to "
+                "Module-LWE, outside that setting"
             ),
         ),
         "threshold-PQ": _cell(
@@ -235,9 +237,9 @@ def lookup(primitive: str, role: str) -> Dict[str, object]:
     # appears once, on BLS at no-threshold; 'incompatible' marks a pairing
     # that is not a research direction at all, such as FROST against any
     # lattice or hash primitive, since FROST is threshold Schnorr; and every
-    # threshold-PQ cell is one of the research labels, which is the
-    # chapter's point that an operator has no chain-deployable threshold
-    # option at chain-tip 2026.
+    # post-quantum primitive's threshold-PQ cell is one of the research
+    # labels, which is the chapter's point that an operator has no
+    # chain-deployable threshold option at chain-tip 2026.
     #
     # Reference: Chapter 39, 'Decide between threshold and per-validator signing'
     #
@@ -263,8 +265,9 @@ def deployment_summary() -> List[Dict[str, object]]:
 def production_ready_at(role: str) -> List[str]:
     """Return the list of primitives whose deployment status is ``production`` for the role.
 
-    Used by the chapter to identify the primitives an operator can
-    deploy today versus those that require a research-track wait.
+    ``production`` means deployed on a live chain. ``fips-final`` does
+    not count: a published standard is not a chain deployment, so
+    no-threshold returns BLS alone and threshold-PQ returns nothing.
     """
     # EXERCISE: implement this function.
     #

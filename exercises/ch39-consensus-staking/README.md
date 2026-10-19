@@ -33,7 +33,9 @@ Chapter 39 prints three blocks, all runnable as files under `chapter-code/ch39`.
 Block 1 is a slice of `pq_total_bytes` and `per_set_bytes_against_baseline`
 folded into one `per_set_bytes` function over a trimmed `CANDIDATES` literal that
 carries only `sig_bytes` and `aggregates`. Block 2 is a slice of `MATRIX` with
-each cell flattened to its status string alone. Block 3 is `breach_years` plus a
+each cell flattened to a short form of its status string: `research` for
+`research-grade`, `classical-only` for `research-classical-only` and `--` for
+`incompatible`. Block 3 is `breach_years` plus a
 `recommend` that returns the two-tuple `recommend_cadence` computes and then
 buries inside a larger dict.
 
@@ -50,8 +52,9 @@ operational-cost fields.
 **This package implements no signature scheme.** Nothing here signs, verifies,
 aggregates, or generates a key under any of the five candidates it names. There
 is no pairing, no lattice arithmetic and no hash tree; the BLS aggregation the
-chapter analyzes is a fact about sizes here, not an operation. The executable
-primitives are in Chapters 11, 12 and 17.
+chapter analyzes is a fact about sizes here, not an operation. The book
+implements ML-DSA in Chapter 12 and SLH-DSA in Chapter 17, and implements
+neither BLS nor FN-DSA.
 
 **The byte budget is a normalized comparison, not an Ethereum block estimate.**
 Every per-set figure assumes N validators sign one message and the protocol
@@ -61,8 +64,9 @@ these. The model isolates the aggregation effect, which holds at any subset; it
 does not predict a block size.
 
 **The deployment statuses are editorial readings of a moving landscape.**
-`production`, `fips-final`, `pre-draft`, `research-grade`, `research-early` and
-`incompatible` encode where each pairing sat at chain-tip 2026. Nothing here is
+`production`, `fips-final`, `pre-draft`, `research-grade`, `research-early`,
+`research-classical-only` and `incompatible` encode where each pairing sat at
+chain-tip 2026, and `CANDIDATES` adds `deployed-legacy` for BLS. Nothing here is
 benchmarked and nothing tracks a standards body. Each label is pinned by a test
 so it cannot drift silently, which makes them checkable rather than correct.
 

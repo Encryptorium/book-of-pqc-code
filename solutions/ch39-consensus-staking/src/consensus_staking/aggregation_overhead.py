@@ -21,8 +21,8 @@ Strand consensus surface:
   "Parameter sets": public key bytelength 897, signature bytelength
   sbytelen 666. FIPS 206 itself has published nothing at chain-tip
   2026, so these figures are the submission's rather than a
-  standard's and can move at finalization. Smallest post-quantum
-  signature among the four NIST candidates. Does not aggregate
+  standard's and can move at finalization. Smallest signature
+  among the four post-quantum candidates. Does not aggregate
   trivially.
 - ``threshold-ML-DSA`` is the threshold-signature variant of ML-DSA
   per active research at chain-tip 2026; combines T partial signatures
@@ -219,10 +219,13 @@ def aggregation_ratio(primitive: str, N: int) -> float:
 def evaluate(primitive: str, N: int = ETH_VALIDATORS_2026) -> dict:
     """Combined per-validator-set envelope for the candidate.
 
-    Returns a dict with the four pedagogical numbers the chapter's
-    inline Block 1 prints: signature bytes, public key bytes,
+    Returns a dict with the candidate's fixed fields (signature and
+    public key bytes, aggregation flag, deployment status, notes),
+    the validator count, and two computed numbers: the
     per-validator-set total bytes (aggregated for BLS / threshold;
-    linear N times sig_bytes for plain PQ), and aggregation ratio.
+    linear N times sig_bytes for plain PQ) and the aggregation ratio.
+    Block 1 prints only the per-set total and its factor against BLS,
+    which per_set_bytes_against_baseline returns.
     """
     assert primitive in CANDIDATES, f"unknown primitive: {primitive!r}"
     assert N >= 1, "validator count must be at least one"

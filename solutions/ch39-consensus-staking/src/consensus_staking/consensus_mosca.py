@@ -26,13 +26,15 @@ The four cadence options:
   calendar interval.
 - ``hard-fork-trigger``: rotate at a named hard-fork event (CRQC
   arrival rumor, jurisdictional mandate, post-quantum activation
-  fork). The default when Z <= Y, where the rotation interval drops
-  below practical hard-fork tempo.
+  fork). The default for a breach with Z <= Y, which leaves no room
+  for a fixed-interval rotation.
 
-The recommendation function picks the cadence whose effective X
-clears the breach inequality with the smallest operational cost. A
-caller can override the recommendation by inspecting the per-cadence
-cost rankings the function returns alongside the recommendation.
+The recommendation function picks the cheapest feasible cadence.
+``no-rotation`` and ``every-N-years`` clear the breach inequality;
+``hard-fork-trigger``, the fallback when neither applies, names a
+trigger rather than clearing it. A caller can override the
+recommendation by inspecting the per-cadence cost rankings the
+function returns alongside the recommendation.
 """
 
 from typing import Dict, Tuple, TypedDict
@@ -122,8 +124,8 @@ def cadence_options(X: int, Y: int, Z: int) -> Dict[str, CadenceOption]:
         "rotation_interval_years": 0,
         "operational_cost": "high",
         "rationale": (
-            "rotate at a named hard-fork event; the default when Z <= Y "
-            "leaves no room for a fixed-interval rotation"
+            "rotate at a named hard-fork event; the default for a breach "
+            "with Z <= Y, which leaves no room for a fixed-interval rotation"
         ),
     }
 

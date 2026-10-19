@@ -145,7 +145,7 @@ def test_every_rationale_names_the_cell_it_belongs_to():
         ("BLS-BLS12-381", "classical-FROST"): "not a post-quantum migration target",
         ("BLS-BLS12-381", "threshold-PQ"): "already collapses partials",
         ("ML-DSA-65", "no-threshold"): "FIPS 204 final",
-        ("ML-DSA-65", "classical-FROST"): "Schnorr-style identification protocol",
+        ("ML-DSA-65", "classical-FROST"): "moves Schnorr's identification scheme",
         ("ML-DSA-65", "threshold-PQ"): "none NIST-standardized",
         ("SLH-DSA-128s", "no-threshold"): "FIPS 205 final",
         ("SLH-DSA-128s", "classical-FROST"): "hash-based signatures do not admit",
