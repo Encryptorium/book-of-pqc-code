@@ -5,12 +5,18 @@ match the reference HQC KAT byte-for-byte. See
 ``tests/ch21/vectors/README.md`` for the list of divergences (no Reed-
 Muller inner code, no FO wrapping, small parameters).
 
-The sizes below come from the 22 August 2025 HQC specification, which
-supersedes the Round-4 submission and is the revision the chapter's
-parameter-set table reproduces: Table 5 for the parameters and Table 6
-for the byte sizes. They were confirmed against the official KAT files
-in the HQC reference repository on 2026-08-11, whose ``.rsp`` filenames
-carry the decapsulation-key length.
+The sizes below are those of the official KAT files in the HQC
+reference repository, whose ``.rsp`` filenames carry the
+decapsulation-key length. They follow the 22 August 2025 HQC
+specification (Table 6) and were confirmed against those files on
+2026-08-11. On 19 October 2026 the repository's only release was still
+v5.0.0 of 22 August 2025. The chapter's parameter table now reproduces
+the 12 October 2026 specification, which raises the weights and changes
+the polynomial for F_{2^8}, so a release built from it will produce
+different vectors. Its encapsulation keys and ciphertexts keep the
+lengths below (Table 9), but its default decapsulation key is the
+32-byte seed, so the ``sk`` lengths and the filenames here belong to
+the v5.0.0 release and will change with the next one.
 
 When those ``.rsp`` files are dropped under ``tests/ch21/vectors/``
 under the names in ``PARAMS``, this suite parses each file and checks:

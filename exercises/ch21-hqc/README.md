@@ -26,7 +26,7 @@ cosmetic:
 | Inner code | repetition, majority-vote decoded | concatenated Reed-Solomon and duplicated Reed-Muller |
 | Ring degree | `n = 83` | `n = 17669`, `35851`, `57637` |
 | Security goal | IND-CPA | IND-CCA2, via a salted Fujisaki-Okamoto transform |
-| Decryption failure rate | a few in a thousand | below `2^-128` by design |
+| Decryption failure rate | a few in a thousand | below `2^-127` at HQC-1 by design |
 
 It is a teaching implementation and nothing here should be used to protect
 anything. Four limitations in particular, each of which Chapter 21 states in

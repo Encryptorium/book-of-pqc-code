@@ -26,10 +26,17 @@ the two implementations agree by construction.
 Each file contains 100 test vectors in the NIST KAT format
 (`count`, `seed`, `pk`, `sk`, `ct`, `ss` blocks separated by blank lines).
 
-Sizes and names in this directory follow the 22 August 2025 HQC
-specification, which supersedes the Round-4 submission. That earlier package
-is still downloadable from the Resources page as `archive_submissions.zip`,
-and its KAT files carry different sizes; do not mix the two.
+Sizes and names in this directory follow the reference repository's release
+v5.0.0 of 22 August 2025, which implements the 22 August 2025 HQC
+specification and was still its only release on 19 October 2026. The
+specification of 12 October 2026 supersedes that revision. It raises the
+weights and changes the polynomial for `F_{2^8}`, so its vectors will differ,
+and it makes the 32-byte seed the default decapsulation key, so a release that
+implements it will carry a 32-byte `sk` while `pk` and `ct` keep the lengths
+below. Vendor the v5.0.0 files to run these checks as written. The Round-4
+package is still downloadable from the Resources page as
+`archive_submissions.zip`, and its KAT files carry different sizes; do not mix
+it with either.
 
 ## Why the toy does not verify byte-for-byte
 
@@ -41,7 +48,7 @@ IND-CPA core:
 | Concatenated outer Reed-Solomon and inner duplicated Reed-Muller code | plain repetition only |
 | Salted FO (HHK) transform wrapping IND-CPA to IND-CCA2 KEM | IND-CPA only |
 | `n = 17669` (HQC-1) / 35851 / 57637 | `n = 83` (toy) |
-| `DFR < 2^-128` (specification target) | `DFR ~ 0.6%` (toy) |
+| `DFR < 2^-127` at HQC-1 (specification) | `DFR ~ 0.6%` (toy) |
 | Deterministic-random-bit-generator schedule | seeded `random.Random` |
 
 Forcing the toy to reproduce the reference KAT byte-for-byte would mean
@@ -56,7 +63,7 @@ section names the IND-CPA to IND-CCA2 gap explicitly.
 - Each `.rsp` file exists, is non-empty, and parses into the NIST KAT
   block structure (`count`, `seed`, `pk`, `sk`, `ct`, `ss`).
 - The count of vectors per file is 100.
-- Byte lengths of `pk`, `sk`, and `ct` match the specification for each
+- Byte lengths of `pk`, `sk`, and `ct` match the v5.0.0 release's for each
   parameter set: `pk` 2241 / 4514 / 7237, `sk` 2321 / 4602 / 7333, and
   `ct` 4433 / 8978 / 14421 at HQC-1, HQC-3 and HQC-5.
 
