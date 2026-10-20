@@ -78,9 +78,9 @@ an AIR over the Mersenne-31 prime field under Circle FRI. Its `L4` of
 `SHA-256` is the book's own pedagogical transcript, not any deployed
 Starknet channel: the published Solidity verifier draws its channel
 randomness with Keccak-256. StarkWare announced on 31 March 2026 that
-the L1 verifier will be changed to verify an S-two circuit proof; on
-7 September 2026 no public record of that change shipping was found, so
-it is pending rather than shipped. Chapter 40's Starknet walkthrough
+the L1 verifier will be changed to verify an S-two circuit proof; no
+public record of that change shipping by 19 October 2026 was found, so
+this package treats it as pending. Chapter 40's Starknet walkthrough
 states all of this.
 
 ## Running the tests
