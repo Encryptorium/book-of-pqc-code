@@ -21,8 +21,8 @@ only and runs on Python 3.10 or later.
   module is interactive; the `lattice_pcs` module does not implement an
   evaluation protocol. Chapter 32 states these boundaries explicitly.
 - **Intended companions.** Chapter 34 covers STARKs and production-depth
-  FRI. The 2024-2026 lattice PCS frontier (Greyhound, Jindo, Hachi) is
-  cited in Chapter 32 but not reimplemented here.
+  FRI. The lattice PCS constructions Chapter 32 cites (Greyhound, Jindo,
+  Hachi) are not reimplemented here.
 
 ## Running
 

@@ -46,8 +46,8 @@ matrix with two equal columns the unit vectors ``e_1`` and ``e_2`` are
 both short, both open the same commitment, and both verify. The module
 does not implement an evaluation-opening protocol because the toy
 parameters are too small to support a sensible evaluation procedure;
-the Chapter 32 prose cites Greyhound, Jindo, Hachi, and Serval for the
-evaluation protocols at the 2024-2026 frontier.
+the Chapter 32 prose cites Greyhound, Jindo, Hachi, and Serval for
+evaluation protocols from the 2024-2026 literature.
 """
 
 from __future__ import annotations
@@ -58,9 +58,9 @@ from dataclasses import dataclass
 
 
 # Toy scalar-SIS parameters. These are pedagogically sized (much smaller
-# than the 2024-2026 frontier parameters). Chapter 32 explicitly calls
-# this out and cites the Hwang et al. 2024, Nguyen-Seiler 2024, Hwang
-# et al. 2026, and Nguyen et al. 2026 papers for concrete parameters.
+# than the parameters in the 2024-2026 literature). Chapter 32 explicitly
+# calls this out and cites the Hwang et al. 2024, Nguyen-Seiler 2024,
+# Hwang et al. 2026, and Nguyen et al. 2026 papers for concrete parameters.
 DEFAULT_MODULUS = 257
 DEFAULT_DIMENSION = 8  # vector length
 DEFAULT_COMMIT_SIZE = 4  # number of commitment coordinates
