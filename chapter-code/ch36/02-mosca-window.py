@@ -8,9 +8,9 @@
 
 # Block 2: pedagogical slice of blockchain_threat.mosca_window.evaluate (stdlib only).
 
-# Z = 9 models a 2035 planning scenario measured from 2026. NCSC and
-# NSM-10 / CNSA 2.0 use 2035 as a migration deadline, not as a
-# predicted CRQC arrival date.
+# Z = 9 models a 2035 planning scenario measured from 2026. NCSC's
+# 2035 target and NSM-10's 2035 goal are migration dates, not
+# predicted CRQC arrival dates.
 Z_2035_PLANNING = 9
 
 STRAND_XY = [

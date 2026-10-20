@@ -101,9 +101,9 @@ def test_nsm10_2035_matches_ncsc_2035(
     mosca_z_values: dict[str, int],
 ) -> None:
     # The two 2035 scenarios use the same Z value; the chapter cites
-    # them separately because the policy framings differ (NCSC 2035
-    # migration horizon vs NSM-10 / CNSA 2.0 2035 NSS regulatory
-    # deadline). Both are planning deadlines, not CRQC forecasts.
+    # them separately because the policy framings differ (NCSC's 2035
+    # migration target vs NSM-10's 2035 goal for NSS). Both are
+    # planning dates, not CRQC forecasts.
     assert mosca_z_values["nsm10_2035"] == mosca_z_values["ncsc_2035"] == 9
 
 
