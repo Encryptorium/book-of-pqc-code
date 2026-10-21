@@ -30,7 +30,7 @@ from typing import Any, Callable
 
 SECRET = b"pedagogical-secret-bytes-only"
 
-# alg identifier -> (hash constructor, deprecated flag)
+# alg identifier -> (hash constructor, retired flag)
 REGISTRY: dict[str, tuple[Callable[[], Any], bool]] = {
     "HS256": (hashlib.sha256, False),
     "HS384": (hashlib.sha384, False),
@@ -69,14 +69,14 @@ def sign_agile(
 ) -> str:
     """Sign ``payload`` under ``alg``, writing the identifier into the header.
 
-    Raises ``ValueError`` if the registry marks ``alg`` deprecated.
+    Raises ``ValueError`` if the registry marks ``alg`` retired.
     ``verify_agile`` refuses it too, so retiring an identifier is a
     registry flag rather than a caller change.
     """
 
-    hash_fn, deprecated = REGISTRY[alg]
-    if deprecated:
-        raise ValueError(f"algorithm {alg} is deprecated")
+    hash_fn, retired = REGISTRY[alg]
+    if retired:
+        raise ValueError(f"algorithm {alg} is retired")
     header = b64url(json.dumps({"typ": "JWT", "alg": alg}).encode())
     body = b64url(json.dumps(payload).encode())
     signed = f"{header}.{body}".encode()
@@ -87,7 +87,7 @@ def sign_agile(
 def verify_agile(token: str, secret: bytes = SECRET) -> bool:
     """Verify a token by dispatching on its own ``alg`` header.
 
-    Returns ``False`` for an unknown identifier and for a deprecated one,
+    Returns ``False`` for an unknown identifier and for a retired one,
     which is what makes the ``alg: none`` and unknown-algorithm bypass
     families fail against this verifier.
     """
@@ -96,8 +96,8 @@ def verify_agile(token: str, secret: bytes = SECRET) -> bool:
     alg = json.loads(base64.urlsafe_b64decode(header + "==="))["alg"]
     if alg not in REGISTRY:
         return False
-    hash_fn, deprecated = REGISTRY[alg]
-    if deprecated:
+    hash_fn, retired = REGISTRY[alg]
+    if retired:
         return False
     signed = f"{header}.{body}".encode()
     expected = b64url(hmac.new(secret, signed, hash_fn).digest())

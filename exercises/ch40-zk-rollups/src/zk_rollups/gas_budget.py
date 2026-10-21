@@ -95,10 +95,9 @@ RECURSIVE_STARK_OUTER_GAS_PER_PROOF = 7_000_000
 RECURSIVE_STARK_BATCH_PROOFS = 100
 
 # Default per-rollup-cycle proof count for the chapter's worked
-# example. ZKsync Era and Starknet both batch roughly this many state-
-# transition proofs into a recursive aggregator per L1 commitment cycle
-# at chain-tip 2026. The number is illustrative; rollup operators tune
-# it against their throughput target.
+# example: the state-transition proofs a recursive aggregator batches
+# per L1 commitment cycle. The number is illustrative; rollup operators
+# tune it against their throughput target.
 DEFAULT_ROLLUP_CYCLE_PROOFS = 100
 
 

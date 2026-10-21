@@ -40,9 +40,10 @@ The six-candidate set:
   child keys derive from a fresh seed via HMAC, never from a
   public-key-only operation.
 - ``Ed25519+ML-DSA-65`` composite supports hardened mode only at
-  the composite level. The Ed25519 component supports non-hardened
-  derivation in isolation, but the ML-DSA component does not. A
-  composite signature requires both halves; the composite as a
+  the composite level. The Ed25519 component admits non-hardened
+  derivation in isolation under BIP32-Ed25519, though not under
+  SLIP-0010, which defines only hardened derivation for Ed25519. The
+  ML-DSA component admits none. A composite signature requires both halves; the composite as a
   whole is therefore hardened-only.
 - ``XMSS-MT`` per RFC 8391 / NIST SP 800-208 supports hardened
   mode only. Each tree's seed derives from one secret seed through

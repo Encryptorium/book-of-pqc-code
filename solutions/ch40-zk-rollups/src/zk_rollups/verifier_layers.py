@@ -68,7 +68,7 @@ plus extraction):
 
 - ``SHA-256``: 256-bit output, Grover-weakened to ~128 bits of
   preimage resistance, and to ~85 bits of collision resistance under
-  the BHT bound (BrassardHoyerTapp 1998).
+  the BHT bound (Brassard, Høyer and Tapp 1998).
 - ``SHAKE-128``: SHA-3-family extendable-output function at the
   128-bit security level. Output length is variable; for a STARK
   Fiat-Shamir at 256-bit transcript bytes the BHT bound gives

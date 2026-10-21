@@ -108,9 +108,10 @@ def cadence_options(X: int, Y: int, Z: int) -> Dict[str, CadenceOption]:
     """Per-cadence feasibility and operational cost under (X, Y, Z).
 
     Each cadence carries a feasibility flag, a rotation interval in
-    years, an operational-cost label, and a one-line rationale. The
-    recommendation function consumes this dict to pick the cheapest
-    feasible cadence.
+    years, an operational-cost label, and a one-line rationale.
+    ``recommend_cadence`` applies the same feasibility conditions to
+    pick the cheapest feasible cadence, and returns this dict beside its
+    pick under ``options``.
     """
     # EXERCISE: implement this function.
     #
@@ -150,8 +151,8 @@ def recommend_cadence(X: int, Y: int, Z: int) -> Dict[str, object]:
     3. ``hard-fork-trigger`` otherwise.
 
     The ``per-vote-cycle`` cadence is always feasible as a lower
-    bound but is operationally prohibitive; the function returns it
-    as a runner-up rather than as the recommendation.
+    bound but is operationally prohibitive; the function never
+    recommends it, and it appears only in ``options``.
     """
     # EXERCISE: implement this function.
     #

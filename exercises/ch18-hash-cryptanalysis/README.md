@@ -74,7 +74,7 @@ which this package never evaluates. Including them would double the table
 without changing a computed result.
 
 **`bht_collision_bits` is a query count, not a cost.** It reports `n/3` because
-Brassard-Hoyer-Tapp achieves that in an idealised black-box model with
+Brassard-Høyer-Tapp achieves that in an idealized black-box model with
 `2**(n/3)` entries of quantum-accessible RAM. It is the smallest of the four
 exponents in `quantum.py` and it is not the binding constraint on any FIPS 205
 parameter set. `test_quantum.py::test_category_floors_track_grover_not_bht` is

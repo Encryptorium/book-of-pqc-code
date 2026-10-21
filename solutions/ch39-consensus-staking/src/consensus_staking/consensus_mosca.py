@@ -77,9 +77,10 @@ def cadence_options(X: int, Y: int, Z: int) -> Dict[str, CadenceOption]:
     """Per-cadence feasibility and operational cost under (X, Y, Z).
 
     Each cadence carries a feasibility flag, a rotation interval in
-    years, an operational-cost label, and a one-line rationale. The
-    recommendation function consumes this dict to pick the cheapest
-    feasible cadence.
+    years, an operational-cost label, and a one-line rationale.
+    ``recommend_cadence`` applies the same feasibility conditions to
+    pick the cheapest feasible cadence, and returns this dict beside its
+    pick under ``options``.
     """
     breach = breach_years(X, Y, Z)
     safe_window = max(0, Z - Y)
@@ -148,8 +149,8 @@ def recommend_cadence(X: int, Y: int, Z: int) -> Dict[str, object]:
 
     The ``every-N-validator-rotations`` cadence has the same
     feasibility as ``every-N-years`` but a higher operational cost;
-    the function returns it as a runner-up rather than as the
-    recommendation.
+    the function never recommends it, and it appears only in
+    ``options``.
     """
     breach = breach_years(X, Y, Z)
     options = cadence_options(X, Y, Z)

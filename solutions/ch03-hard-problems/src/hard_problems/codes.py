@@ -9,7 +9,10 @@ Chapter 3 uses this to draw the contrast the syndrome decoding problem rests on.
 Decoding is easy here because the code has structure that the decoder knows;
 scramble the columns and the same syndrome carries the same information but no
 longer names the position, so recovering it needs a lookup table or a general
-algorithm. The hardness in SDP is about *random* codes, not about decoding.
+algorithm. Code-based schemes start from the working assumption that random
+linear codes are hard to decode on average. That hardness is the benchmark for
+generic attacks, which treat a scheme's code as a general linear code; attacks
+that exploit the structure of a scheme's own code are the other route.
 
 Standard library only.
 """

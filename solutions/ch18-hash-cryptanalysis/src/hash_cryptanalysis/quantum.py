@@ -3,7 +3,7 @@
 Four numbers per hash width, and Chapter 18's argument is about which of them
 binds. Preimage costs `2**n` classically and `2**(n/2)` under Grover. Collision
 costs `2**(n/2)` classically by the birthday bound and `2**(n/3)` under
-Brassard-Hoyer-Tapp, given quantum-accessible memory at that same scale.
+Brassard-Høyer-Tapp, given quantum-accessible memory at that same scale.
 
 The BHT exponent is the smallest of the four and it is not the binding one. It is
 a query-complexity result in a black-box model with an amount of quantum RAM that
@@ -47,10 +47,10 @@ def birthday_collision_bits(n_bits: int) -> float:
 
 
 def bht_collision_bits(n_bits: int) -> float:
-    """Brassard-Hoyer-Tapp collision search: `2**(n/3)`, so `n / 3` bits.
+    """Brassard-Høyer-Tapp collision search: `2**(n/3)`, so `n / 3` bits.
 
     Assumes `2**(n/3)` entries of quantum-accessible RAM, queryable in
-    superposition. Read it as the exponent an idealised black-box model yields,
+    superposition. Read it as the exponent an idealized black-box model yields,
     not as a cost an attacker pays.
     """
     return n_bits / 3

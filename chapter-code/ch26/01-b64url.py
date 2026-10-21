@@ -33,13 +33,13 @@ REGISTRY = {
     "HS256": (hashlib.sha256, False),
     "HS384": (hashlib.sha384, False),
     "HS512": (hashlib.sha512, False),
-    "HS1":   (hashlib.sha1,   True),     # True = deprecated
+    "HS1":   (hashlib.sha1,   True),     # True = retired
 }
 
 def sign_agile(payload, alg):
-    hash_fn, deprecated = REGISTRY[alg]
-    if deprecated:
-        raise ValueError(f"algorithm {alg} is deprecated")
+    hash_fn, retired = REGISTRY[alg]
+    if retired:
+        raise ValueError(f"algorithm {alg} is retired")
     header = b64url(json.dumps({"typ": "JWT", "alg": alg}).encode())
     body = b64url(json.dumps(payload).encode())
     signed = f"{header}.{body}".encode()
@@ -51,8 +51,8 @@ def verify_agile(token):
     alg = json.loads(base64.urlsafe_b64decode(header + "==="))["alg"]
     if alg not in REGISTRY:
         return False
-    hash_fn, deprecated = REGISTRY[alg]
-    if deprecated:
+    hash_fn, retired = REGISTRY[alg]
+    if retired:
         return False
     signed = f"{header}.{body}".encode()
     expected = b64url(hmac.new(SECRET, signed, hash_fn).digest())

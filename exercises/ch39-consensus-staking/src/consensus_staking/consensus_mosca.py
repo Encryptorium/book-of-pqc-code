@@ -89,9 +89,10 @@ def cadence_options(X: int, Y: int, Z: int) -> Dict[str, CadenceOption]:
     """Per-cadence feasibility and operational cost under (X, Y, Z).
 
     Each cadence carries a feasibility flag, a rotation interval in
-    years, an operational-cost label, and a one-line rationale. The
-    recommendation function consumes this dict to pick the cheapest
-    feasible cadence.
+    years, an operational-cost label, and a one-line rationale.
+    ``recommend_cadence`` applies the same feasibility conditions to
+    pick the cheapest feasible cadence, and returns this dict beside its
+    pick under ``options``.
     """
     # EXERCISE: implement this function.
     #
@@ -129,8 +130,8 @@ def recommend_cadence(X: int, Y: int, Z: int) -> Dict[str, object]:
 
     The ``every-N-validator-rotations`` cadence has the same
     feasibility as ``every-N-years`` but a higher operational cost;
-    the function returns it as a runner-up rather than as the
-    recommendation.
+    the function never recommends it, and it appears only in
+    ``options``.
     """
     # EXERCISE: implement this function.
     #
@@ -139,10 +140,10 @@ def recommend_cadence(X: int, Y: int, Z: int) -> Dict[str, object]:
     # least one year gives every-N-years at that window; otherwise
     # hard-fork-trigger at interval 0. every-N-validator-rotations is never
     # the recommendation because it matches every-N-years on feasibility and
-    # loses on cost, so it comes back only inside the options dict as a
-    # runner-up. Return X, Y, Z, breach_years, safe_window_years,
-    # recommendation, rotation_interval_years, and the full options dict, so
-    # a caller can override the pick from the same call.
+    # loses on cost, so it comes back only inside the options dict. Return
+    # X, Y, Z, breach_years, safe_window_years, recommendation,
+    # rotation_interval_years, and the full options dict, so a caller can
+    # override the pick from the same call.
     #
     # Reference: Chapter 39, 'Plan the validator-key rotation cadence'
     #

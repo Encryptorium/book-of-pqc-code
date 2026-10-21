@@ -6,7 +6,7 @@ algorithm id ``id-MLDSA65-Ed25519-SHA512`` (Section 6, OID
 ``mldsa_sig || ed_sig`` per Section 4.3; verify returns True only
 when both component signatures validate (AND-mode). The serialized
 composite public key is ``mldsa_pk || ed_pk``. OR-mode is out of
-scope: the transition-period threat model assumes an attacker may
+scope: the threat model assumes an attacker may
 break one component but not both simultaneously.
 
 The signing input is a composite message representative
@@ -32,7 +32,11 @@ ML-DSA-65 is stubbed (see ``mldsa_stub.py``) by choice, not by absence:
 ``solutions/ch12-mldsa`` ships the real FIPS 204 implementation and can
 be swapped in. The combiner semantics, the serialization order, and the
 message representative M' are real, apart from the Label context noted
-above; the ML-DSA signature scheme itself is a placeholder.
+above and the private key; the ML-DSA signature scheme itself is a
+placeholder. The private key is ``mldsa_sk || ed_seed``, 4,064 bytes,
+where draft-19 Section 4.2 serializes the 32-byte ML-DSA seed in place
+of the expanded key, so a key from ``composite_sig_keygen`` is not in
+the draft's format.
 """
 
 import hashlib
@@ -85,8 +89,9 @@ def composite_sig_keygen(
     """Derive an explicit-composite keypair from two 32-byte seeds.
 
     Returns ``(pk, sk)`` where ``pk = mldsa_pk || ed_pk`` and
-    ``sk = mldsa_sk || ed_seed`` per the LAMPS draft serialization
-    order.
+    ``sk = mldsa_sk || ed_seed`` in the LAMPS draft's serialization
+    order. The draft's Section 4.2 puts the 32-byte ML-DSA seed where
+    this puts the expanded key (see the module docstring).
     """
     # EXERCISE: implement this function.
     #

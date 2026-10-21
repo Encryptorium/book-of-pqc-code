@@ -67,14 +67,14 @@ def test_agile_signatures_differ_by_algorithm():
     assert len(sigs) == 3
 
 
-def test_agile_signing_refuses_a_deprecated_algorithm():
-    with pytest.raises(ValueError, match="deprecated"):
+def test_agile_signing_refuses_a_retired_algorithm():
+    with pytest.raises(ValueError, match="retired"):
         sign_agile(PAYLOAD, "HS1")
 
 
-def test_agile_verification_refuses_a_deprecated_algorithm():
+def test_agile_verification_refuses_a_retired_algorithm():
     """A token minted before HS1 was flagged still fails verification,
-    which is the deprecation flag doing its job on both paths."""
+    which is the retired flag doing its job on both paths."""
 
     hash_fn, _ = REGISTRY["HS1"]
     REGISTRY["HS1"] = (hash_fn, False)

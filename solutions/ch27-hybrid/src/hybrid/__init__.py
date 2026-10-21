@@ -1,7 +1,6 @@
 """Chapter 27: Hybrid schemes in practice.
 
-Pure-Python implementations of the two canonical transition-period
-hybrids.
+Pure-Python implementations of the two canonical hybrids.
 
 - ``x25519``: Curve25519 scalar multiplication per RFC 7748.
 - ``ed25519``: EdDSA signatures on Curve25519 per RFC 8032.
